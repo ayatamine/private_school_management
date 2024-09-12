@@ -1,0 +1,102 @@
+created:
+    - database/factories/UserFactory.php
+    - database/factories/AcademicYearFactory.php
+    - database/factories/AcademicStageFactory.php
+    - database/factories/CourseFactory.php
+    - database/factories/TuitionFeeFactory.php
+    - database/factories/TransportFeeFactory.php
+    - database/factories/ParentFactory.php
+    - database/factories/SemesterFactory.php
+    - database/factories/DepartmentFactory.php
+    - database/factories/DesignationFactory.php
+    - database/factories/EmployeeFactory.php
+    - database/factories/VehicleFactory.php
+    - database/factories/FinanceAccountFactory.php
+    - database/factories/StudentFactory.php
+    - database/factories/TransportFactory.php
+    - database/factories/PaymentMethodFactory.php
+    - database/factories/ConcessionFeeFactory.php
+    - database/factories/ValueAddedTaxFactory.php
+    - database/factories/SchoolSettingFactory.php
+    - database/factories/JobFactory.php
+    - database/migrations/2024_09_12_021441_create_users_table.php
+    - database/migrations/2024_09_12_021442_create_academic_years_table.php
+    - database/migrations/2024_09_12_021443_create_academic_stages_table.php
+    - database/migrations/2024_09_12_021444_create_courses_table.php
+    - database/migrations/2024_09_12_021445_create_tuition_fees_table.php
+    - database/migrations/2024_09_12_021446_create_transport_fees_table.php
+    - database/migrations/2024_09_12_021447_create_parents_table.php
+    - database/migrations/2024_09_12_021448_create_semesters_table.php
+    - database/migrations/2024_09_12_021449_create_departments_table.php
+    - database/migrations/2024_09_12_021450_create_designations_table.php
+    - database/migrations/2024_09_12_021451_create_employees_table.php
+    - database/migrations/2024_09_12_021452_create_vehicles_table.php
+    - database/migrations/2024_09_12_021453_create_finance_accounts_table.php
+    - database/migrations/2024_09_12_021454_create_students_table.php
+    - database/migrations/2024_09_12_021455_create_transports_table.php
+    - database/migrations/2024_09_12_021456_create_payment_methods_table.php
+    - database/migrations/2024_09_12_021457_create_concession_fees_table.php
+    - database/migrations/2024_09_12_021458_create_value_added_taxes_table.php
+    - database/migrations/2024_09_12_021459_create_school_settings_table.php
+    - database/migrations/2024_09_12_021500_create_jobs_table.php
+    - app/Models/User.php
+    - app/Models/AcademicYear.php
+    - app/Models/AcademicStage.php
+    - app/Models/Course.php
+    - app/Models/TuitionFee.php
+    - app/Models/TransportFee.php
+    - app/Models/Parent.php
+    - app/Models/Semester.php
+    - app/Models/Department.php
+    - app/Models/Designation.php
+    - app/Models/Employee.php
+    - app/Models/Vehicle.php
+    - app/Models/FinanceAccount.php
+    - app/Models/Student.php
+    - app/Models/Transport.php
+    - app/Models/PaymentMethod.php
+    - app/Models/ConcessionFee.php
+    - app/Models/ValueAddedTax.php
+    - app/Models/SchoolSetting.php
+    - app/Models/Job.php
+    - database/seeders/UserSeeder.php
+    - database/seeders/AcademicYearSeeder.php
+    - database/seeders/AcademicStageSeeder.php
+    - database/seeders/JobSeeder.php
+models:
+    User: { id: id, natinoal_id: string, password: bigInteger, is_admin: 'boolean default:false', phone_number: string, gender: 'enum:"male","female"' }
+    Setting: { id: id, app_name: string, logo: string, phone_number: string, whatsapp_number: string, contact_email: string, support_email: string, address: string, about_us: mediumText, facebook_link: 'string nullable', linkedin_link: 'string nullable', twitter_link: 'string nullable', instagram_link: 'string nullable', softdeletes: softDeletes }
+    Complaint: { id: id, order_id: 'bigInteger foreign:Order.id nullable', reason: string, content: mediumText, status: 'enum:"open","under_review","resolved","closed"', resolution_summary: 'mediumText nullable', resolved_by: 'bigInteger foreign:users.id', softdeletes: softDeletes, relationships: { BelongsTo: 'User,Order' } }
+    File: { id: id, fileable_id: bigInteger, fileable_type: string, file: string, softdeletes: softDeletes }
+    Testimonial: { id: id, comment: mediumText, image: 'string nullable', commenter_name: string, position: 'string nullable' }
+    Vendor: { id: id, user_id: 'bigInteger foreign:users.id', company_name: string, business_files: 'string nullable', business_licence_link: 'string nullable', bio: 'mediumText nullable', bank_id: 'string nullable', relationships: { BelongsTo: User } }
+    Client: { id: id, user_id: 'bigInteger foreign:users.id', total_spent: 'integer unsigned', relationships: { BelongsTo: User } }
+    KnowledgeBaseCategory: { id: id, name: string }
+    Currency: { id: id, name: string, symbol: string, is_active: boolean }
+    Order: { id: id, vendor_id: 'bigInteger foreign:vendors.id', client_id: 'bigInteger foreign:clients.id', status: 'enum:"pending","approved","inspected","completed","refunded"', payment_status: 'enum:"0","1"', expected_delivery_date: date, real_delivery_date: date, shipping_address_id: 'bigInteger foreign:shipping_addresses.id', softdeletes: softDeletes, relationships: { BelongsTo: 'Vendor,Client,Currency,ShippingAddress' } }
+    Inspection: { id: id, order_id: 'bigInteger foreign:Order.id', inspection_date: timestamp, report: text, status: 'enum:"pending","passed","failed"', remarks: 'mediumText nullable', softdeletes: softDeletes, relationships: { BelongsTo: Order } }
+    HomeCarousel: { id: id, title: string, image: string, text: 'mediumText  nullable', is_visible: boolean }
+    KnowledgeBase: { id: id, title: string, content: text, tags: 'json nullable', published: boolean, relationships: { BelongsTo: KnowledgeBaseCategory } }
+    ShippingAddress: { id: id, client_id: 'bigInteger foreign:clients.id', first_name: 'string:255', last_name: 'string:255', phone_number: 'string:255', country: 'string:255', city: 'string:255', relationships: { BelongsTo: Client } }
+    Product: { id: id, order_id: 'bigInteger foreign:orders.id', name: 'string:255', price: 'decimal:16,2', description: 'mediumText nullable', quantity: 'integer unsigned', relationships: { BelongsTo: Order } }
+    FAQ: { id: id, title: string, content: mediumText, is_visible: 'boolean default:true', type: 'enum:"client","vendor"' }
+    Feature: { id: id, title: title, content: mediumText, is_visible: 'boolean default:true', icon: string }
+    AcademicYear: { id: id, name: string, start_date: date, end_date: date, description: 'string nullable', is_default: 'boolean default:"0"', is_registration_active: 'boolean default:"0"' }
+    AcademicStage: { id: id, name: string }
+    Course: { id: id, academic_year_id: 'bigInteger unsigned foreign:academic_years.id', academic_group_id: 'bigInteger unsigned foreign:academic_stages.id', name: string, relationships: { BelongsTo: 'AcademicYear, AcademicStage' } }
+    TuitionFee: { id: id, academic_year_id: 'bigInteger unsigned foreign:academic_years.id', course_id: 'bigInteger unsigned foreign:courses.id', payment_partition_count: integer, payment_partition: json, relationships: { BelongsTo: AcademicYear } }
+    TransportFee: { id: id, academic_year_id: 'bigInteger unsigned foreign:academic_years.id', name: string, payment_partition_count: integer, payment_partition: json, relationships: { BelongsTo: AcademicYear } }
+    Parent: { id: id, full_name: string, relation: 'string comment:"father,mother,brother,sister,guardian,other"', user_id: 'bigInteger unsigned foreign:users.id', relationships: { BelongsTo: User } }
+    Semester: { id: id, academic_year_id: 'bigInteger unsigned foreign:academic_years.id', course_id: 'bigInteger unsigned foreign:courses.id', name: bigInteger, max_students_number: 'integer unsigned', is_registration_active: 'boolean default:"0"', is_promotion_active: 'boolean default:"0"', relationships: { BelongsTo: 'AcademicYear, Course' } }
+    Department: { id: id, name: bigInteger }
+    Designation: { id: id, name: bigInteger }
+    Employee: { id: id, code: string, user_id: 'bigInteger unsigned foreign:users.id', first_name: string, middle_name: string, third_name: 'string nullable', last_name: 'string nullable', department_id: 'bigInteger unsigned foreign:departments.id', designation_id: 'bigInteger unsigned foreign:designations.id', gender: 'enum:"male","female"', joining_date: date, nationality: string, identity_number: string, identity_type: string, identiry_expire_date: date, relationships: { BelongsTo: 'User, Department, Designation' } }
+    Vehicle: { id: id, car_name: string, plate_number: string, form_number: string, expire_date: date, insurance_name: bigInteger, insurance_expire_at: date, periodic_inspection_expire_at: date, documents: mediumText }
+    FinanceAccount: { id: id, name: string, type: 'enum:"bank","cash" comment:"نقدي أو بنكي"', opening_balance: double, is_active: 'boolean default:"0"', bank_name: 'string nullable', account_number: bigInteger, link_with_employee_payments: 'string default:"0"' }
+    Student: { id: id, first_name: string, middle_name: string, third_name: 'string nullable', last_name: 'string nullable', birth_date: date, nationality: string, email: 'string nullable', course_id: 'bigInteger unsigned foreign:courses.id', parent_id: 'bigInteger unsigned foreign:parents.id', is_approved: 'boolean default:false', approved_at: 'timestamp nullable', registered_by: 'bigInteger unsigned foreign:users.id', registration_number: string, user_id: 'bigInteger unsigned foreign:users.id', gender: 'enum:"male","female"', opening_balance: double, finance_document: string, note: string, relationships: { BelongsTo: 'Course, Parent, User' } }
+    Transport: { id: id, vehicle_id: 'bigInteger unsigned foreign:vehicles.id', transport_fees_id: 'bigInteger unsigned foreign:transport_fees.id', registration_date: date, registred_by: 'bigInteger unsigned foreign:users.id', relationships: { BelongsTo: 'Vehicle, TransportFee' } }
+    PaymentMethod: { id: id, name: string, finance_account_id: 'bigInteger unsigned foreign:finance_accounts.id', code: string, is_code_required: 'boolean default:"0"', relationships: { BelongsTo: FinanceAccount } }
+    ConcessionFee: { id: id, academic_year_id: 'bigInteger unsigned foreign:academic_years.id', name: string, value: float, is_active: 'boolean default:"0"', relationships: { BelongsTo: AcademicYear } }
+    ValueAddedTax: { id: id, name: string, percentage: float, applies_at: date, is_saudi_student_exepmted: 'boolean default:"0"' }
+    SchoolSetting: { id: id, title: string, phone_number: string, website: 'string nullable', permit_number: integer, commercial_register_number: integer, added_value_tax_number: integer, logo: string, stamp: string, new_registration_number_start: string }
+    Job: { id: id, name: string, is_active: boolean }

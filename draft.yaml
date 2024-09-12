@@ -1,0 +1,171 @@
+models:
+    User:
+        id: id
+        national_id: string
+        password: string
+        is_admin: boolean default:false
+        phone_number: string
+        gender: enum:"male","female"
+    AcademicYear:
+        id: id
+        name: string
+        start_date: date
+        end_date: date
+        description: string nullable
+        is_default: boolean default:"0"
+        is_registration_active: boolean default:"0"
+    AcademicStage:
+        id: id
+        name: string
+    Course:
+        id: id
+        academic_year_id: bigInteger unsigned foreign:academic_years.id
+        academic_group_id: bigInteger unsigned foreign:academic_stages.id
+        name: string
+        relationships:
+            BelongsTo: AcademicYear, AcademicStage
+    TuitionFee:
+        id: id
+        academic_year_id: bigInteger unsigned foreign:academic_years.id
+        course_id: bigInteger unsigned foreign:courses.id
+        payment_partition_count: integer
+        payment_partition: json
+        relationships:
+            BelongsTo: AcademicYear
+    TransportFee:
+        id: id
+        academic_year_id: bigInteger unsigned foreign:academic_years.id
+        name: string
+        payment_partition_count: integer
+        payment_partition: json
+        relationships:
+            BelongsTo: AcademicYear
+    Parent:
+        id: id
+        full_name: string
+        relation: string comment:"father,mother,brother,sister,guardian,other"
+        user_id: bigInteger unsigned foreign:users.id
+        relationships:
+            BelongsTo: User
+    Semester:
+        id: id
+        academic_year_id: bigInteger unsigned foreign:academic_years.id
+        course_id: bigInteger unsigned foreign:courses.id
+        name: bigInteger
+        max_students_number: integer unsigned
+        is_registration_active: boolean default:"0"
+        is_promotion_active: boolean default:"0"
+        relationships:
+            BelongsTo: AcademicYear, Course
+    Department:
+        id: id
+        name: bigInteger
+    Designation:
+        id: id
+        name: bigInteger
+    Employee:
+        id: id
+        code: string
+        user_id: bigInteger unsigned foreign:users.id
+        first_name: string
+        middle_name: string
+        third_name: string nullable
+        last_name: string nullable
+        department_id: bigInteger unsigned foreign:departments.id
+        designation_id: bigInteger unsigned foreign:designations.id
+        gender: enum:"male","female"
+        joining_date: date
+        nationality: string
+        identity_number: string
+        identity_type: string
+        identiry_expire_date: date
+        relationships:
+            BelongsTo: User, Department, Designation
+    Vehicle:
+        id: id
+        car_name: string
+        plate_number: string
+        form_number: string
+        expire_date: date
+        insurance_name: bigInteger
+        insurance_expire_at: date
+        periodic_inspection_expire_at: date
+        documents: mediumText
+    FinanceAccount:
+        id: id
+        name: string
+        type: enum:"bank","cash" comment:"نقدي أو بنكي"
+        opening_balance: double
+        is_active: boolean default:"0"
+        bank_name: string nullable
+        account_number: bigInteger
+        link_with_employee_payments: string default:"0"
+    Student:
+        id: id
+        first_name: string
+        middle_name: string
+        third_name: string nullable
+        last_name: string nullable
+        birth_date: date
+        nationality: string
+        email: string nullable
+        course_id: bigInteger unsigned foreign:courses.id
+        parent_id: bigInteger unsigned foreign:parents.id
+        is_approved: boolean default:false
+        approved_at: timestamp nullable
+        registered_by: bigInteger unsigned foreign:users.id
+        registration_number: string
+        user_id: bigInteger unsigned foreign:users.id
+        gender: enum:"male","female"
+        opening_balance: double
+        finance_document: string
+        note: string
+        relationships:
+            BelongsTo: Course, Parent, User
+    Transport:
+        id: id
+        vehicle_id: bigInteger unsigned foreign:vehicles.id
+        transport_fees_id: bigInteger unsigned foreign:transport_fees.id
+        registration_date: date
+        registred_by: bigInteger unsigned foreign:users.id
+        relationships:
+            BelongsTo: Vehicle, TransportFee
+    PaymentMethod:
+        id: id
+        name: string
+        finance_account_id: bigInteger unsigned foreign:finance_accounts.id
+        code: string
+        is_code_required: boolean default:"0"
+        relationships:
+            BelongsTo: FinanceAccount
+    ConcessionFee:
+        id: id
+        academic_year_id: bigInteger unsigned foreign:academic_years.id
+        name: string
+        value: float
+        is_active: boolean default:"0"
+        relationships:
+            BelongsTo: AcademicYear
+    ValueAddedTax:
+        id: id
+        name: string
+        percentage: float
+        applies_at: date
+        is_saudi_student_exepmted: boolean default:"0"
+    SchoolSetting:
+        id: id
+        title: string
+        phone_number: string
+        website: string nullable
+        permit_number: integer
+        commercial_register_number: integer
+        added_value_tax_number: integer
+        logo: string
+        stamp: string
+        new_registration_number_start: string
+    Job:
+        id: id
+        name: string
+        is_active: boolean
+       
+seeders: User,AcademicYear,AcademicStage,Job
