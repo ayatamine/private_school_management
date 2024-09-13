@@ -16,11 +16,10 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('academic_year_id');
-            $table->foreign('academic_year_id')->references('id')->on('academic_years');
-            $table->unsignedBigInteger('academic_group_id');
-            $table->foreign('academic_group_id')->references('id')->on('academic_stages');
+            $table->foreign(columns: 'academic_year_id')->references('id')->on('academic_years');
+            $table->unsignedBigInteger('academic_stage_id');
+            $table->foreign('academic_stage_id')->references('id')->on('academic_stages');
             $table->string('name');
-            $table->foreignId('academic_stage_id');
             $table->timestamps();
         });
 

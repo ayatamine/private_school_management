@@ -18,23 +18,37 @@ class CourseResource extends Resource
     protected static ?string $model = Course::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function getNavigationGroup():string
+    {
+        return trans('main.academic_settings');
+    }
+    public static function getModelLabel():string
+    {
+        return trans_choice('main.academic_course',1);
+    }
+    public static function getNavigationLabel():string
+    {
+        return trans_choice('main.academic_course',2);
+    }
 
+    public static function getPluralModelLabel():string
+    {
+        return trans_choice('main.academic_course',2);
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('academic_year_id')
-                    ->relationship('academicYear', 'name')
+                    ->relationship('academicYear', 'name')->label(trans_choice('main.academic_year',1))
                     ->required(),
-                Forms\Components\Select::make('academic_group_id')
-                    ->relationship('academicGroup', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('academic_stage_id')
+                Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
                     ->relationship('academicStage', 'name')
                     ->required(),
+                Forms\Components\TextInput::make('name')->label(trans('main.name'))
+                    ->required()
+                    ->maxLength(255),
+               
             ]);
     }
 
@@ -42,30 +56,25 @@ class CourseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('academicYear.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('academicGroup.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('academicStage.name')
+                Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice( 'main.academic_year',number: 1))
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('academicStage.name')->label(trans_choice( 'main.academic_stage',1))
+                    ->numeric()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

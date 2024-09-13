@@ -25,6 +25,5 @@ class Designation extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'name' => 'integer',
     ];
 }

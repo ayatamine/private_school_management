@@ -18,12 +18,28 @@ class AcademicStageResource extends Resource
     protected static ?string $model = AcademicStage::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function getNavigationGroup():string
+    {
+        return trans('main.academic_settings');
+    }
+    public static function getModelLabel():string
+    {
+        return trans_choice('main.academic_stage',1);
+    }
+    public static function getNavigationLabel():string
+    {
+        return trans_choice('main.academic_stage',2);
+    }
 
+    public static function getPluralModelLabel():string
+    {
+        return trans_choice('main.academic_stage',2);
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name')->label(trans(key: 'main.name'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -33,21 +49,17 @@ class AcademicStageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

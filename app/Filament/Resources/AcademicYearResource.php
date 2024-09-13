@@ -18,7 +18,10 @@ class AcademicYearResource extends Resource
     protected static ?string $model = AcademicYear::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    public static function getNavigationGroup():string
+    {
+        return trans('main.academic_settings');
+    }
     public static function getModelLabel():string
     {
         return trans_choice('main.academic_year',1);
@@ -37,18 +40,18 @@ class AcademicYearResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name')->label(trans('main.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('start_date')
+                Forms\Components\DatePicker::make('start_date')->label(trans('main.start_date'))
                     ->required(),
-                Forms\Components\DatePicker::make('end_date')
+                Forms\Components\DatePicker::make('end_date')->label(trans('main.end_date'))
                     ->required(),
-                Forms\Components\TextInput::make('description')
+                Forms\Components\TextInput::make('description')->label(trans('main.description'))
                     ->maxLength(255),
-                Forms\Components\Toggle::make('is_default')
+                Forms\Components\Toggle::make('is_default')->label(trans('main.is_default'))
                     ->required(),
-                Forms\Components\Toggle::make('is_registration_active')
+                Forms\Components\Toggle::make('is_registration_active')->label(trans('main.is_registration_active'))
                     ->required(),
             ]);
     }
@@ -57,34 +60,29 @@ class AcademicYearResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('start_date')
+                Tables\Columns\TextColumn::make('start_date')->label(trans('main.start_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
+                Tables\Columns\TextColumn::make('end_date')->label(trans('main.end_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
+                Tables\Columns\TextColumn::make('description')->label(trans('main.description'))->limit(50)
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_default')
+                Tables\Columns\IconColumn::make('is_default')->label(trans('main.is_default'))
                     ->boolean(),
-                Tables\Columns\IconColumn::make('is_registration_active')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\ToggleColumn::make('is_registration_active')->label(trans('main.is_registration_active')),
+                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

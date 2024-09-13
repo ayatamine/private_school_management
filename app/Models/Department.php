@@ -25,6 +25,5 @@ class Department extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'name' => 'integer',
     ];
 }

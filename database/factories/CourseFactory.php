@@ -24,7 +24,6 @@ class CourseFactory extends Factory
     {
         return [
             'academic_year_id' => AcademicYear::factory(),
-            'academic_group_id' => AcademicStage::factory(),
             'name' => $this->faker->name(),
             'academic_stage_id' => AcademicStage::factory(),
         ];

@@ -19,13 +19,30 @@ class DesignationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    
+    public static function getNavigationGroup():string
+    {
+        return trans('main.employee_settings');
+    }
+    public static function getModelLabel():string
+    {
+        return trans_choice('main.designation',1);
+    }
+    public static function getNavigationLabel():string
+    {
+        return trans_choice('main.designation',2);
+    }
+
+    public static function getPluralModelLabel():string
+    {
+        return trans_choice('main.designation',2);
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\TextInput::make('name')->label(trans('main.name'))
+                    ->required(),
             ]);
     }
 
@@ -33,22 +50,17 @@ class DesignationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

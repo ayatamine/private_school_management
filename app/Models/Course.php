@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\AcademicYear;
+use App\Models\AcademicStage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Course extends Model
 {
@@ -17,7 +19,6 @@ class Course extends Model
      */
     protected $fillable = [
         'academic_year_id',
-        'academic_group_id',
         'name',
         'academic_stage_id',
     ];
@@ -30,7 +31,6 @@ class Course extends Model
     protected $casts = [
         'id' => 'integer',
         'academic_year_id' => 'integer',
-        'academic_group_id' => 'integer',
         'academic_stage_id' => 'integer',
     ];
 
@@ -44,8 +44,4 @@ class Course extends Model
         return $this->belongsTo(AcademicStage::class);
     }
 
-    public function academicGroup(): BelongsTo
-    {
-        return $this->belongsTo(AcademicStage::class);
-    }
 }

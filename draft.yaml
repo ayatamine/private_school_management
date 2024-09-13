@@ -21,7 +21,7 @@ models:
     Course:
         id: id
         academic_year_id: bigInteger unsigned foreign:academic_years.id
-        academic_group_id: bigInteger unsigned foreign:academic_stages.id
+        academic_stage_id: bigInteger unsigned foreign:academic_stages.id
         name: string
         relationships:
             BelongsTo: AcademicYear, AcademicStage
@@ -60,10 +60,10 @@ models:
             BelongsTo: AcademicYear, Course
     Department:
         id: id
-        name: bigInteger
+        name: string
     Designation:
         id: id
-        name: bigInteger
+        name: string
     Employee:
         id: id
         code: string
