@@ -2,6 +2,7 @@ models:
     User:
         id: id
         national_id: string
+        username: string
         password: string
         is_admin: boolean default:false
         phone_number: string
