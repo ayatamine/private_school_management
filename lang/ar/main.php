@@ -33,5 +33,17 @@ return [
     'department_name'=>'اسم القسم',
     'created_at'=>'تاريخ الانشاء',
     'updated_at'=>'اخر تحديث في ',
-
+    'full_name'=>'الاسم الكامل',
+    'parent_relation'=>'علاقة ولي الأمر',
+    'phone_number'=>'رقم الهاتف',
+    'national_id'=>'رقم الهوية',
+    'relation'=>'العلاقة',
+    'gender'=>'الجنس',
+    'password'=>'كلمة السر',
+    'male'=>'ذكر',
+    'female'=>'أنثى',
+    'father'=>'الأب','mother'=>'الأم','brother'=>'الأخ','sister'=>'الأخت','guardian'=>'وصي','other'=>'اخرى',
+    'you_can_change_password'=>'(بامكانك تغيير كلمة المرور في أي وقت)',
+    'max_students_number'=>'الحد الأقصى لعدد الطلاب',
+    'is_promotion_active'=>'تفعيل الترفيع',
 ];

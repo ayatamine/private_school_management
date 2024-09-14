@@ -17,7 +17,7 @@ class DesignationResource extends Resource
 {
     protected static ?string $model = Designation::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-designation';
 
     
     public static function getNavigationGroup():string

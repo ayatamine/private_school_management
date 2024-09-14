@@ -33,7 +33,6 @@ class Semester extends Model
         'id' => 'integer',
         'academic_year_id' => 'integer',
         'course_id' => 'integer',
-        'name' => 'integer',
         'is_registration_active' => 'boolean',
         'is_promotion_active' => 'boolean',
     ];

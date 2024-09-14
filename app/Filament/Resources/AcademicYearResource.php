@@ -17,7 +17,7 @@ class AcademicYearResource extends Resource
 {
     protected static ?string $model = AcademicYear::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-academic_years';
     public static function getNavigationGroup():string
     {
         return trans('main.academic_settings');

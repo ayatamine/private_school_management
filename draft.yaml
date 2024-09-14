@@ -52,7 +52,7 @@ models:
         id: id
         academic_year_id: bigInteger unsigned foreign:academic_years.id
         course_id: bigInteger unsigned foreign:courses.id
-        name: bigInteger
+        name: string
         max_students_number: integer unsigned
         is_registration_active: boolean default:"0"
         is_promotion_active: boolean default:"0"

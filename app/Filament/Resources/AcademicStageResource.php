@@ -17,7 +17,7 @@ class AcademicStageResource extends Resource
 {
     protected static ?string $model = AcademicStage::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'icon-academic_stage';
     public static function getNavigationGroup():string
     {
         return trans('main.academic_settings');

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('academic_year_id')->references('id')->on('academic_years');
             $table->unsignedBigInteger('course_id');
             $table->foreign('course_id')->references('id')->on('courses');
-            $table->bigInteger('name');
+            $table->string('name');
             $table->unsignedInteger('max_students_number');
             $table->boolean('is_registration_active')->default(0);
             $table->boolean('is_promotion_active')->default(0);
