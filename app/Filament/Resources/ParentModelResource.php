@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class ParentModelResource extends Resource
 {
@@ -86,10 +87,10 @@ class ParentModelResource extends Resource
                     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
-                    ->dateTime()
+                    ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->dateTime()
+                    ->date()
                     ->sortable(),
             ])
             ->filters([
@@ -101,6 +102,10 @@ class ParentModelResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.parent',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

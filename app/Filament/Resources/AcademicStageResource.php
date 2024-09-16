@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AcademicStageResource\Pages;
-use App\Filament\Resources\AcademicStageResource\RelationManagers;
-use App\Models\AcademicStage;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicStage;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\AcademicStageResource\Pages;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\AcademicStageResource\RelationManagers;
 
 class AcademicStageResource extends Resource
 {
@@ -52,7 +53,7 @@ class AcademicStageResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->dateTime()
+                    ->date()
                     ->sortable(),
             ])
             ->filters([
@@ -63,6 +64,10 @@ class AcademicStageResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.academic_stage',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

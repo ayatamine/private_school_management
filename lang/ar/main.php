@@ -8,6 +8,7 @@ return [
     'academic_stage' => 'المراحل الدراسية | مرحلة دراسية',
     'academic_course' => 'صفوف دراسية | صف دراسي ',
     'department' => 'الأقسام | قسم',
+    'department_jobs' => 'أقسام التوظيف',
     'designation' => 'مسميات الوظيفة | مسمى الوظيفة',
     'parent' => 'أولياء الأمور | ولي الأمر',
     'payment_method' => 'طرق الدفع | طريقة الدفع',
@@ -46,4 +47,6 @@ return [
     'you_can_change_password'=>'(بامكانك تغيير كلمة المرور في أي وقت)',
     'max_students_number'=>'الحد الأقصى لعدد الطلاب',
     'is_promotion_active'=>'تفعيل الترفيع',
+    'menu'=>'قائمة ',
+    'print'=>'طباعة',
 ];

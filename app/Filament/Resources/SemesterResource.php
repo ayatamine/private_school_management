@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SemesterResource\Pages;
-use App\Filament\Resources\SemesterResource\RelationManagers;
-use App\Models\Semester;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Semester;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\SemesterResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\SemesterResource\RelationManagers;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class SemesterResource extends Resource
 {
@@ -73,7 +74,7 @@ class SemesterResource extends Resource
                 Tables\Columns\ToggleColumn::make('is_registration_active')->label(trans('main.is_registration_active')),
                 Tables\Columns\ToggleColumn::make('is_promotion_active')->label(trans('main.is_promotion_active')),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->dateTime()
+                    ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -81,6 +82,10 @@ class SemesterResource extends Resource
                 //
             ])
             ->actions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.semester',2)
+                ])->disableXlsx(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])

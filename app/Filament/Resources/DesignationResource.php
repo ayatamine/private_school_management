@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DesignationResource\Pages;
-use App\Filament\Resources\DesignationResource\RelationManagers;
-use App\Models\Designation;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Designation;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\DesignationResource\Pages;
+use App\Filament\Resources\DesignationResource\RelationManagers;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class DesignationResource extends Resource
 {
@@ -53,7 +54,7 @@ class DesignationResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->dateTime()
+                    ->date()
                     ->sortable(),
             ])
             ->filters([
@@ -64,6 +65,10 @@ class DesignationResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.designation',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
