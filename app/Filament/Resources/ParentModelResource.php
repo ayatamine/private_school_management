@@ -48,8 +48,8 @@ class ParentModelResource extends Resource
                 Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
                     ->options(
                         [
-                            'father'=>'الأب','mother'=>'الأم','brother'=>'الأخ','sister'=>'الأخت','guardian'=>'وصي','other'=>'اخرى'
-                        ]
+                            'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
+                            ]
                     )
                     ->required(),
                 Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
@@ -61,8 +61,10 @@ class ParentModelResource extends Resource
                     ->unique(table:'users',ignoreRecord: true)
                     ->maxLength(13),   
                 Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                    ->options(['male'=>'ذكر', 'id'=>'أنثى'])
+                    ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
                     ->required(),        
+                Forms\Components\TextInput::make('email')->label(trans('main.email'))
+                    ->maxLength(255),        
                 Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                     ->maxLength(255),        
             ]);
@@ -74,17 +76,20 @@ class ParentModelResource extends Resource
             ->columns([
                
                 Tables\Columns\TextColumn::make('full_name')->label(trans('main.full_name'))
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('relation')->label(trans('main.relation'))
                     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
-                    ->numeric()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
                     ->formatStateUsing(fn (string $state) => trans("main.$state"))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.email')->label(trans('main.email'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->date()

@@ -22,21 +22,21 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('nationality');
             $table->string('email')->nullable();
-            $table->unsignedBigInteger('course_id');
+            $table->unsignedBigInteger('course_id')->nullable();
             $table->foreign('course_id')->references('id')->on('courses');
-            $table->unsignedBigInteger('parent_id');
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('parents');
             $table->boolean('is_approved')->default(false);
             $table->timestamp('approved_at')->nullable();
             $table->unsignedBigInteger('registered_by');
             $table->foreign('registered_by')->references('id')->on('users');
-            $table->string('registration_number');
+            $table->string('registration_number')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->enum('gender', ["male","female"]);
-            $table->double('opening_balance');
-            $table->string('finance_document');
-            $table->string('note');
+            $table->double('opening_balance')->default(0);
+            $table->string('finance_document')->nullable();
+            $table->string('note')->nullable();
             $table->timestamps();
         });
 

@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Filament\Resources\ParentModelResource\Pages;
+namespace App\Filament\Resources\StudentResource\Pages;
 
-use Hash;
 use App\Models\User;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\CreateRecord;
-use App\Filament\Resources\ParentModelResource;
+use App\Filament\Resources\StudentResource;
 
-class CreateParentModel extends CreateRecord
+class CreateStudent extends CreateRecord
 {
-    protected static string $resource = ParentModelResource::class;
+    protected static string $resource = StudentResource::class;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
      
@@ -21,8 +21,9 @@ class CreateParentModel extends CreateRecord
             'email' =>$data['email'],
             'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
         ]);
+        $data['registered_by'] = Auth::id();
         $data['user_id'] = $user?->id;
-    
+        $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
         return $data;
     }
 }

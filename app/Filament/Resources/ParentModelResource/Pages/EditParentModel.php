@@ -23,6 +23,7 @@ class EditParentModel extends EditRecord
         $data['national_id'] = $user->national_id;
         $data['gender'] = $user->gender;
         $data['phone_number'] = $user->phone_number;
+        $data['email'] = $user->email;
     
         return $data;
     }

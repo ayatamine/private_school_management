@@ -2,7 +2,8 @@ models:
     User:
         id: id
         national_id: string
-        username: string
+        email: string nullable
+        username: string nullable
         password: string
         is_admin: boolean default:false
         phone_number: string
@@ -41,11 +42,12 @@ models:
         payment_partition: json
         relationships:
             BelongsTo: AcademicYear
-    Parent:
+    ParentModel:
         id: id
         full_name: string
         relation: string comment:"father,mother,brother,sister,guardian,other"
         user_id: bigInteger unsigned foreign:users.id
+        email: string nullable
         relationships:
             BelongsTo: User
     Semester:
@@ -115,13 +117,13 @@ models:
         is_approved: boolean default:false
         approved_at: timestamp nullable
         registered_by: bigInteger unsigned foreign:users.id
-        registration_number: string
+        registration_number: string nullable
         user_id: bigInteger unsigned foreign:users.id
         gender: enum:"male","female"
-        opening_balance: double
-        finance_document: string
-        note: string
-        relationships:
+        opening_balance: double 0
+        finance_document: string nullable
+        note: string nullable
+        relationships: 
             BelongsTo: Course, Parent, User
     Transport:
         id: id

@@ -2,14 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ParentModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Student extends Model
 {
     use HasFactory;
 
+    public static function booted()
+    {
+        // Will fire every time an User is created
+        static::created(function (Student $student) {
+           if(!$student->registration_number) $student->registration_number = $student->id;
+           $student->save();
+        });
+    }
     /**
      * The attributes that are mass assignable.
      *
@@ -60,7 +70,7 @@ class Student extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Parent::class);
+        return $this->belongsTo(ParentModel::class,'parent_id','id');
     }
 
     public function user(): BelongsTo
@@ -71,5 +81,14 @@ class Student extends Model
     public function registeredBy(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    public function financeDocument():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+             
+                return $value ? asset("storage/$value") :"";
+            }
+        );
     }
 }
