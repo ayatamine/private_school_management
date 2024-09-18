@@ -71,4 +71,5 @@ return [
     'edit'=>'تعديل',
     'view_document'=>'عرض المستند',
     'no_document_found'=>'لايوجد أي مستند',
+    'student_registered_successfully'=>'تم تسجيل الطالب بنجاح',
 ];

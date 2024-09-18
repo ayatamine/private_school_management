@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
@@ -64,14 +65,51 @@ class StudentResource extends Resource
                             ->searchable()
                             ->columnSpanFull()
                             ->visible(fn (Get $get) => $get('new_student') == false )
-                            ->hiddenOn('edit'),
-                
+                            ->hiddenOn('edit')
+                            ->live()
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                $student = Student::with('parent')->with('parent.user')->find($state);
+                                // dd($parent);
+                                $set('created_at', date('Y-m-d' ,strtotime($student?->created_at)) );
+                                $set('academic_year_id', $student?->course?->academic_year_id );
+                                $set('opening_balance', $student?->opening_balance );
+                                $set('finance_document', $student?->finance_document );
+                                $set('note', $student?->note );
+                                if($student?->finance_document !="" ) $set('finance_document', [ $student?->finance_document]);
+
+                                $set('parent_id', $student?->parent?->id );
+                                $set('parent_relation', $student?->parent?->relation ? trans("main.".$student?->parent?->relation) : "");
+                                $set('parent_national_id', $student?->parent?->user->national_id);
+                                $set('parent_email', $student?->parent?->user->email);
+                                $set('parent_phone_number', $student?->parent?->user->phone_number);
+                                $set('parent_gender', $student?->parent?->user?->gender ? trans("main.".$student?->parent?->user?->gender."") : "");
+                                //set course id
+                                $set('course_id', $student?->course_id );
+                            }),
+                //when the student already registered
+                Section::make(trans('main.radical_infos'))
+                    ->columnSpanFull()
+                    ->schema([ Grid::make()
+                     ->schema([
+                        Forms\Components\DatePicker::make('created_at')->label(trans('main.registration_date'))->columnSpanFull()->default(now()),
+                        Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
+                            ->options(AcademicYear::where('is_registration_active',true)->pluck('name', 'id'))
+                            ->default(AcademicYear::where('is_registration_active',true)->where('is_default',true)?->first()?->name)
+                            ->required()
+                            ->live(),
+                        Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
+                            ->options(fn (Get $get): Collection => Course::query()
+                            ->where('academic_year_id', $get('academic_year_id'))
+                            ->pluck('name', 'id')),
+                            ])
+                ])->visible(fn (Get $get) => $get('new_student') == false )
+                ->hiddenOn('edit'),
                 //new registration only form
                 Section::make(trans('main.radical_infos'))
                     ->columnSpanFull()
                     ->schema([ Grid::make()
                      ->schema([
-                        Forms\Components\DatePicker::make('created_at')->label(trans('main.registration_date'))->columnSpanFull(),
+                        Forms\Components\DatePicker::make('created_at')->label(trans('main.registration_date'))->columnSpanFull()->default(now()),
                         Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                             ->options(AcademicYear::where('is_registration_active',true)->pluck('name', 'id'))
                             ->default(AcademicYear::where('is_registration_active',true)->where('is_default',true)?->first()?->name)
@@ -121,7 +159,8 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                             ->maxLength(255),        
                     ])
-                ])->visible(fn (Get $get) => $get('new_student') == true ),
+                ])
+                ->visible(fn (Get $get) => $get('new_student') == true  ||  (request()->is('admin/students/*/edit')) ),
                 Section::make(trans('main.parent_data'))
                     ->columnSpanFull()
                     ->schema([ Grid::make()
@@ -249,8 +288,8 @@ class StudentResource extends Resource
                         ->columns(2)
                         ->id('main-section')
                         ->schema([
-                                TextEntry::make('course.academic_year')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                                TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
+                                TextEntry::make('course.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
+                                TextEntry::make('course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
                                 TextEntry::make('first_name')->label(trans('main.first_name'))->weight(FontWeight::Bold),
                                 TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
                                 TextEntry::make(name: 'third_name')->label(trans('main.third_name'))->weight(FontWeight::Bold),
@@ -279,8 +318,8 @@ class StudentResource extends Resource
 
 
                                 TextEntry::make('opening_balance')->label(trans('main.opening_balance'))->weight(FontWeight::Bold),
-                                TextEntry::make(name: 'finance_document')->label(trans('main.document'))->weight(FontWeight::Bold),
-                                ViewEntry::make('note')->label(trans('main.note'))->view('infolists.components.view-financial-document')
+                                ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
+                                TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold)
 
                        
                         ]),
