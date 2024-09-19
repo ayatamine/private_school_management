@@ -72,4 +72,12 @@ return [
     'view_document'=>'عرض المستند',
     'no_document_found'=>'لايوجد أي مستند',
     'student_registered_successfully'=>'تم تسجيل الطالب بنجاح',
+    'prefix_code'=>'بادئة الرقم',
+    'identity_type'=>'نوع الهوية',
+    'identiry_expire_date'=>'تاريخ انتهاء الهوية',
+    'national_identity'=>'الهوية الوطنية',
+    'visitor_accommodation'=>'إقامة زائر',
+    'resident_accommodation'=>'إقامة مقيم',
+    'joining_date'=>'تاريخ الالتحاق',
+    'accept_status'=>'حالة القبول',
 ];

@@ -27,9 +27,8 @@ class Employee extends Model
         'gender',
         'joining_date',
         'nationality',
-        'identity_number',
         'identity_type',
-        'identiry_expire_date',
+        'identity_expire_date',
     ];
 
     /**

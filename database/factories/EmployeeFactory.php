@@ -35,9 +35,8 @@ class EmployeeFactory extends Factory
             'gender' => $this->faker->randomElement(["male","female"]),
             'joining_date' => $this->faker->date(),
             'nationality' => $this->faker->word(),
-            'identity_number' => $this->faker->word(),
             'identity_type' => $this->faker->word(),
-            'identiry_expire_date' => $this->faker->date(),
+            'identity_expire_date' => $this->faker->date(),
         ];
     }
 }

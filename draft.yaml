@@ -79,9 +79,8 @@ models:
         gender: enum:"male","female"
         joining_date: date
         nationality: string
-        identity_number: string
         identity_type: string
-        identiry_expire_date: date
+        identity_expire_date: date
         relationships:
             BelongsTo: User, Department, Designation
     Vehicle:

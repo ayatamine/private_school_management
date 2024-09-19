@@ -20,7 +20,9 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\Request;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use App\Filament\Resources\StudentResource\Pages;
@@ -263,7 +265,16 @@ class StudentResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('course_id')->label(trans_choice('main.academic_course',1))
+                    ->relationship('course', 'name')->searchable()
+                    ->preload(),
+                TernaryFilter::make('accept_status')->label(trans('main.accept_status'))
+                    ->nullable()
+                    ->attribute('approved_at'),
+                SelectFilter::make('gender')->label(trans('main.gender'))->options([
+                    'male' => trans('main.male'),
+                    'female' => trans('main.female'),
+                ]),
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),

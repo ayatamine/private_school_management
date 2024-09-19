@@ -29,7 +29,6 @@ return new class extends Migration
             $table->enum('gender', ["male","female"]);
             $table->date('joining_date');
             $table->string('nationality');
-            $table->string('identity_number');
             $table->string('identity_type');
             $table->date('identiry_expire_date');
             $table->timestamps();
