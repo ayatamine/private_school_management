@@ -33,8 +33,8 @@ class Vehicle extends Model
     protected $casts = [
         'id' => 'integer',
         'expire_date' => 'date',
-        'insurance_name' => 'integer',
         'insurance_expire_at' => 'date',
         'periodic_inspection_expire_at' => 'date',
+        'documents' => 'array',
     ];
 }

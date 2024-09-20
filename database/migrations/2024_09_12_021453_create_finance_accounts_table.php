@@ -19,8 +19,9 @@ return new class extends Migration
             $table->enum('type', ["bank","cash"])->comment('نقدي أو بنكي');
             $table->double('opening_balance');
             $table->boolean('is_active')->default(0);
+            $table->boolean(column: 'is_visible')->default(0);
             $table->string('bank_name')->nullable();
-            $table->bigInteger('account_number');
+            $table->string('account_number')->nullable();
             $table->string('link_with_employee_payments')->default('0');
             $table->timestamps();
         });

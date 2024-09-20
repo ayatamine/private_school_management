@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('plate_number');
             $table->string('form_number');
             $table->date('expire_date');
-            $table->bigInteger('insurance_name');
+            $table->string('insurance_name');
             $table->date('insurance_expire_at');
             $table->date('periodic_inspection_expire_at');
-            $table->mediumText('documents');
+            $table->mediumText('documents')->nullable();
             $table->timestamps();
         });
 

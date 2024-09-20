@@ -82,14 +82,15 @@ class SemesterResource extends Resource
                 //
             ])
             ->actions([
-                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.semester',2)
-                ])->disableXlsx(),
+                
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.semester',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

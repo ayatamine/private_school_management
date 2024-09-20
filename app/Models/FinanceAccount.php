@@ -19,6 +19,7 @@ class FinanceAccount extends Model
         'type',
         'opening_balance',
         'is_active',
+        'is_visible',
         'bank_name',
         'account_number',
         'link_with_employee_payments',
@@ -33,6 +34,6 @@ class FinanceAccount extends Model
         'id' => 'integer',
         'opening_balance' => 'double',
         'is_active' => 'boolean',
-        'account_number' => 'integer',
+        'is_visible' => 'boolean',
     ];
 }

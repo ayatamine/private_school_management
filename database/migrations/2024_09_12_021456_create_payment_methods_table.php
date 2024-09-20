@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('finance_account_id');
             $table->foreign('finance_account_id')->references('id')->on('finance_accounts');
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->boolean('is_code_required')->default(0);
             $table->timestamps();
         });
