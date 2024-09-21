@@ -112,7 +112,7 @@ class FinanceAccountResource extends Resource
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
                 ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.semester',2)
+                    'table_header' => trans('main.menu').' '.trans_choice('main.finance_account',2)
                 ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

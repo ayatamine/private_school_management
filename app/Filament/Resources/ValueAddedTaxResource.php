@@ -6,8 +6,10 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\SchoolSetting;
 use App\Models\ValueAddedTax;
 use Filament\Resources\Resource;
+use Filament\Actions\StaticAction;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
@@ -86,7 +88,16 @@ class ValueAddedTaxResource extends Resource
                 //
             ])
             ->headerActions([
-               
+                Action::make('sendEmail')->label(trans('main.change_tax_number'))
+                ->form([
+                    Forms\Components\TextInput::make('tax_number')->required()->label(trans('main.tax_number'))
+                    ->default(SchoolSetting::first()?->added_value_tax_number),
+                ])
+                ->color('info')
+                ->action(function (array $data) {
+                    SchoolSetting::first()->update(['added_value_tax_number'=>$data['tax_number']]);
+                })
+                ->modalSubmitAction(fn (StaticAction $action) => $action->label(trans('main.confirm')))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -96,7 +107,7 @@ class ValueAddedTaxResource extends Resource
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
                 ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.semester',2)
+                    'table_header' => trans('main.menu').' '.trans_choice('main.value_added_tax',2)
                 ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
