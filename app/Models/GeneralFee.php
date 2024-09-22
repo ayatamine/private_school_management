@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ConcessionFee extends Model
+class GeneralFee extends Model
 {
     use HasFactory;
 
@@ -17,10 +18,10 @@ class ConcessionFee extends Model
      */
     protected $fillable = [
         'academic_year_id',
+        'course_id',
         'name',
-        'type',
-        'value',
-        'is_active',
+        'payment_partition_count',
+        'payment_partition',
     ];
 
     /**
@@ -31,12 +32,16 @@ class ConcessionFee extends Model
     protected $casts = [
         'id' => 'integer',
         'academic_year_id' => 'integer',
-        'value' => 'float',
-        'is_active' => 'boolean',
+        'course_id' => 'integer',
+        'payment_partition' => 'array',
     ];
 
     public function academicYear(): BelongsTo
     {
         return $this->belongsTo(AcademicYear::class);
+    }
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
     }
 }

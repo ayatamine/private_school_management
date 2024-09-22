@@ -24,6 +24,7 @@ class ConcessionFeeFactory extends Factory
         return [
             'academic_year_id' => AcademicYear::factory(),
             'name' => $this->faker->name(),
+            'type' => 'value',
             'value' => $this->faker->randomFloat(0, 0, 9999999999.),
             'is_active' => $this->faker->boolean(),
         ];

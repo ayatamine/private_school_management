@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('concession_fees', function (Blueprint $table) {
+        Schema::create('general_fees', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('academic_year_id');
             $table->foreign('academic_year_id')->references('id')->on('academic_years');
+            $table->unsignedBigInteger('course_id');
+            $table->foreign('course_id')->references('id')->on('courses');
             $table->string('name');
-            $table->enum('type',['percentage','value']);
-            $table->float('value');
-            $table->boolean('is_active')->default(0);
+            $table->integer('payment_partition_count');
+            $table->json('payment_partition');
             $table->timestamps();
         });
 
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('concession_fees');
+        Schema::dropIfExists('general_fees');
     }
 };

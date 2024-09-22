@@ -146,6 +146,7 @@ models:
         academic_year_id: bigInteger unsigned foreign:academic_years.id
         name: string
         value: float
+        type: enum:"percentage","value"
         is_active: boolean default:"0"
         relationships:
             BelongsTo: AcademicYear
