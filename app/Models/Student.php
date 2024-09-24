@@ -44,6 +44,10 @@ class Student extends Model
         'opening_balance',
         'finance_document',
         'note',
+        'termination_date',
+        'termination_reason',
+        'termination_document',
+        'terminated_by',
     ];
 
     /**
@@ -60,9 +64,10 @@ class Student extends Model
         'approved_at' => 'timestamp',
         'registered_by' => 'integer',
         'user_id' => 'integer',
+        'terminated_by' => 'integer',
         'opening_balance' => 'double',
     ];
-
+    protected $appends=['username'];
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
@@ -80,7 +85,11 @@ class Student extends Model
 
     public function registeredBy(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'registered_by','id');
+    }
+    public function terminatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'terminated_by','id');
     }
     public function financeDocument():Attribute
     {
@@ -88,6 +97,15 @@ class Student extends Model
             get: function ($value) {
              
                 return $value ? asset("storage/$value") :"";
+            }
+        );
+    }
+    public function username():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+             
+                return "$this->first_name  $this->middle_name" ;
             }
         );
     }

@@ -17,12 +17,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('vehicle_id');
             $table->foreign('vehicle_id')->references('id')->on('vehicles');
-            $table->unsignedBigInteger('transport_fees_id');
-            $table->foreign('transport_fees_id')->references('id')->on('transport_fees');
-            $table->date('registration_date');
-            $table->unsignedBigInteger('registred_by');
-            $table->foreign('registred_by')->references('id')->on('users');
-            $table->foreignId('transport_fee_id');
+            $table->unsignedBigInteger('transport_fee_id');
+            $table->foreign('transport_fee_id')->references('id')->on('transport_fees');
+            $table->unsignedBigInteger('registered_by');
+            $table->foreign('registered_by')->references('id')->on('users');
+     
             $table->timestamps();
         });
 

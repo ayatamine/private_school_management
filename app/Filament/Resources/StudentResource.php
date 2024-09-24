@@ -237,6 +237,7 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(Student::query()->whereNull('termination_reason'))
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
                     ->searchable()

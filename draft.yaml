@@ -128,11 +128,11 @@ models:
     Transport:
         id: id
         vehicle_id: bigInteger unsigned foreign:vehicles.id
-        transport_fees_id: bigInteger unsigned foreign:transport_fees.id
+        transport_fee_id: bigInteger unsigned foreign:transport_fees.id
         registration_date: date
-        registred_by: bigInteger unsigned foreign:users.id
+        registered_by: bigInteger unsigned foreign:users.id
         relationships:
-            BelongsTo: Vehicle, TransportFee
+            BelongsTo: Vehicle, TransportFee,User
     PaymentMethod:
         id: id
         name: string

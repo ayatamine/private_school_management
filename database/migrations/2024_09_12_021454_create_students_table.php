@@ -33,10 +33,16 @@ return new class extends Migration
             $table->string('registration_number')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+         
             $table->enum('gender', ["male","female"]);
             $table->double('opening_balance')->default(0);
             $table->string('finance_document')->nullable();
             $table->string('note')->nullable();
+            $table->string(column: 'termination_reason')->nullable();
+            $table->date(column: 'termination_date')->nullable();
+            $table->date(column: 'termination_document')->nullable();
+            $table->unsignedBigInteger('terminated_by');
+            $table->foreign('terminated_by')->references('id')->on('users');
             $table->timestamps();
         });
 

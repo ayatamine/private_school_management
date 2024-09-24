@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
-use App\Models\ParentModel;
+use Filament\Panel;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\ParentModel;
 use Illuminate\Support\Facades\Auth;
+use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends  Authenticatable
+class User extends  Authenticatable implements FilamentUser, HasName
 {
     use HasFactory;
 
@@ -49,13 +52,20 @@ class User extends  Authenticatable
         'password' => 'hashed',
         'is_admin' => 'boolean',
     ];
-
-    public function getNameAttribute()
+    public function canAccessPanel(Panel $panel): bool
     {
-            if($this->student) return $this->student?->first_name .''. $this->student?->last_name ;
+        return true;
+    }
+    public function getUsernameAttribute()
+    {
+            if($this->student) return $this->student?->first_name .''. $this->student?->middle_name ;
             if($this->employee) return $this->employee?->first_name .''. $this->employee?->last_name ;
-            if($this->parent) return $this->parent?->first_name .''. $this->parent?->last_name ;
+            if($this->parent) return $this->parent?->full_name ;
             return $this->username;
+    }
+    public function getFilamentName(): string
+    {
+        return $this->getUsernameAttribute();
     }
 
     public function parent(): HasOne

@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Transport extends Model
 {
@@ -16,10 +17,9 @@ class Transport extends Model
      * @var array
      */
     protected $fillable = [
+        'student_id',
         'vehicle_id',
-        'transport_fees_id',
-        'registration_date',
-        'registred_by',
+        'registered_by',
         'transport_fee_id',
     ];
 
@@ -31,12 +31,15 @@ class Transport extends Model
     protected $casts = [
         'id' => 'integer',
         'vehicle_id' => 'integer',
-        'transport_fees_id' => 'integer',
-        'registration_date' => 'date',
-        'registred_by' => 'integer',
+        'student_id' => 'integer',
+        'registered_by' => 'integer',
         'transport_fee_id' => 'integer',
     ];
 
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);
@@ -47,13 +50,10 @@ class Transport extends Model
         return $this->belongsTo(TransportFee::class);
     }
 
-    public function transportFees(): BelongsTo
-    {
-        return $this->belongsTo(TransportFee::class);
-    }
+
 
     public function registredBy(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'registered_by','id');
     }
 }
