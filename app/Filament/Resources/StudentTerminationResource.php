@@ -43,12 +43,12 @@ class StudentTerminationResource extends Resource
     {
         return $form
             ->schema([
-                Section::make(trans('main.financial_infos'))
+                Section::make(trans('main.termination'))
                     ->columnSpanFull()
                     ->schema([ Grid::make()
                      ->schema([
                         Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                            ->options( Student::selectRaw("id, concat(first_name, ' ', middle_name) as full_name")->pluck('full_name', 'id'))
+                            ->options( Student::whereNull('termination_date')->selectRaw("id, concat(first_name, ' ', middle_name) as full_name")->pluck('full_name', 'id'))
                             ->searchable()
                             ->preload()
                             ->required()

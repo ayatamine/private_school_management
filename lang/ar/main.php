@@ -130,4 +130,5 @@ return [
     'termination_reason'=>'سبب الانهاء',
     'termination_date'=>'تاريخ الانهاء',
     'termination'=>'إنهاء القيد',
+    'fees_invoice'=>'فاتورة الرسوم',
 ];

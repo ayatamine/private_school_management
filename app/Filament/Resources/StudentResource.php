@@ -63,7 +63,7 @@ class StudentResource extends Resource
                 ->hiddenOn('edit'),
                 Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
                             ->preload()
-                            ->options(Student::all()->pluck('registration_number', 'id'))
+                            ->options(Student::whereNull('course_id')->pluck('registration_number', 'id'))
                             ->searchable()
                             ->columnSpanFull()
                             ->visible(fn (Get $get) => $get('new_student') == false )
@@ -162,7 +162,7 @@ class StudentResource extends Resource
                             ->maxLength(255),        
                     ])
                 ])
-                ->visible(fn (Get $get) => $get('new_student') == true  ||  (request()->is('admin/students/*/edit')) ),
+                ->hidden(fn (Get $get) => $get('new_student') == false ),
                 Section::make(trans('main.parent_data'))
                     ->columnSpanFull()
                     ->schema([ Grid::make()

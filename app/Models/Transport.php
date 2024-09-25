@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Student;
+use App\Models\Vehicle;
+use App\Models\TransportFee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,6 +12,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Transport extends Model
 {
     use HasFactory;
+    public static function booted()
+    {
+        parent::booted();
+        // Will fire every time an User is created
+        static::created(function (Transport $transport) {
+             //add tuiton fees
+             Student::find($transport->student_id)->transportFees()->sync($transport->transport_fee_id);
+        });
+    }
+
 
     /**
      * The attributes that are mass assignable.
@@ -38,7 +50,7 @@ class Transport extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo( Student::class,'student_id','id');
     }
     public function vehicle(): BelongsTo
     {

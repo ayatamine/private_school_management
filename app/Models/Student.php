@@ -2,9 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\User;
+use App\Models\Course;
+use App\Models\Invoice;
+use App\Models\Transport;
+use App\Models\GeneralFee;
+use App\Models\TuitionFee;
 use App\Models\ParentModel;
+use App\Models\TransportFee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,10 +23,31 @@ class Student extends Model
 
     public static function booted()
     {
+        parent::booted();
         // Will fire every time an User is created
         static::created(function (Student $student) {
            if(!$student->registration_number) $student->registration_number = $student->id;
            $student->save();
+            //register fees 
+            $tuitionFee = TuitionFee::whereCourseId($student->course_id)->first();
+            if($tuitionFee)
+            {
+              $student->tuitionFees()->attach($tuitionFee->id);
+            }
+            //create invoice for student
+            $academic_year_id = $student->course()->academic_year_id;
+            $invoice  = Invoice::whereStudentId($student->id)->whereAcademicYearId($academic_year_id)->first();
+            if(!$invoice)
+            {
+                $invoice =Invoice::create([
+                    'number'=>$student->course()?->academicYear()?->name."".$student->registration_number,
+                    'name' => trans('main.fees_invoice')." ".$student->course()?->academicYear()?->name,
+                    'student_id'=>$student->id,
+                    'academic_year_id'=>$academic_year_id,
+                ]);
+                 $student->invoices()->save($invoice);
+            }
+            
         });
     }
     /**
@@ -82,6 +112,11 @@ class Student extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function transport(): HasOne
+    {
+        return $this->hasOne(Transport::class);
+    }
+   
 
     public function registeredBy(): BelongsTo
     {
@@ -90,6 +125,10 @@ class Student extends Model
     public function terminatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class,'terminated_by','id');
+    }
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
     public function financeDocument():Attribute
     {
@@ -108,5 +147,27 @@ class Student extends Model
                 return "$this->first_name  $this->middle_name" ;
             }
         );
+    }
+
+
+    public function transportFees()
+    {
+        return $this->morphedByMany(TransportFee::class, 'feeable', 'student_fee')
+                    ->withPivot('discounts', 'created_at')
+                    ->withTimestamps();
+    }
+
+    public function otherFees()
+    {
+        return $this->morphedByMany(GeneralFee::class, 'feeable', 'student_fee')
+                    ->withPivot('discounts', 'created_at')
+                    ->withTimestamps();
+    }
+
+    public function tuitionFees()
+    {
+        return $this->morphedByMany(TuitionFee::class, 'feeable', 'student_fee')
+                    ->withPivot('discounts', 'created_at')
+                    ->withTimestamps();
     }
 }

@@ -14,6 +14,6 @@ class CreateTransport extends CreateRecord
     {
             $data['registered_by'] = Auth::id();
 
-        return $data;
+            return $data;
     }
 }

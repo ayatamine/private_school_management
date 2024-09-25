@@ -47,11 +47,14 @@ class TransportResource extends Resource
                 ->columns(2)
                 ->schema([
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                    ->relationship('student', 'first_name')
+                    ->relationship('student', 'first_name',
+                        modifyQueryUsing: fn (Builder $query) => $query->doesntHave('transport')
+                    )
                     ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->first_name} {$record->middle_name} #{$record->registration_number}")
                     ->searchable(['registration_number','first_name', 'middle_name'])
                     ->preload()
-                    ->required(),
+                    ->required()
+                    ->disabled(request()->is('admin/transports/*/edit')),
                 Forms\Components\Select::make('vehicle_id')->label(trans('main.bus_name'))
                     ->relationship('vehicle', 'car_name')
                     ->required(),
