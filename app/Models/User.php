@@ -8,15 +8,17 @@ use App\Models\Employee;
 use App\Models\ParentModel;
 use Illuminate\Support\Facades\Auth;
 use Filament\Models\Contracts\HasName;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends  Authenticatable implements FilamentUser, HasName
 {
-    use HasFactory;
+    use HasFactory, HasRoles,HasPanelShield;
 
     /**
      * The attributes that are mass assignable.

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Course;
+use App\Models\Student;
 use App\Models\AcademicYear;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +42,6 @@ class Invoice extends Model
     }
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Student::class);
     }
 }

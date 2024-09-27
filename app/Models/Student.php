@@ -168,6 +168,7 @@ class Student extends Model
     {
         return $this->morphedByMany(TuitionFee::class, 'feeable', 'student_fee')
                     ->withPivot('discounts', 'created_at')
+                    ->with('academicYear')
                     ->withTimestamps();
     }
 }

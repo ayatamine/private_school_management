@@ -50,6 +50,8 @@ class CreateStudent extends CreateRecord
                     "finance_document" =>$data['finance_document'],
                     "note" =>$data['note'],
                 ]);
+                DB::commit();
+                DB::beginTransaction();
                 //add tuiton fees
                 $tuitionFee = TuitionFee::whereCourseId($Student->course_id)->first();
                 if($tuitionFee)
@@ -57,14 +59,14 @@ class CreateStudent extends CreateRecord
                     $Student->tuitionFees()->sync($tuitionFee->id);
                 }
                  //create invoice for student
-                $academic_year_id = $Student->course()->academic_year_id;
+                $academic_year_id = $data['academic_year_id'];
                 $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
                 if(!$invoice)
                 {
                     $invoice =Invoice::create([
-                        'number'=>$Student->course()?->academicYear()?->name."".$Student->registration_number,
-                        'name' => trans('main.fees_invoice')." ".$Student->course()?->academicYear()?->name,
-                        'Student_id'=>$Student->id,
+                        'number'=>$Student->course?->academicYear?->name."".$Student->registration_number,
+                        'name' => trans('main.fees_invoice')." ".$Student->course?->academicYear?->name,
+                        'student_id'=>$Student->id,
                         'academic_year_id'=>$academic_year_id,
                     ]);
                     $Student->invoices()->save($invoice);
