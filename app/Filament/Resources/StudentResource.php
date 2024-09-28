@@ -340,17 +340,17 @@ class StudentResource extends Resource
                         ->schema([
 
                                 ViewEntry::make('tuitionFees')->label(trans_choice('main.tuition_fee',2))->view('infolists.components.view-student-tuition-fees')
-                                ->registerActions([
-                                    Action::make('editPartitions')
-                                        ->label(trans('main.edit_partitions'))
-                                        ->form([
-                                            Forms\Components\TextInput::make('name')
-                                                ->required(),
-                                        ])
-                                        ->action(function (array $data, Student $record) {
-                                            $record->status()->create($data);
-                                        }),
-                                ]),
+                                // ->registerActions([
+                                //     Action::make('editPartitions')
+                                //         ->label(trans('main.edit_partitions'))
+                                //         ->form([
+                                //             Forms\Components\Select::make('name')
+                                //                 ->required(),
+                                //         ])
+                                //         ->action(function (array $data, Student $record) {
+                                //             $record->status()->create($data);
+                                //         }),
+                                // ]),
                         ]),
                        
             ]);

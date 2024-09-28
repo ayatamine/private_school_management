@@ -139,5 +139,7 @@ return [
     'value_after_discount'=>'القيمة بعد الخصم',
     'tax_value'=>'قيمة الضريبة',
     'total'=>'اجمالي المبلغ',
-    'edit_partitions'=>'تعديل الأقساط',
+    'edit_partition'=>'تعديل الأقساط | تعديل قسط',
+    'action'=>'اجراء',
+    'partition_updated_successfully'=>'تم تحديث القسط بنجاح',
 ];

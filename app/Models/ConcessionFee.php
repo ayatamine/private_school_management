@@ -39,4 +39,8 @@ class ConcessionFee extends Model
     {
         return $this->belongsTo(AcademicYear::class);
     }
+    public function scopeActive()
+    {
+        return $this->where('is_active',true);
+    }
 }
