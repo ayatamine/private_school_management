@@ -26,7 +26,6 @@ return new class extends Migration
             $table->date('payment_date');
             $table->unsignedBigInteger('registered_by');
             $table->foreign('registered_by')->references('id')->on('users');
-            $table->foreignId('user_id');
             $table->timestamps();
         });
 

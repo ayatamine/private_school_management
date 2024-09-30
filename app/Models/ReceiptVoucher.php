@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -27,7 +28,6 @@ class ReceiptVoucher extends Model
         'payment_method_id',
         'payment_date',
         'registered_by',
-        'user_id',
     ];
 
     /**
@@ -43,21 +43,21 @@ class ReceiptVoucher extends Model
         'payment_method_id' => 'integer',
         'payment_date' => 'date',
         'registered_by' => 'integer',
-        'user_id' => 'integer',
     ];
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Student::class)->where('termination_date',null);
     }
 
     public function paymentMethod(): BelongsTo
     {
-        return $this->belongsTo(PaymentMethod::class);
+        return $this->belongsTo(PaymentMethod::class)->withDefault(['name'=>'transfer']);
     }
 
     public function registeredBy(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'registered_by','id');
     }
+
 }

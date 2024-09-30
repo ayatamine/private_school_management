@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ReceiptVoucherResource\Pages;
-use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
-use App\Models\ReceiptVoucher;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Get;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ReceiptVoucher;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ReceiptVoucherResource\Pages;
+use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
 
 class ReceiptVoucherResource extends Resource
 {
@@ -39,28 +41,32 @@ class ReceiptVoucherResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('student_id')
-                    ->relationship('student', 'id')
+                Section::make('')
+                ->schema([
+                Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
+                    ->relationship('student', 'username')
                     ->required(),
+                Forms\Components\TextInput::make('payment_method')
+                    ->label(trans_choice('main.payment_method',1))
+                    ->default(trans('main.transfer'))
+                    ->disabled()
+                    ->hidden(fn(Get $get) =>$get('payment_method_id') != null),
                 Forms\Components\Select::make('payment_method_id')
-                    ->relationship('paymentMethod', 'name'),
-                Forms\Components\TextInput::make('registered_by')
+                    ->label(trans_choice('main.payment_method',1))
+                    ->relationship('paymentMethod', 'name')
+                    ->hidden(fn(Get $get) =>$get('payment_method_id') == null),
+                Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('value')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('value_in_alphabetic')
+                Forms\Components\TextInput::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
                     ->maxLength(255),
-                Forms\Components\TextInput::make('document')
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_approved')
+                Forms\Components\DatePicker::make('payment_date')->label(trans('main.payment_date'))
                     ->required(),
-                Forms\Components\DatePicker::make('payment_date')
-                    ->required(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\FileUpload::make('document')->label(trans('main.document'))
+                    ->hidden(fn(Get $get) =>$get('document') == null),
+                Forms\Components\Toggle::make('is_approved')->label(trans('main.approvel_status'))
+                    ->hidden(fn(Get $get) =>$get('is_approved') == true),
+                ])
             ]);
     }
 
@@ -68,44 +74,31 @@ class ReceiptVoucherResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('student.id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paymentMethod.name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
+                    ->formatStateUsing(fn($state)=> $state == 'transfer' ? trans('main.transfer') : $state)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('registered_by')
-                    ->numeric()
+                
+                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+                    ->formatStateUsing(fn($state)=> $state == $state." ".env('DEFAULT_CURRENCY'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('value')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('value_in_alphabetic')
+                Tables\Columns\TextColumn::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('document')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_approved')
+                Tables\Columns\IconColumn::make('is_approved')->label(trans('main.approvel_status'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('payment_date')
+                Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

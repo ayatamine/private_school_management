@@ -16,4 +16,9 @@ class EditReceiptVoucher extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+    public function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['payment_method'] =$data['payment_method_id'] ? null : trans('main.transfer');
+        return $data;
+    }
 }

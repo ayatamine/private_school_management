@@ -147,4 +147,8 @@ return [
     'account_ballance_actual'=>'رصيد الحساب الحالي هو ',
     'SAR'=>'ر.س',
     'balance_calculate_method'=>'الرصيد الافتتاحي + اجمالي الأقساط - اجمالي المدفوعات',
+    'payment_date'=>'تاريخ الدفع',
+    'value_in_alphabetic'=>'القيمة (كتابة)',
+    'approvel_status'=>'حالة القبول',
+    'transfer'=>'تحويل',
 ];
