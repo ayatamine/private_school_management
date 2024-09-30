@@ -335,6 +335,20 @@ class StudentResource extends Resource
 
                        
                         ]),
+                \Filament\Infolists\Components\Section::make(trans('main.account_ballance'))
+                        ->columns(2)
+                        ->id('account_ballance-section')
+                        ->schema([
+                                TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
+                                ->color('primary')
+                                ->size(TextEntry\TextEntrySize::Large)
+                                ->weight(FontWeight::Bold)
+                                ->tooltip(function (TextEntry $component): ?string {
+                                    
+                                    return trans('main.balance_calculate_method');
+                                })
+                       
+                        ]),
                 \Filament\Infolists\Components\Section::make(trans('main.tuition_fee'))
                         ->id('tuition_fee-section')
                         ->schema([
@@ -351,6 +365,12 @@ class StudentResource extends Resource
                                 //             $record->status()->create($data);
                                 //         }),
                                 // ]),
+                        ]),
+                \Filament\Infolists\Components\Section::make(trans('main.transport_fee'))
+                        ->id('transport_fee-section')
+                        ->schema([
+
+                                ViewEntry::make('transportFees')->label(trans_choice('main.transport_fee',2))->view('infolists.components.view-student-transport-fee')
                         ]),
                        
             ]);

@@ -171,5 +171,16 @@ models:
         id: id
         name: string
         is_active: boolean
-       
+    ReceiptVoucher:
+        id: id
+        student_id: bigInteger unsigned foreign:students.id
+        value: float
+        value_in_alphabetic: string nullable
+        document: string nullable
+        is_approved: boolean default:"0"
+        payment_method_id: bigInteger unsigned foreign:payment_mehtods.id nullable
+        payment_date: date 
+        registered_by: bigInteger unsigned foreign:users.id 
+        relationships:
+            BelongsTo: Student, PaymentMethod
 seeders: User,AcademicYear,AcademicStage,Job

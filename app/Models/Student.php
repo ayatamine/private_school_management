@@ -9,6 +9,7 @@ use App\Models\Transport;
 use App\Models\GeneralFee;
 use App\Models\TuitionFee;
 use App\Models\ParentModel;
+use App\Traits\HasPayments;
 use App\Models\TransportFee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Student extends Model
 {
-    use HasFactory;
+    use HasFactory,HasPayments;
 
     public static function booted()
     {
@@ -97,7 +98,7 @@ class Student extends Model
         'terminated_by' => 'integer',
         'opening_balance' => 'double',
     ];
-    protected $appends=['username'];
+    protected $appends=['username','balance'];
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
@@ -170,5 +171,13 @@ class Student extends Model
                     ->withPivot('discounts', 'created_at')
                     ->with('academicYear')
                     ->withTimestamps();
+    }
+    public function balance():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                return $this->totalFees() + $this->opening_balance - $this->payments()  ." " .trans("main.".env('DEFAULT_CURRENCY'));
+            }
+        );
     }
 }

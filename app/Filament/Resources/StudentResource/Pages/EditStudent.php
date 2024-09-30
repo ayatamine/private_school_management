@@ -58,7 +58,7 @@ class EditStudent extends EditRecord
     
     protected function mutateFormDataBeforeSave(array $data): array
     {
-dd($data);
+
             User::findOrFail($this->record->user_id)->update([
                 'national_id' =>$data['national_id'],
                 'gender' =>$data['gender'],

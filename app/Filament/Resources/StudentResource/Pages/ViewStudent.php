@@ -82,4 +82,43 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             
         });
     }
+    public function editTransportFeePartitions(): Action
+    {
+        return Action::make('editTransportFeePartitions')
+        ->label(trans_choice('main.edit_partition',1))
+        ->form([
+             //TODO: here you should put concession of the current year
+                  Forms\Components\Select::make('concession_fee_id')
+                                ->label(trans('main.name'))
+                                ->options(ConcessionFee::active()->pluck('name','id'))
+                                ->required(),
+        ])
+        ->action(function (array $arguments,array $data) {
+            $concession_fee = ConcessionFee::findOrFail($data['concession_fee_id']);
+            $fee =TuitionFee::findOrFail($arguments['fee_id']);
+            $payment_partition = $fee->payment_partition;
+            if(array_key_exists($arguments['partition'],$payment_partition))
+            {
+               
+                $discounts=$payment_partition;
+                // foreach($payment_partition as $key=>$value)
+                // {
+                //     $discounts[$key] = $value;
+                // }
+                $discounts[0]['discount_type'] = $concession_fee->type;
+                $discounts[0]['discount_value'] = $concession_fee->value;
+
+                DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type']]);
+            }
+            Notification::make()
+            ->title(trans('main.partition_updated_successfully'))
+            ->icon('heroicon-o-document-text')
+            ->iconColor('success')
+            ->send();
+            return redirect(request()->header('Referer'));
+            // dd($fee);
+            // DB::update('update student_fee set name = ? where id = ?',[$name,$arguments['fee_id']]);
+            
+        });
+    }
 }

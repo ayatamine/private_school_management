@@ -2,6 +2,7 @@
 <style>
     td{color: black;font-weight: 600}
 </style>
+
 <div class=" relative overflow-x-auto shadow-md sm:rounded-lg">
     {{-- <div class="py-2 flex justify-end mb-2">
         {{ $getAction('editPartitions','aùo,e') }}
@@ -26,7 +27,7 @@
                 <th scope="col" class="px-6 py-3 border">
                     {{trans('main.value_after_discount')}}
                 </th>
-                @if($getRecord()->nationality = "saudian")
+                @if($getRecord()->nationality != "saudian")
                 <th scope="col" class="px-6 py-3 border">
                     {{trans('main.tax_percentage')}}
                 </th>
@@ -61,50 +62,77 @@
                         {{$partition['value']}}
                     </td>
                     @php
-                        $discounts = DB::select('select discounts from student_fee where feeable_id = ? AND feeable_type = ?',[$fee->id,"App\Models\TuitionFee"]);
+                        $discounts = DB::table('student_fee')
+                                    ->where('feeable_id', $fee->id)
+                                    ->where('feeable_type', 'App\Models\TuitionFee')
+                                    ->value('discounts');
+                                    $decodedDiscounts = json_decode($discounts, true);
                     @endphp
-                    @if(isset($discounts[0]))
+                    @if(isset($decodedDiscounts[0]))
                     <td class="px-6 py-4 border" >
-                        {{dd((array)$discounts[0])}}
+                        {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
                     </td>
                     <td class="px-6 py-4 border">
-                     
+                        @php
+                            if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                            {
+                                 $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                            }
+                            else{
+                                $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
+                            }
+                               
+                        @endphp
+                        
+                        {{$value_after_discount}}
                     </td>
                      @else 
 
                      <td class="px-6 py-4 border" >
-                        02
+                        0
                      </td>
                      <td class="px-6 py-4 border" >
                         0
                      </td>
                      @endif
+                     
                     @if($getRecord()->nationality != "saudian")
+                    @php
+                        $vat = \App\Models\ValueAddedTax::first();
+                    @endphp
+                    
                     <td class="px-6 py-4 border">
-                        $2999
+                        {{$vat->percentage}} %
                     </td>
                     <td class="px-6 py-4 border">
-                        $2999
-                    </td>
-                    @else 
-                    <td class="px-6 py-4 border">
-                        0%
-                    </td>
-                    <td class="px-6 py-4 border">
-                       0
+                        {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
+                        @php
+                            $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value'])
+                        @endphp
+                        {{$value_after_tax}}
                     </td>
                     @endif
                     <td class="px-6 py-4 border">
                         {{$partition['due_date']}}
                     </td>
                     <td class="px-6 py-4 border">
-                        $2999
+                        @php
+                            $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
+                        @endphp
+                        {{$total[$i]}}
                     </td>
-                    <td>{{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TuitionFee"]) }}</td>
+                    <td  class="px-6 py-4 border">{{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TuitionFee"]) }}</td>
                 </tr> 
               @endforeach
              @endif
             @endforeach
+            {{-- total sum --}}
+            <tr>
+                <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total')}}</td>
+                <td class="px-6 py-4 border">
+                    {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                </td>
+            </tr>
         </tbody>
     </table>
    

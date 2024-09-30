@@ -28,6 +28,7 @@ return [
     'finance_account' => 'الحسابات  | حساب ',
     'concession_fee' => 'خصم الرسوم | خصم الرسوم',
     'invoice' => 'الفواتير | فاتورة',
+    'receipt_voucher' => 'سندات القبض | سند القبض',
     'name'=>'الاسم',
     'start_date'=>'تاريخ البداية',
     'end_date'=>'تاريخ النهاية',
@@ -142,4 +143,8 @@ return [
     'edit_partition'=>'تعديل الأقساط | تعديل قسط',
     'action'=>'اجراء',
     'partition_updated_successfully'=>'تم تحديث القسط بنجاح',
+    'account_ballance'=>'رصيد الحساب',
+    'account_ballance_actual'=>'رصيد الحساب الحالي هو ',
+    'SAR'=>'ر.س',
+    'balance_calculate_method'=>'الرصيد الافتتاحي + اجمالي الأقساط - اجمالي المدفوعات',
 ];
