@@ -167,4 +167,9 @@ return [
     'invoice_number'=>'رقم الفاتورة',
     'release_date'=>'تاريخ الإصدار',
     'student_info'=>'معلومات الطالب',
+    'total_without_taxes'=>'الاجمالي بدون ضريبة',
+    'total_of_taxes'=>'اجمالي الضريبة',
+    'print_receipt_voucher'=>'طباعة السند',
+    'receipt_voucher_info'=>'بيانات السند',
+    'serial_number'=>'الرقم التسلسلي',
 ];

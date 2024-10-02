@@ -9,7 +9,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "ab-alselwi/laravel-arabic-html": "^0.2.0",
         "alperenersoy/filament-export": "^3.0",
         "bezhansalleh/filament-shield": "^3.2",
         "carlos-meneses/laravel-mpdf": "^2.1",
@@ -20,6 +19,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {

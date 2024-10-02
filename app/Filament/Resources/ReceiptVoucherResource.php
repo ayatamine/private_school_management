@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use MPDF;
 use NumberToWord;
 use Filament\Forms;
 use Filament\Tables;
@@ -9,8 +10,10 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -73,7 +76,7 @@ class ReceiptVoucherResource extends Resource
                 Forms\Components\FileUpload::make('document')->label(trans('main.document'))
                     ->hidden(fn(Get $get) =>$get('document') == null),
                 Forms\Components\Toggle::make('is_approved')->label(trans('main.approvel_status'))
-                    ->hidden(fn(Get $get) =>$get('is_approved') == true),
+                    ->hidden(fn(Get $get) => $get('is_approved') == true),
                 ])
             ]);
     }
@@ -107,6 +110,41 @@ class ReceiptVoucherResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Action::make('print_receipt_voucher')
+                    ->icon('icon-print')
+                    ->color('info')
+                    ->label(trans('main.print_receipt_voucher'))
+                    ->action(function(ReceiptVoucher $record) {
+                        $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
+                     
+                        // $pdf = PDF::loadView('pdf.receipt_voucher', $data);
+                        // // return $pdf->download('document.pdf');
+                        // return response()->streamDownload(function () use ($pdf) {
+                        //     echo $pdf->stream();
+                        //     }, 'name.pdf');
+
+                            // $html = view('pdf.receipt_voucher',$data)->toArabicHTML();
+
+                            // $pdf = PDF::loadHTML($html)->output();
+                            
+                            // $headers = array(
+                            //     "Content-type" => "application/pdf",
+                            // );
+                            
+                            // // Create a stream response as a file download
+                            // return response()->streamDownload(
+                            //     fn () => print($pdf), // add the content to the stream
+                            //     "receipt_voucher.pdf", // the name of the file/stream
+                            //     $headers
+                            // );
+
+                            $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
+                            $pdf->simpleTables = true;
+
+                            $pdf->download('document.pdf');
+                            header("Refresh:0");
+
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

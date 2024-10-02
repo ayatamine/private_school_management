@@ -4,7 +4,7 @@
         <title>{{ $invoice->name }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta charset="utf-8">
-        <style type="text/css" media="screen">
+        <style type="text/css" >
 
             @font-face
             {
@@ -33,7 +33,8 @@
                 margin: 36pt;
             }
 
-            h4 { direction: rtl;text-align: right;
+            h4 { 
+                direction: rtl;text-align: right;
                 margin-top: 0;
                 margin-bottom: 0.5rem;
             }
@@ -53,12 +54,12 @@
                 border-style: none;
             }
 
-            table {
-                direction: ltr;
+            /* table {
+                direction: rtl;
             width: 100%;
             text-align: right; border-collapse: collapse;
             font-family: 'DejaVu Sans', 'Roboto', 'Montserrat', 'Open Sans', sans-serif;
-            }
+            } */
 
             th {
                 text-align: inherit;
@@ -78,22 +79,18 @@
                 direction: ltr;text-align:right;
                 width: 100%;
                 margin-bottom: 1rem;
-                color: #212529;
+                color: #212529;border-collapse: collapse; 
             }
 
             .table th,
             .table td {
-                padding: 0.75rem;
-                vertical-align: top;
+                vertical-align: top; border-top: 1px solid #3f4143;padding: 0.3rem;
+                font-size: 14px !important;
             }
 
-            .table.table-items td {
-                border-top: 1px solid #dee2e6;
-            }
-
-            .table thead th {
-                vertical-align: bottom;
-                border-bottom: 2px solid #dee2e6;
+            table td ,table th{
+                vertical-align: middle;
+                border: 1px solid #262729;padding: 0.3rem;
             }
 
             .mt-5 {
@@ -135,6 +132,9 @@
                 font-size: 12px;
                 font-weight: 700;
             }
+            .border {
+                border: 1px solid #999 !important;
+            }
             .border-0 {
                 border: none !important;
             }
@@ -144,10 +144,12 @@
             tr{
                 direction: rtl;text-align:right;
             }
-            th,td{color: black;font-weight: 600;border: 1px solid #999;padding: 0.75rem;vertical-align: top;}
-            th{background: #dcd9d9}
+            /* th,td{color: black;font-weight: 600;border: 1px solid #999 !important;padding: 0.75rem;vertical-align: top;display: block}
+            th{background: #dcd9d9} */
             hr{border-top: 1px solid #212529}
-            
+            XML{
+                display:none;
+            }
         </style>
         
     </head>
@@ -160,15 +162,15 @@
         {{-- <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.school_info')}}</strong>
         </h5> --}}
-        <table class="table mt-5" style="width: 100%">
+        <table class=" mt-5" style="width: 100%">
             <tbody>
                 <tr>
                     @if($settings->logo)
-                    <td class="border-0 pl-0" colspan="2" >
+                    <td class="border-0 pl-0" style="border: none" colspan="2" >
                         <img style="margin:auto;text-align:center" src="{{ url("storage/$settings->logo") }}" alt="logo" height="100">
                     </td>
                     @endif
-                    <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px">
+                    <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
                         {{ trans('main.school_title') }} : <span style="">{{ $settings->title }}</span> <br>
                         {{ trans('main.permit_number') }} : <span style="">{{ $settings->permit_number }}</span> <br>
                         {{ trans('main.commercial_register_number') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
@@ -184,52 +186,21 @@
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.invoice_info')}}</strong>
         </h5>
-        <table class="table mt-5">
+        <table class=" mt-5" style="width: 100%">
             <tbody>
                 <tr>
-                    <td class="border-0 pl-0" >
-                        {{ trans('main.name') }} : <span style="">{{ $invoice->name }}</span> <br>
+                    <td class="border-0 pl-0" colspan="2" style="border: none" >
+                        {{ trans('main.name') }} : <span style="">{{ $invoice->name }}</span> <br><br>
                         {{ trans('main.invoice_number') }} : <span style="">{{ $invoice->number }}</span> <br>
                        
                     </td>
-                    <td class="border-0 pl-0">
-                            <h4 class="text-uppercase cool-gray">
-                                <strong style="text-align: right;direction: rtl">{{ $invoice->name }}</strong>
-                            </h4>
-                    </td>
-                    <td class="border-0 pl-0" >
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans('main.invoice_number') }}</strong>
-                        </h4>
-                    </td>
-                    <td class="border-0 pl-0">
-                            <h4 class="text-uppercase cool-gray">
-                                <strong style="text-align: right;direction: rtl">#{{ $invoice->number }}</strong>
-                            </h4>
+                    
+                    <td class="border-0 pl-0" style="border: none"  colspan="2">
+                        {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($invoice->created_at)) }}</span> <br><br>
+                        {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br>
                     </td>
                 </tr>
-                <tr>
-                    <td class="border-0 pl-0" >
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans('main.release_date') }}</strong>
-                        </h4>
-                    </td>
-                    <td class="border-0 pl-0">
-                            <h4 class="text-uppercase cool-gray">
-                                <strong style="text-align: right;direction: rtl">{{ date('Y-m-d',strtotime($invoice->created_at)) }}</strong>
-                            </h4>
-                    </td>
-                    <td class="border-0 pl-0" width="70%">
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans_choice('main.academic_year',1) }}</strong>
-                        </h4>
-                    </td>
-                    <td class="border-0 pl-0">
-                            <h4 class="text-uppercase cool-gray">
-                                <strong style="text-align: right;direction: rtl">{{ $invoice->academicYear?->name }}</strong>
-                            </h4>
-                    </td>
-                </tr>
+                
             </tbody>
         </table>
         <hr>
@@ -237,82 +208,62 @@
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.student_info')}}</strong>
         </h5>
-        <table class="table mt-5">
+        <table class=" mt-5"  style="width: 100%">
             <tbody>
                 <tr>
-                    <td class="border-0 pl-0" width="70%">
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans('main.name') }}</strong>
-                        </h4>
+                    <td class="border-0 pl-0" style="border: none"  colspan="2">
+                        {{ trans('main.name') }} : <span style="">{{ $invoice?->student->username }}</span> <br><br>
+                        {{ trans('main.nationality') }} : <span style="">{{ $invoice?->student->nationality }}</span> <br>
+                       
                     </td>
-                    <td class="border-0 pl-0">
-                        <strong style="text-align: right;direction: rtl">{{ $invoice?->student->username }}</strong>
-                    </td>
-                    <td class="border-0 pl-0" width="70%">
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans('main.nationality') }}</strong>
-                        </h4>
-                    </td>
-                    <td class="border-0 pl-0">
-                        <strong style="text-align: right;direction: rtl">{{ $invoice->nationality }}</strong>
+                    
+                    <td class="border-0 pl-0"  style="border: none"  colspan="2">
+                        {{ trans('main.registration_number') }} : <span style="">{{ $invoice?->student->registration_number }}</span> <br><br>
+                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $invoice?->student?->course?->name }}</span> <br>
                     </td>
                 </tr>
-                <tr>
-                    <td class="border-0 pl-0" width="70%">
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans('main.registration_number') }}</strong>
-                        </h4>
-                    </td>
-                    <td class="border-0 pl-0">
-                        <strong style="text-align: right;direction: rtl">{{ $invoice?->student->registration_number }}</strong>
-                    </td>
-                    <td class="border-0 pl-0" width="70%">
-                        <h4 class="text-uppercase">
-                            <strong style="text-align: right;direction: rtl">{{ trans_choice('main.course',1) }}</strong>
-                        </h4>
-                    </td>
-                    <td class="border-0 pl-0">
-                        <strong style="text-align: right;direction: rtl">{{ $invoice->academic_course?->name }}</strong>
-                    </td>
-                </tr>
+                
             </tbody>
         </table>
         <hr>
         <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.tuition_fee')}}</strong>
+            <strong style="text-align: right;direction: rtl">{{ trans_choice('main.tuition_fee',2)}}</strong>
         </h5>
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
+        @php
+            $total_without_taxes =$total_of_taxes = [];
+        @endphp
+        <table   style="width: 100%;border-collapse: collapse;">
+            <thead >
                
                 <tr>
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" colspan="1">
                        {{trans('main.fee_name')}}
                     </th>
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col"  colspan="1">
                         {{trans('main.partition_name')}}
                     </th>
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col"  colspan="1">
                         {{trans('main.value')}}
                     </th>
                    
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" >
                         {{trans('main.discount_value')}}
                     </th>
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" >
                         {{trans('main.value_after_discount')}}
                     </th>
                     @if($invoice->student->nationality != "saudian")
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" >
                         {{trans('main.tax_percentage')}}
                     </th>
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" >
                         {{trans('main.tax_value')}}
                     </th>
                     @endif
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" >
                         {{trans('main.due_date')}}
                     </th>
-                    <th scope="col" class="px-6 py-3 border">
+                    <th scope="col" >
                         {{trans('main.total')}}
                     </th>
                 </tr>
@@ -322,14 +273,14 @@
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
                   
-                    <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                        <td scope="row" class="px-6 py-4 border">
+                    <tr>
+                        <td scope="row" >
                            {{trans_choice('main.tuition_fee',1)}} {{$fee->academicYear?->name}}
                         </td>
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
                         </td>
-                        <td class="px-6 py-4 border">
+                        <td >
                             {{$partition['value']}}
                         </td>
                         @php
@@ -340,10 +291,10 @@
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
                         @if(isset($decodedDiscounts[0]))
-                        <td class="px-6 py-4 border" >
+                        <td  >
                             {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
                         </td>
-                        <td class="px-6 py-4 border">
+                        <td >
                             @php
                                 if($decodedDiscounts[0]['discount_type'] == 'percentage')
                                 {
@@ -353,16 +304,17 @@
                                     $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
                                 }
                                    
+                                $total_without_taxes[$i]=$value_after_discount;
                             @endphp
                             
                             {{$value_after_discount}}
                         </td>
                          @else 
     
-                         <td class="px-6 py-4 border" >
+                         <td  >
                             0
                          </td>
-                         <td class="px-6 py-4 border" >
+                         <td  >
                             0
                          </td>
                          @endif
@@ -372,21 +324,23 @@
                             $vat = \App\Models\ValueAddedTax::first();
                         @endphp
                         
-                        <td class="px-6 py-4 border">
+                        <td >
                             {{$vat->percentage}} %
                         </td>
-                        <td class="px-6 py-4 border">
+                        <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value'])
+                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
+
+                                $total_of_taxes[$i]=$vat->percentage;
                             @endphp
                             {{$value_after_tax}}
                         </td>
                         @endif
-                        <td class="px-6 py-4 border">
+                        <td >
                             {{$partition['due_date']}}
                         </td>
-                        <td class="px-6 py-4 border">
+                        <td >
                             @php
                                 $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
                             @endphp
@@ -396,66 +350,185 @@
                   @endforeach
                  @endif
                 @endforeach
+                {{-- total without taxes --}}
+                <tr>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_without_taxes')}}</td>
+                    <td>
+                        {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                    </td>
+                </tr>
+                {{-- total without taxes --}}
+                <tr>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}</td>
+                    <td>
+                        {{array_sum($total_of_taxes)}} %
+                    </td>
+                </tr>
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 border" @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total')}}</td>
-                    <td class="px-6 py-4 border">
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total')}}</td>
+                    <td>
                         {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                     </td>
                 </tr>
             </tbody>
         </table>
-       
-        <table>
-            <tr class="top">
-                <td colspan="2">
-                    <table>
-                        <tr>
-                            <td class="title">
+        <h5 class="text-uppercase cool-gray">
+            <strong style="text-align: right;direction: rtl">{{ trans_choice('main.transport_fee',2)}}</strong>
+        </h5>
+        <table   style="width: 100%;border-collapse: collapse;">
+            <thead >
+               
+                <tr>
+                    <th scope="col" >
+                       {{trans('main.fee_name')}}
+                    </th>
+                    <th scope="col" >
+                        {{trans('main.partition_name')}}
+                    </th>
+                    <th scope="col" >
+                        {{trans('main.value')}}
+                    </th>
+                   
+                    <th scope="col" >
+                        {{trans('main.discount_value')}}
+                    </th>
+                    <th scope="col" >
+                        {{trans('main.value_after_discount')}}
+                    </th>
+                    @if($invoice->student->nationality != "saudian")
+                    <th scope="col" >
+                        {{trans('main.tax_percentage')}}
+                    </th>
+                    <th scope="col" >
+                        {{trans('main.tax_value')}}
+                    </th>
+                    @endif
+                    <th scope="col" >
+                        {{trans('main.due_date')}}
+                    </th>
+                    <th scope="col" >
+                        {{trans('main.total')}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($invoice->student->transportFees as $fee)
+                 @if(count($fee->payment_partition))
+                  @foreach ($fee->payment_partition as $i=> $partition)
+                  
+                    <tr>
+                        <td  >
+                           {{trans_choice('main.transport_fee',1)}} {{$fee->academicYear?->name}}
+                        </td>
+                        <td >
+                            {{$partition['partition_name']}}
+                        </td>
+                        <td >
+                            {{$partition['value']}}
+                        </td>
+                        @php
+                            $discounts = DB::table('student_fee')
+                                        ->where('feeable_id', $fee->id)
+                                        ->where('feeable_type', 'App\Models\TransportFee')
+                                        ->value('discounts');
+                                        $decodedDiscounts = json_decode($discounts, true);
+                        @endphp
+                        @if(isset($decodedDiscounts[0]))
+                        <td  >
+                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                        </td>
+                        <td >
+                            @php
+                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                {
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                }
+                                else{
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
+                                }
+                                $total_without_taxes[$i]=$value_after_discount;
+                            @endphp
+                            
+                            {{$value_after_discount}}
+                        </td>
+                         @else 
+    
+                         <td  >
+                            0
+                         </td>
+                         <td  >
+                            0
+                         </td>
+                         @endif
+                         
+                        @if($invoice->student->nationality != "saudian")
+                        @php
+                            $vat = \App\Models\ValueAddedTax::first();
+                        @endphp
+                        
+                        <td >
+                            {{$vat->percentage}} %
+                        </td>
+                        <td >
+                            {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
+                            @php
+                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
 
-                            </td>
-
-                            <td>
-                                فاتورة #: 123<br />
-                                الانشاء : يناير 1, 2015<br />
-                                تاريخ : فبراير 1, 2015
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-
-
-            <tr class="heading">
-                <td>العنصر </td>
-
-                <td>السعر </td>
-            </tr>
-
-            <tr class="item">
-                <td>تصميم موقع </td>
-
-                <td>$300.00</td>
-            </tr>
-
-            <tr class="item">
-                <td>استضافة (3 أشهر )</td>
-
-                <td>$75.00</td>
-            </tr>
-
-            <tr class="item ">
-                <td>نطاق (1 عام )</td>
-
-                <td>$10.00</td>
-            </tr>
-
-            <tr class="total last">
-                <td>الإجمالي : </td>
-
-                <td>$385.00 </td>
-            </tr>
+                                $total_of_taxes[$i]=$vat->percentage;
+                            @endphp
+                            {{$value_after_tax}}
+                        </td>
+                        @endif
+                        <td >
+                            {{$partition['due_date']}}
+                        </td>
+                        <td >
+                            @php
+                                $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
+                            @endphp
+                            {{$total[$i]}}
+                        </td>
+                    </tr> 
+                  @endforeach
+                 @endif
+                @endforeach
+                 {{-- total without taxes --}}
+                 <tr>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_without_taxes')}}</td>
+                    <td>
+                        {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                    </td>
+                </tr>
+                {{-- total without taxes --}}
+                <tr>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}</td>
+                    <td>
+                        {{array_sum($total_of_taxes)}} %
+                    </td>
+                </tr>
+                {{-- total sum --}}
+                <tr>
+                    <td  @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total')}}</td>
+                    <td >
+                        {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                    </td>
+                </tr>
+            </tbody>
         </table>
+        <br><br><br><br>
+        @php
+            $qr_content = json_encode([
+                'school_name'=>$settings->name,
+                'added_value_tax_number'=>$settings->added_value_tax_number,
+                'invoice_date'=>$invoice->created_at,
+                'total'=>$invoice->student?->totalFees()
+            ]);
+        @endphp
+        <div>
+            {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}}
+        </div>
+   
 
     </body>
 </html>

@@ -4,66 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2668ba4ffbd095794a600b2741422a21",
+    "content-hash": "3755596884172043b4f26a0c3d2b550a",
     "packages": [
-        {
-            "name": "ab-alselwi/laravel-arabic-html",
-            "version": "0.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Ab-Alselwi/laravel-arabic-html.git",
-                "reference": "2aae4c50ee0219da7a85aafafe8b85de3fcd40a8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Ab-Alselwi/laravel-arabic-html/zipball/2aae4c50ee0219da7a85aafafe8b85de3fcd40a8",
-                "reference": "2aae4c50ee0219da7a85aafafe8b85de3fcd40a8",
-                "shasum": ""
-            },
-            "require": {
-                "barryvdh/laravel-dompdf": "^1.0||^2.0",
-                "illuminate/support": "^6|^7|^8|^9|^10",
-                "illuminate/view": "^6|^7|^8|^9|^10",
-                "khaled.alshamaa/ar-php": "^6.2",
-                "php": "^7.3||^8.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Ab\\ArabicHTML\\ServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Ab\\ArabicHTML\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Abdulfattah Alselwi",
-                    "email": "abalselwi.job@gmail.com"
-                }
-            ],
-            "description": "Convert laravel view to arabic html (pdf) by using ArPHP and dompdf with arabic fonts and text.",
-            "keywords": [
-                "arabic",
-                "arabic-calendar",
-                "arabic-dompdf",
-                "arabic-glyphs",
-                "arabic-html"
-            ],
-            "support": {
-                "issues": "https://github.com/Ab-Alselwi/laravel-arabic-html/issues",
-                "source": "https://github.com/Ab-Alselwi/laravel-arabic-html/tree/0.2.0"
-            },
-            "time": "2023-05-24T15:04:23+00:00"
-        },
         {
             "name": "alperenersoy/filament-export",
             "version": "v3.0.4",
@@ -185,6 +127,60 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.2.24"
             },
             "time": "2024-09-08T15:57:08+00:00"
+        },
+        {
+            "name": "bacon/bacon-qr-code",
+            "version": "2.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Bacon/BaconQrCode.git",
+                "reference": "8674e51bb65af933a5ffaf1c308a660387c35c22"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Bacon/BaconQrCode/zipball/8674e51bb65af933a5ffaf1c308a660387c35c22",
+                "reference": "8674e51bb65af933a5ffaf1c308a660387c35c22",
+                "shasum": ""
+            },
+            "require": {
+                "dasprid/enum": "^1.0.3",
+                "ext-iconv": "*",
+                "php": "^7.1 || ^8.0"
+            },
+            "require-dev": {
+                "phly/keep-a-changelog": "^2.1",
+                "phpunit/phpunit": "^7 | ^8 | ^9",
+                "spatie/phpunit-snapshot-assertions": "^4.2.9",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "suggest": {
+                "ext-imagick": "to generate QR code images"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "BaconQrCode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Scholzen 'DASPRiD'",
+                    "email": "mail@dasprids.de",
+                    "homepage": "https://dasprids.de/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "BaconQrCode is a QR code generator for PHP.",
+            "homepage": "https://github.com/Bacon/BaconQrCode",
+            "support": {
+                "issues": "https://github.com/Bacon/BaconQrCode/issues",
+                "source": "https://github.com/Bacon/BaconQrCode/tree/2.0.8"
+            },
+            "time": "2022-12-07T17:46:57+00:00"
         },
         {
             "name": "barryvdh/laravel-dompdf",
@@ -788,6 +784,56 @@
                 }
             ],
             "time": "2024-05-06T09:10:03+00:00"
+        },
+        {
+            "name": "dasprid/enum",
+            "version": "1.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DASPRiD/Enum.git",
+                "reference": "8dfd07c6d2cf31c8da90c53b83c026c7696dda90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DASPRiD/Enum/zipball/8dfd07c6d2cf31c8da90c53b83c026c7696dda90",
+                "reference": "8dfd07c6d2cf31c8da90c53b83c026c7696dda90",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1 <9.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7 || ^8 || ^9 || ^10 || ^11",
+                "squizlabs/php_codesniffer": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DASPRiD\\Enum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Scholzen 'DASPRiD'",
+                    "email": "mail@dasprids.de",
+                    "homepage": "https://dasprids.de/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP 7.1 enum implementation",
+            "keywords": [
+                "enum",
+                "map"
+            ],
+            "support": {
+                "issues": "https://github.com/DASPRiD/Enum/issues",
+                "source": "https://github.com/DASPRiD/Enum/tree/1.0.6"
+            },
+            "time": "2024-08-09T14:30:48+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -2540,69 +2586,6 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
-        },
-        {
-            "name": "khaled.alshamaa/ar-php",
-            "version": "v6.3.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/khaled-alshamaa/ar-php.git",
-                "reference": "36550a0d805dc50fcede0132cd8b83c80fe1fd6c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/khaled-alshamaa/ar-php/zipball/36550a0d805dc50fcede0132cd8b83c80fe1fd6c",
-                "reference": "36550a0d805dc50fcede0132cd8b83c80fe1fd6c",
-                "shasum": ""
-            },
-            "require": {
-                "ext-calendar": "*",
-                "ext-mbstring": "*",
-                "php": ">=5.6.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "9.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ArPHP\\I18N\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Khaled Al-Sham'aa",
-                    "email": "khaled@ar-php.org",
-                    "homepage": "http://www.ar-php.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Set of functionalities enable Arabic website developers to serve professional search, present and process Arabic content in PHP",
-            "homepage": "https://github.com/khaled-alshamaa/ar-php",
-            "keywords": [
-                "arabic",
-                "arabic-calendar",
-                "arabic-glyphs",
-                "arabic-numbers",
-                "arabic-segments-identifier",
-                "arabic-sentiment",
-                "arabic-sql-query"
-            ],
-            "support": {
-                "issues": "https://github.com/khaled-alshamaa/ar-php/issues",
-                "source": "https://github.com/khaled-alshamaa/ar-php/tree/v6.3.4"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/khaled-alshamaa",
-                    "type": "github"
-                }
-            ],
-            "time": "2023-04-04T22:05:31+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -5997,6 +5980,74 @@
                 }
             ],
             "time": "2024-09-02T10:17:15+00:00"
+        },
+        {
+            "name": "simplesoftwareio/simple-qrcode",
+            "version": "4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SimpleSoftwareIO/simple-qrcode.git",
+                "reference": "916db7948ca6772d54bb617259c768c9cdc8d537"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SimpleSoftwareIO/simple-qrcode/zipball/916db7948ca6772d54bb617259c768c9cdc8d537",
+                "reference": "916db7948ca6772d54bb617259c768c9cdc8d537",
+                "shasum": ""
+            },
+            "require": {
+                "bacon/bacon-qr-code": "^2.0",
+                "ext-gd": "*",
+                "php": ">=7.2|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~1",
+                "phpunit/phpunit": "~9"
+            },
+            "suggest": {
+                "ext-imagick": "Allows the generation of PNG QrCodes.",
+                "illuminate/support": "Allows for use within Laravel."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider"
+                    ],
+                    "aliases": {
+                        "QrCode": "SimpleSoftwareIO\\QrCode\\Facades\\QrCode"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SimpleSoftwareIO\\QrCode\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Simple Software LLC",
+                    "email": "support@simplesoftware.io"
+                }
+            ],
+            "description": "Simple QrCode is a QR code generator made for Laravel.",
+            "homepage": "https://www.simplesoftware.io/#/docs/simple-qrcode",
+            "keywords": [
+                "Simple",
+                "generator",
+                "laravel",
+                "qrcode",
+                "wrapper"
+            ],
+            "support": {
+                "issues": "https://github.com/SimpleSoftwareIO/simple-qrcode/issues",
+                "source": "https://github.com/SimpleSoftwareIO/simple-qrcode/tree/4.2.0"
+            },
+            "time": "2021-02-08T20:43:55+00:00"
         },
         {
             "name": "spatie/color",

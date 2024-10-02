@@ -74,7 +74,9 @@ class InvoiceResource extends Resource
                 Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice('main.academic_year',1))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
-                    ->sortable(),
+                    ->url(fn (Invoice $record): string => route('filament.admin.resources.students.view', ['record' => $record->student->id]))
+                    ->sortable()
+                    ->openUrlInNewTab(),
                 
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->dateTime()
@@ -115,7 +117,8 @@ class InvoiceResource extends Resource
                             // );
 
                             $pdf = MPDF::loadView('pdf.invoice', $data);
-                            
+                            $pdf->simpleTables = true;
+
                             return $pdf->download('document.pdf');
                     })
             ])
