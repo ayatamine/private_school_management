@@ -160,6 +160,7 @@ models:
         id: id
         title: string
         phone_number: string
+        email: string
         website: string nullable
         permit_number: integer
         commercial_register_number: integer

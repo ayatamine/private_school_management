@@ -14,8 +14,12 @@ trait HasPayments {
      */
     public function payments() 
     {
-
-        return 0;
+        $payments = $this->receiptVoucher;
+        $total =0;
+        foreach ($payments as $payment) {
+           $total+= $payment->value;
+        }
+        return $total;
     }
     /**
      *  

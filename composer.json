@@ -9,8 +9,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "ab-alselwi/laravel-arabic-html": "^0.2.0",
         "alperenersoy/filament-export": "^3.0",
         "bezhansalleh/filament-shield": "^3.2",
+        "carlos-meneses/laravel-mpdf": "^2.1",
         "filament/filament": "3.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
@@ -37,13 +39,17 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Helpers\\": "Helpers/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "App/Helpers/NumberToWord.php"
+        ]
     },
     "scripts": {
         "post-autoload-dump": [

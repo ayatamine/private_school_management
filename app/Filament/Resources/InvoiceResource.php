@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InvoiceResource\Pages;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
-use App\Models\Invoice;
+use MPDF;
+use PDF;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Invoice;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\SchoolSetting;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\InvoiceResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\InvoiceResource\RelationManagers;
 
 class InvoiceResource extends Resource
 {
@@ -82,6 +86,38 @@ class InvoiceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Action::make('print_invoice')
+                    ->icon('icon-print')
+                    ->color('info')
+                    ->label(trans('main.print_invoice'))
+                    ->action(function(Invoice $record) {
+                        $data = ['invoice' => $record,'settings'=>SchoolSetting::first()];
+                     
+                        // $pdf = PDF::loadView('pdf.invoice', $data);
+                        // // return $pdf->download('document.pdf');
+                        // return response()->streamDownload(function () use ($pdf) {
+                        //     echo $pdf->stream();
+                        //     }, 'name.pdf');
+
+                            // $html = view('pdf.invoice',$data)->toArabicHTML();
+
+                            // $pdf = PDF::loadHTML($html)->output();
+                            
+                            // $headers = array(
+                            //     "Content-type" => "application/pdf",
+                            // );
+                            
+                            // // Create a stream response as a file download
+                            // return response()->streamDownload(
+                            //     fn () => print($pdf), // add the content to the stream
+                            //     "invoice.pdf", // the name of the file/stream
+                            //     $headers
+                            // );
+
+                            $pdf = MPDF::loadView('pdf.invoice', $data);
+                            
+                            return $pdf->download('document.pdf');
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

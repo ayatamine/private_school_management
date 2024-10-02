@@ -11,6 +11,7 @@ use App\Models\TuitionFee;
 use App\Models\ParentModel;
 use App\Traits\HasPayments;
 use App\Models\TransportFee;
+use App\Models\ReceiptVoucher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -171,6 +172,10 @@ class Student extends Model
                     ->withPivot('discounts', 'created_at')
                     ->with('academicYear')
                     ->withTimestamps();
+    }
+    public function receiptVoucher():HasMany
+    {
+        return $this->hasMany(ReceiptVoucher::class)->where('is_approved',true);
     }
     public function balance():Attribute
     {

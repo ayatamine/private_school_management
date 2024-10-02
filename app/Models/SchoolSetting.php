@@ -17,6 +17,7 @@ class SchoolSetting extends Model
     protected $fillable = [
         'title',
         'phone_number',
+        'email',
         'website',
         'permit_number',
         'commercial_register_number',
@@ -34,4 +35,5 @@ class SchoolSetting extends Model
     protected $casts = [
         'id' => 'integer',
     ];
+    
 }

@@ -335,6 +335,12 @@ class StudentResource extends Resource
 
                        
                         ]),
+                \Filament\Infolists\Components\Section::make(trans('main.payments'))
+                        ->id('payments-section')
+                        ->schema([
+                            ViewEntry::make('receiptVoucher')->label(trans_choice('main.payments',2))->view('infolists.components.student-payments')
+                       
+                        ]),
                 \Filament\Infolists\Components\Section::make(trans('main.account_ballance'))
                         ->columns(2)
                         ->id('account_ballance-section')

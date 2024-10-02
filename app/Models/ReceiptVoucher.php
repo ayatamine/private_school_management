@@ -59,5 +59,9 @@ class ReceiptVoucher extends Model
     {
         return $this->belongsTo(User::class,'registered_by','id');
     }
+    public function scopeApproved()
+    {
+        return $this->where('is_approved',true);
+    }
 
 }

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use NumberToWord;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ReceiptVoucher;
@@ -57,7 +59,13 @@ class ReceiptVoucherResource extends Resource
                     ->hidden(fn(Get $get) =>$get('payment_method_id') == null),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, ?string $state) {
+                        $numberToWord = new NumberToWord();
+                        $set('value_in_alphabetic',$numberToWord->convert($state));
+                    })
+                    ->live(onBlur: true),
                 Forms\Components\TextInput::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('payment_date')->label(trans('main.payment_date'))
