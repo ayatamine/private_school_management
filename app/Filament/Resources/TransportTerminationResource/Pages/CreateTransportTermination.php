@@ -13,6 +13,7 @@ use App\Filament\Resources\TransportTerminationResource;
 class CreateTransportTermination extends CreateRecord
 {
     protected static string $resource = TransportTerminationResource::class;
+    
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         
@@ -26,5 +27,9 @@ class CreateTransportTermination extends CreateRecord
         $this->halt();
         return $data;
         
+    }
+    public function getBreadcrumb(): string
+    {
+        return '';
     }
 }

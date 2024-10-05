@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TransportResource;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -23,14 +24,16 @@ class TransportTerminationResource extends Resource
     protected static ?string $model = Transport::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static bool $shouldRegisterNavigation = false;
     public static function getNavigationGroup():string
     {
-        return trans_choice('main.student',2);
+        return trans_choice('main.transport_termination',2);
     }
     public static function getModelLabel():string
     {
-        return trans_choice('main.student',1);
+        return trans_choice('main.transport_termination',1);
     }
+
     public static function getNavigationLabel():string
     {
         return trans_choice('main.transport_termination',2);
@@ -40,17 +43,23 @@ class TransportTerminationResource extends Resource
     {
         return trans_choice('main.transport_termination',2);
     }
+    public static function getBreadcrumb(): string
+    {
+        return '';
+    }
     public static function form(Form $form): Form
     {
         return $form
         ->schema([
-            Section::make(trans('main.termination'))
+            Section::make(trans('main.transport_termination'))
                 ->columnSpanFull()
                 ->schema([ Grid::make()
                  ->schema([
                     Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                                 ->relationship('student', 'username',
-                                modifyQueryUsing: fn (Builder $query) => $query->Has('transport')
+                                modifyQueryUsing: fn (Builder $query) => $query->whereHas('transport',function(Builder $query){
+                                    return $query->whereNull('termination_date');
+                                })
                             )
                         // ->searchable()
                         ->preload()
