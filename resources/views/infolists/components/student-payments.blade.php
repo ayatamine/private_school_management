@@ -3,6 +3,8 @@
         td{color: black;font-weight: 600}
     </style>
     
+    @if($getState() != null && count($getState()))
+
     <div class=" relative overflow-x-auto shadow-md sm:rounded-lg">
         {{-- <div class="py-2 flex justify-end mb-2">
             {{ $getAction('editPartitions','aùo,e') }}
@@ -44,7 +46,7 @@
                         </td>
                         
                         <td class="px-6 py-4 border" >
-                            {{$payment->value}}
+                            {{$payment->value}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                         @php
@@ -59,7 +61,7 @@
                 <tr>
                     <td class="px-6 py-4 border" colspan="3" >{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
-                       {{$total}}
+                       {{$total}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                     </td>
                 </tr>
             </tbody>
@@ -68,6 +70,8 @@
      
         <x-filament-actions::modals />
     </div>
-    
+    @else 
+        <h4>{{trans('main.no_operation_found')}}</h4>
+    @endif
     </x-dynamic-component>
     

@@ -172,4 +172,9 @@ return [
     'print_receipt_voucher'=>'طباعة السند',
     'receipt_voucher_info'=>'بيانات السند',
     'serial_number'=>'الرقم التسلسلي',
+    'no_operation_found'=>'لايوجد أي عملية',
+    'not_registered_yet'=>'لم يتم الاشتراك بعد',
+    'student_termination_success'=>'تم انهاء قيد الطالب بنجاح',
+    'restore'=>'استرجاع',
+    'student_restored_success'=>'تم ارجاع حساب الطالب بنجاح',
 ];

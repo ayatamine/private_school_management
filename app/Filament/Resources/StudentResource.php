@@ -124,7 +124,7 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make(name: 'middle_name')->label(trans('main.middle_name'))
+                        Forms\Components\TextInput::make( 'middle_name')->label(trans('main.middle_name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('third_name')->label(trans('main.third_name'))
@@ -146,15 +146,15 @@ class StudentResource extends Resource
                             ->hidden(fn (Get $get) => $get('nationality') == 'saudian'),
                         Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                             ->required()
-                            ->unique(table:'users',ignoreRecord: true)
+                            // ->unique(table:'users',ignoreRecord: true,column:'user.national_id')
                             ->maxLength(10),           
                         Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
                             ->required()
-                            ->unique(table:'users',ignoreRecord: true)
+                            // ->unique(table:'users',ignoreRecord: true)
                             ->maxLength(13),   
                         Forms\Components\TextInput::make('email')->label(trans('main.email'))
-                            ->required()
-                            ->unique(table:'users',ignoreRecord: true),   
+                            ->required(),
+                            // ->unique(table:'users',ignoreRecord: true),   
                         Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
                             ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
                             ->required(),        
@@ -162,7 +162,7 @@ class StudentResource extends Resource
                             ->maxLength(255),        
                     ])
                 ])
-                ->hidden(fn (Get $get) => $get('new_student') == false ),
+                ->visible(fn (Get $get) => $get('new_student') == null || $get('new_student') == true),
                 Section::make(trans('main.parent_data'))
                     ->columnSpanFull()
                     ->schema([ Grid::make()
@@ -224,7 +224,7 @@ class StudentResource extends Resource
                             ->numeric(),
                         Forms\Components\FileUpload::make(name: 'finance_document')->label(trans('main.document'))
                             ->directory('students_financial_documents'),
-                        Forms\Components\TextArea::make('note')->label(trans('main.note'))
+                        Forms\Components\Textarea::make('note')->label(trans('main.note'))
                             ->columnSpanFull()
                             ->maxLength(255),
                         
@@ -269,7 +269,7 @@ class StudentResource extends Resource
                 SelectFilter::make('course_id')->label(trans_choice('main.academic_course',1))
                     ->relationship('course', 'name')->searchable()
                     ->preload(),
-                TernaryFilter::make('accept_status')->label(trans('main.accept_status'))
+                TernaryFilter::make('accept_status')->label(trans('main.approvel_status'))
                     ->nullable()
                     ->attribute('approved_at'),
                 SelectFilter::make('gender')->label(trans('main.gender'))->options([
@@ -329,7 +329,9 @@ class StudentResource extends Resource
                         ->schema([
 
 
-                                TextEntry::make('opening_balance')->label(trans('main.opening_balance'))->weight(FontWeight::Bold),
+                                TextEntry::make('opening_balance')->label(trans('main.opening_balance'))
+                                ->formatStateUsing(fn (string $state) => $state." ".trans("main.".env('DEFAULT_CURRENCY')))
+                                ->weight(FontWeight::Bold),
                                 ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
                                 TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold)
 
@@ -355,7 +357,7 @@ class StudentResource extends Resource
                                 })
                        
                         ]),
-                \Filament\Infolists\Components\Section::make(trans('main.tuition_fee'))
+                \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
                         ->id('tuition_fee-section')
                         ->schema([
 
@@ -372,7 +374,7 @@ class StudentResource extends Resource
                                 //         }),
                                 // ]),
                         ]),
-                \Filament\Infolists\Components\Section::make(trans('main.transport_fee'))
+                \Filament\Infolists\Components\Section::make(trans_choice('main.transport_fee',2))
                         ->id('transport_fee-section')
                         ->schema([
 

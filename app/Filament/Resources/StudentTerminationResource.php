@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StudentTerminationResource\Pages;
 use App\Filament\Resources\StudentTerminationResource\RelationManagers;
+use Filament\Tables\Actions\Action;
 
 class StudentTerminationResource extends Resource
 {
@@ -55,7 +56,7 @@ class StudentTerminationResource extends Resource
                             ->hiddenOn('edit'),
                         Forms\Components\TextInput::make('username')->label(trans_choice('main.student',1))->hiddenOn('create')->disabled(),
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
-                        Forms\Components\TextArea::make('termination_reason')->label(trans('main.termination_reason'))
+                        Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
                             ->columnSpanFull()
                             ->maxLength(26663)->required(),
                         Forms\Components\FileUpload::make(name: 'termination_document')->label(trans('main.document'))
@@ -93,6 +94,22 @@ class StudentTerminationResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make(trans('main.restore'))
+                ->color('success')
+                ->action(function (Student $record) {
+                  
+                   $record->update([
+                        'terminated_by'=>null,
+                        'termination_date'=>null,
+                        'termination_reason'=>null,
+                        'termination_document'=>null,
+                   ]);
+                   Notification::make()
+                                       ->title(trans('main.student_restored_success'))
+                                       ->icon('heroicon-o-document-text')
+                                       ->iconColor('success')
+                                       ->send();
+                }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

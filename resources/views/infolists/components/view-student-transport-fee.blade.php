@@ -2,7 +2,7 @@
     <style>
         td{color: black;font-weight: 600}
     </style>
-    
+     @if($getState() != null && count($getState()))
     <div class=" relative overflow-x-auto shadow-md sm:rounded-lg">
         {{-- <div class="py-2 flex justify-end mb-2">
             {{ $getAction('editPartitions','aùo,e') }}
@@ -139,6 +139,8 @@
      
         <x-filament-actions::modals />
     </div>
-    
+    @else 
+    <h4>{{trans('main.not_registered_yet')}}</h4>
+    @endif
     </x-dynamic-component>
     

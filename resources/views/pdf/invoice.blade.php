@@ -332,7 +332,7 @@
                             @php
                                 $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
 
-                                $total_of_taxes[$i]=$vat->percentage;
+                                $total_of_taxes[$i]=$value_after_tax;
                             @endphp
                             {{$value_after_tax}}
                         </td>
@@ -359,9 +359,9 @@
                 </tr>
                 {{-- total without taxes --}}
                 <tr>
-                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}</td>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}({{\App\Models\ValueAddedTax::first()->percentage }}%)</td>
                     <td>
-                        {{array_sum($total_of_taxes)}} %
+                        {{array_sum($total_of_taxes)}}  {{trans("main.".env('DEFAULT_CURRENCY'))}}
                     </td>
                 </tr>
                 {{-- total sum --}}
@@ -475,7 +475,7 @@
                             @php
                                 $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
 
-                                $total_of_taxes[$i]=$vat->percentage;
+                                $total_of_taxes[$i]=$value_after_tax;
                             @endphp
                             {{$value_after_tax}}
                         </td>
@@ -502,9 +502,9 @@
                 </tr>
                 {{-- total without taxes --}}
                 <tr>
-                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}</td>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}({{\App\Models\ValueAddedTax::first()->percentage }}%)</td>
                     <td>
-                        {{array_sum($total_of_taxes)}} %
+                        {{array_sum($total_of_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                     </td>
                 </tr>
                 {{-- total sum --}}

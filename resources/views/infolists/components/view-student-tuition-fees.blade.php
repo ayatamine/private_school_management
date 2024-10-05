@@ -7,6 +7,7 @@
     {{-- <div class="py-2 flex justify-end mb-2">
         {{ $getAction('editPartitions','aùo,e') }}
     </div> --}}
+    @if($getState() != null && count($getState()))
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
            
@@ -139,5 +140,7 @@
  
     <x-filament-actions::modals />
 </div>
-
+@else 
+<h4>{{trans('main.not_registered_yet')}}</h4>
+@endif
 </x-dynamic-component>
