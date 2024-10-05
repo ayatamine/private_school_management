@@ -48,7 +48,7 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "App/Helpers/NumberToWord.php"
+            "app/Helpers/NumberToWord.php"
         ]
     },
     "scripts": {

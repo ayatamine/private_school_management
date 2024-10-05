@@ -45,31 +45,51 @@ trait HasPayments {
                  {
                     foreach ($fee->payment_partition as $i=> $partition)
                     {
-                        //if has discounts
-                        $value_after_discount=$value_after_tax = 0;
-                        $discounts = DB::table('student_fee')
-                                    ->where('feeable_id', $fee->id)
-                                    ->where('feeable_type', $model)
-                                    ->value('discounts');
-                        $decodedDiscounts = json_decode($discounts, true);
-                     
-                        if(isset($decodedDiscounts[0]))
+                        $can_be_calculated  =false;
+                        if($model =='App\Models\TuitionFee')
                         {
-                            if($decodedDiscounts[0]['discount_type'] == 'percentage')
-                                {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
-                                }
-                                else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
-                                }
+                            if($this->termination_date ==null || $this->termination_date > $partition['due_date'])
+                            {
+                                $can_be_calculated = true;
+                            }
                         }
-                        if($this->nationality != "saudian")
+                        else //transport fee
                         {
-                            $vat = \App\Models\ValueAddedTax::first();
-                            $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
+                            if( $this->transport && ( $this->transport->termination_date == null || $this->transport->termination_date > $partition['due_date']))
+                            {
+                                $can_be_calculated = true;
+                            }
                         }
-                        $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
+                        //calculate only if the requirement is ok
+                        if($can_be_calculated)
+                        {
+                            //if has discounts
+                            $value_after_discount=$value_after_tax = 0;
+                            
+                            $discounts = DB::table('student_fee')
+                                        ->where('feeable_id', $fee->id)
+                                        ->where('feeable_type', $model)
+                                        ->value('discounts');
+                            $decodedDiscounts = json_decode($discounts, true);
+                        
+                            if(isset($decodedDiscounts[0]))
+                            {
+                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                    {
+                                        $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                    }
+                                    else{
+                                        $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
+                                    }
+                            }
+                            if($this->nationality != "saudian")
+                            {
+                                $vat = \App\Models\ValueAddedTax::first();
+                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
+                            }
+                            $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
 
+                        }
                     }
                 }
                 $total_sum+= array_sum($total);
