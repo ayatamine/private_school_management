@@ -47,10 +47,14 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $total =[];
+                @endphp
                 @foreach ($getState() as $fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
-                  
+                   {{-- if student transport has been terminated after due date --}}
+                    @if( $getRecord()->transport && $getRecord()->transport->termination_date && $getRecord()->transport->termination_date > $partition['due_date'])
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <td scope="row" class="px-6 py-4 border">
                            {{trans_choice('main.transport_fee',1)}} {{$fee->academicYear?->name}}
@@ -123,6 +127,7 @@
                         </td>
                         <td  class="px-6 py-4 border">{{ ($this->editTransportFeePartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TransportFee"]) }}</td>
                     </tr> 
+                    @endif
                   @endforeach
                  @endif
                 @endforeach

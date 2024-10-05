@@ -10,12 +10,13 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\StudentTermination;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StudentTerminationResource\Pages;
 use App\Filament\Resources\StudentTerminationResource\RelationManagers;
-use Filament\Tables\Actions\Action;
 
 class StudentTerminationResource extends Resource
 {
@@ -73,7 +74,7 @@ class StudentTerminationResource extends Resource
         return $table
             ->query(Student::query()->whereNotNull('termination_reason'))
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
+                Tables\Columns\TextColumn::make('username')->label(trans('main.name'))
                 ->searchable()
                 ->sortable(),
                 Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
@@ -93,9 +94,16 @@ class StudentTerminationResource extends Resource
                 //
             ])
             ->actions([
+                Action::make(trans('main.view'))
+                ->icon('icon-eye')
+                ->color('info')
+                ->url(fn(Student $record)=> StudentResource::getUrl('view',[$record])),
                 Tables\Actions\EditAction::make(),
                 Action::make(trans('main.restore'))
                 ->color('success')
+                ->requiresConfirmation()
+                ->modalHeading(trans('main.restore_student'))
+                ->modalDescription(trans('main.restore_student_description'))
                 ->action(function (Student $record) {
                   
                    $record->update([

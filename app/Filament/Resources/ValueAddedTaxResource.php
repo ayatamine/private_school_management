@@ -28,10 +28,10 @@ class ValueAddedTaxResource extends Resource
     {
         return trans('main.finance');
     }
-    public static function canCreate():bool 
-    {
-        return false;
-    }
+    // public static function canCreate():bool 
+    // {
+    //     return false;
+    // }
     public static function getModelLabel():string
     {
         return trans_choice('main.value_added_tax',1);

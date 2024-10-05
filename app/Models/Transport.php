@@ -33,6 +33,9 @@ class Transport extends Model
         'vehicle_id',
         'registered_by',
         'transport_fee_id',
+        'termination_date',
+        'termination_reason',
+        'terminated_by',
     ];
 
     /**

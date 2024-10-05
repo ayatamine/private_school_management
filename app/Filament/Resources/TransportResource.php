@@ -9,8 +9,11 @@ use Filament\Forms\Form;
 use App\Models\Transport;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TernaryFilter;
 use App\Filament\Resources\TransportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportResource\RelationManagers;
@@ -69,6 +72,7 @@ class TransportResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // ->query(Transport::query()->whereNull('termination_reason'))
             ->columns([
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
                     ->searchable()
@@ -82,18 +86,55 @@ class TransportResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->label(trans( 'main.registration_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')->label(trans( 'main.updated_at'))
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('termination_reason')->label(trans('main.status'))
+                    ->badge()
+                    ->formatStateUsing(fn (string $state) => $state == null ? trans("main.transportation_active")  : trans("main.transportation_inactive"))
+                    ->color(fn (string $state) => $state == null ? trans("success")  : trans("danger"))
+                    ,
+                // Tables\Columns\TextColumn::make('updated_at')->label(trans( 'main.updated_at'))
+                //     ->date()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // SelectFilter::make('termination_reason')->label(trans('main.status'))->options([
+                //     'male' => trans('main.transportation_active'),
+                //     'female' => trans('main.transportation_inactive'),
+                // ]),
+                TernaryFilter::make('terminated_at')->label(trans('main.status'))
+                    ->nullable()
+                    ->trueLabel(trans('main.transportation_active'))
+                    ->falseLabel(trans('main.transportation_inactive'))
+                    ->attribute('termination_date')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNull('termination_date'),
+                        false: fn (Builder $query) => $query->whereNotNull('termination_date'),
+                    )->default(true),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->hidden(fn (Transport $record) => $record->termination_reason != null),
+                Tables\Actions\EditAction::make()->hidden(fn (Transport $record) => $record->termination_reason != null),
+                Action::make(trans('main.restore'))
+                ->color('success')
+                ->requiresConfirmation()
+                ->modalHeading(trans('main.restore_student_transportation'))
+                ->modalDescription(trans('main.restore_student_transportation_description'))
+                ->action(function (Transport $record) {
+                  
+                   $record->update([
+                        'terminated_by'=>null,
+                        'termination_date'=>null,
+                        'termination_reason'=>null,
+                        'termination_document'=>null,
+                   ]);
+                   Notification::make()
+                                       ->title(trans('main.student_restored_success'))
+                                       ->icon('heroicon-o-document-text')
+                                       ->iconColor('success')
+                                       ->send();
+                })->hidden(fn (Transport $record) => $record->termination_reason == null),
                 Tables\Actions\DeleteAction::make(),
+                
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')

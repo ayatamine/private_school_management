@@ -1,27 +1,23 @@
 <?php
 
-namespace App\Filament\Resources\StudentTerminationResource\Pages;
+namespace App\Filament\Resources\TransportTerminationResource\Pages;
 
 use Filament\Actions;
 use App\Models\Student;
+use App\Models\Transport;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\CreateRecord;
-use App\Filament\Resources\StudentTerminationResource;
+use App\Filament\Resources\TransportTerminationResource;
 
-class CreateStudentTermination extends CreateRecord
+class CreateTransportTermination extends CreateRecord
 {
-    protected static string $resource = StudentTerminationResource::class;
+    protected static string $resource = TransportTerminationResource::class;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         
-   
         $data['terminated_by'] = Auth::id();
-        $data['course_id'] = null;
-        $data['is_approved'] = false;
-        $student = Student::findOrFail($data['student_id'])->update($data);
+        $student = Transport::whereStudentId($data['student_id'])->first()->update($data);
         Notification::make()
                             ->title(trans('main.student_termination_success'))
                             ->icon('heroicon-o-document-text')
@@ -31,5 +27,4 @@ class CreateStudentTermination extends CreateRecord
         return $data;
         
     }
-
 }
