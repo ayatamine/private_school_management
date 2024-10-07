@@ -21,7 +21,7 @@ class EditParentModel extends EditRecord
     {
         $user = User::findOrFail($data['user_id']);
         $data['national_id'] = $user->national_id;
-        $data['gender'] = $user->gender;
+        // $data['gender'] = $user->gender;
         $data['phone_number'] = $user->phone_number;
         $data['email'] = $user->email;
     

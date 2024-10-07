@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Set;
 use App\Models\Semester;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicStage;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SemesterResource\Pages;
@@ -42,6 +44,13 @@ class SemesterResource extends Resource
             ->schema([
                 Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                     ->relationship('academicYear', 'name')
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        // dd($parent);
+                        $set('academic_stage_id', AcademicStage::where('academic_year_id',$state)->get()->toArray());
+                    }),
+                Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
                     ->required(),
                 Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                     ->relationship('course', 'name')

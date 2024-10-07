@@ -186,4 +186,6 @@ return [
     'status'=>'الحالة',
     'transportation_active'=>'ساري المفعول',
     'transportation_inactive'=>'منتهي القيد',
+    'student_name'=>'اسم الطالب',
+    'transportation_inactive'=>'منتهي القيد',
 ];

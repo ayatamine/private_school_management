@@ -16,7 +16,7 @@ class CreateParentModel extends CreateRecord
      
         $user = User::create([
             'national_id' =>$data['national_id'],
-            'gender' =>$data['gender'],
+            // 'gender' =>$data['gender'],
             'phone_number' =>$data['phone_number'],
             'email' =>$data['email'],
             'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')

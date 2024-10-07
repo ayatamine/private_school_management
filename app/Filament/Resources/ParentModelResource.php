@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use Filament\Forms\Components\Section;
 
 class ParentModelResource extends Resource
 {
@@ -45,13 +46,13 @@ class ParentModelResource extends Resource
                 Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
-                    ->options(
-                        [
-                            'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
-                            ]
-                    )
-                    ->required(),
+                // Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
+                //     ->options(
+                //         [
+                //             'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
+                //             ]
+                //     )
+                //     ->required(),
                 Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                     ->required()
                     ->unique(table:'users',ignoreRecord: true)
@@ -60,13 +61,33 @@ class ParentModelResource extends Resource
                     ->required()
                     ->unique(table:'users',ignoreRecord: true)
                     ->maxLength(13),   
-                Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                    ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
-                    ->required(),        
+                // Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
+                //     ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
+                //     ->required(),        
                 Forms\Components\TextInput::make('email')->label(trans('main.email'))
                     ->maxLength(255),        
                 Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
-                    ->maxLength(255),        
+                    ->maxLength(255)        
+                    ->hiddenOn('view'),
+                Section::make(trans('main.student_info'))
+                  ->columns(2)
+                  ->schema([   
+                    Forms\Components\TextInput::make('student.username')->label(trans('main.student_name'))
+                        ->visibleOn('view'),        
+                    Forms\Components\TextInput::make('student.user.national_id')->label(trans('main.national_id'))
+                        ->visibleOn('view'),   
+                    Forms\Components\TextInput::make('student.course.name')->label(trans_choice('main.academic_course',1))
+                        ->visibleOn('view'),   
+                    Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
+                            ->options(
+                                [
+                                    'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
+                                    ]
+                            )
+                            ->visibleOn('view')
+                            ->disabled(),  
+                          
+                  ])
             ]);
     }
 
@@ -78,17 +99,17 @@ class ParentModelResource extends Resource
                 Tables\Columns\TextColumn::make('full_name')->label(trans('main.full_name'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('relation')->label(trans('main.relation'))
-                    ->formatStateUsing(fn (string $state) => trans("main.$state"))
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('relation')->label(trans('main.relation'))
+                //     ->formatStateUsing(fn (string $state) => trans("main.$state"))
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
-                    ->formatStateUsing(fn (string $state) => trans("main.$state"))
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
+                //     ->formatStateUsing(fn (string $state) => trans("main.$state"))
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('user.email')->label(trans('main.email'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
