@@ -16,6 +16,7 @@ class Designation extends Model
      */
     protected $fillable = [
         'name',
+        'is_active',
     ];
 
     /**
@@ -25,5 +26,6 @@ class Designation extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'is_active' => 'boolean',
     ];
 }

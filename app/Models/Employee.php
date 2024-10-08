@@ -29,6 +29,17 @@ class Employee extends Model
         'nationality',
         'identity_type',
         'identity_expire_date',
+        //new attr
+        'birth_date',
+        'social_status',
+        'study_degree',
+        'national_address',
+        'iban',
+        'documents',
+        'termination_reason',
+        'termination_date',
+        'termination_document',
+        'terminated_by',
     ];
 
     /**
@@ -43,6 +54,10 @@ class Employee extends Model
         'designation_id' => 'integer',
         'joining_date' => 'date',
         'identiry_expire_date' => 'date',
+        'birth_date' => 'date',
+        'termination_date' => 'date',
+        'terminated_by' => 'integer',
+        'documents' => 'array',
     ];
 
     public function user(): BelongsTo
@@ -57,6 +72,6 @@ class Employee extends Model
 
     public function designation(): BelongsTo
     {
-        return $this->belongsTo(Designation::class);
+        return $this->belongsTo(Designation::class)->whereIsActive(true);
     }
 }

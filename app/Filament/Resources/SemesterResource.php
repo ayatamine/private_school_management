@@ -4,12 +4,17 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Course;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Semester;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
 use App\Models\AcademicStage;
 use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SemesterResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -42,18 +47,27 @@ class SemesterResource extends Resource
     {
         return $form
             ->schema([
+                Section::make()
+                ->schema([
                 Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                     ->relationship('academicYear', 'name')
+                    ->default(AcademicYear::whereIsDefault(true)->first()->id)
                     ->required()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        // dd($parent);
-                        $set('academic_stage_id', AcademicStage::where('academic_year_id',$state)->get()->toArray());
-                    }),
+                    // ->live()
+                    // ->afterStateUpdated(function (Set $set, $state) {
+                    //     // dd($parent);
+                    //     $set('academic_stage_id', AcademicStage::where('academic_year_id',$state)->get()->toArray());
+                    // })
+                    ,
                 Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
+                    ->options(AcademicStage::pluck('name','id'))
+                    ->live()
                     ->required(),
                 Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
-                    ->relationship('course', 'name')
+                    // ->relationship('course', 'name')
+                    ->options(fn (Get $get): Collection => Course::query()
+                    ->where('academic_stage_id', $get('academic_stage_id'))
+                    ->pluck('name', 'id'))
                     ->required(),
                 Forms\Components\TextInput::make('name')->label(trans('main.name'))
                     ->required(),
@@ -64,6 +78,7 @@ class SemesterResource extends Resource
                     ->required(),
                 Forms\Components\Toggle::make('is_promotion_active')->label(trans('main.is_promotion_active'))
                     ->required(),
+                ])
             ]);
     }
 

@@ -13,6 +13,7 @@ class CreateEmployee extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
      
+            unset($data['age']);
             $user = User::create([
                 'national_id' =>$data['national_id'],
                 'gender' =>$data['gender'],
@@ -21,6 +22,7 @@ class CreateEmployee extends CreateRecord
                 'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
             ]);
             $data['user_id'] = $user?->id;
+            $data['joining_date'] = now();
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
         return $data;

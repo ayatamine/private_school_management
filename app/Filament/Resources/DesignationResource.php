@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\Designation;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DesignationResource\Pages;
@@ -42,8 +43,12 @@ class DesignationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->label(trans('main.name'))
-                    ->required(),
+                Section::make()
+                ->schema([
+                    Forms\Components\TextInput::make('name')->label(trans('main.name'))
+                        ->required(),
+                    Forms\Components\Toggle::make('is_active')->label(trans('main.is_designation_active')),
+                ])
             ]);
     }
 
@@ -53,6 +58,7 @@ class DesignationResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->sortable(),
+                Tables\Columns\ToggleColumn::make('is_active')->label(trans('main.is_designation_active')),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
                     ->date()
                     ->sortable(),

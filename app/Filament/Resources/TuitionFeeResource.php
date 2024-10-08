@@ -50,6 +50,7 @@ class TuitionFeeResource extends Resource
                         ->required(),
                     Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                         ->relationship('course', 'name')
+                        ->unique(ignoreRecord:true)
                         ->required(),
                     // Forms\Components\TextInput::make('payment_partition_count')->label(trans('main.payment_partition_count'))
                     //     ->required()
@@ -101,6 +102,7 @@ class TuitionFeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ReplicateAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
