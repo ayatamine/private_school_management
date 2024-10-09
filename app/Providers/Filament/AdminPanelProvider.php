@@ -11,6 +11,7 @@ use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Pages\StudentTransportation;
+use App\Filament\Resources\FinanceAccountResource;
 use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -45,6 +46,11 @@ class AdminPanelProvider extends PanelProvider
                     ->label(trans('main.school_settings'))
                     ->icon('icon-school')
                     ->url(fn (): string => SchoolSettingResource::getUrl('edit',[1])),
+                NavigationItem::make('finance_account')
+                    ->label(trans_choice('main.add_finance_account',2))
+                    ->icon('icon-finance_accounts')
+                    ->group(trans('main.finance_settings'))
+                    ->url(fn (): string => FinanceAccountResource::getUrl('create')),
             ])
             ->pages([
                 Pages\Dashboard::class,

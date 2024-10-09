@@ -25,6 +25,8 @@ class FinanceAccountResource extends Resource
     {
         return trans('main.finance');
     }
+   
+   
     public static function getModelLabel():string
     {
         return trans_choice('main.finance_account',1);

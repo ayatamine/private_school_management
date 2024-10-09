@@ -41,6 +41,16 @@ class CreateStudent extends CreateRecord
             try{
                 DB::beginTransaction();
                 $Student = Student::findOrFail(intval($data['registration_number']));
+                $Student->user->update([
+                    'national_id' =>$data['national_id'],
+                    'gender' =>$data['gender'],
+                    'phone_number' =>$data['phone_number'],
+                    'email' =>$data['email'],
+                    'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+                ]);
+                foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
+                    unset($data[$value]);
+                }
                 $Student->update([
                     "created_at" =>$data['created_at'],
                     "academic_year_id" =>$data['academic_year_id'],

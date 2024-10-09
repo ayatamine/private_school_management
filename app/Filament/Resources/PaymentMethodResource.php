@@ -23,7 +23,7 @@ class PaymentMethodResource extends Resource
     protected static ?string $navigationIcon = 'icon-payment_methods';
     public static function getNavigationGroup():string
     {
-        return trans('main.finance');
+        return trans('main.finance_settings');
     }
     public static function getModelLabel():string
     {
@@ -51,16 +51,18 @@ class PaymentMethodResource extends Resource
                     Forms\Components\TextInput::make('name')->label(trans('main.payment_method_name'))
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\Toggle::make('add_refrence_number')->label(trans('main.add_refrence_number'))
-                        ->columnSpanFull()
-                        ->default(false)
-                        ->live(),
+                    // Forms\Components\Toggle::make('add_refrence_number')->label(trans('main.add_refrence_number'))
+                    //     ->columnSpanFull()
+                    //     ->default(false)
+                    //     ->live(),
                     Forms\Components\TextInput::make('code')->label(trans('main.reference_number'))
-                        ->visible(fn (Get $get) => $get('add_refrence_number') == true)
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('is_code_required')->label(trans('main.is_reference_number_required'))
-                        ->columnSpanFull()
-                        ->visible(fn (Get $get) => $get('add_refrence_number') == true),
+                        // ->visible(fn (Get $get) => $get('add_refrence_number') == true)
+                        ->maxLength(255)
+                        ->default('PM')
+                        ->hidden(),
+                    // Forms\Components\Toggle::make('is_code_required')->label(trans('main.is_reference_number_required'))
+                    //     ->columnSpanFull()
+                    //     ->visible(fn (Get $get) => $get('add_refrence_number') == true),
                 ])
             ]);
     }
@@ -74,9 +76,9 @@ class PaymentMethodResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')->label(trans('main.payment_method_name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('code')->label(trans('main.reference_number'))
-                    ->searchable(),
-                Tables\Columns\ToggleColumn::make('is_code_required')->label(trans('main.is_reference_number_required')),
+                // Tables\Columns\TextColumn::make('code')->label(trans('main.reference_number'))
+                //     ->searchable(),
+                // Tables\Columns\ToggleColumn::make('is_code_required')->label(trans('main.is_reference_number_required')),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->date()
                     ->sortable()

@@ -29,9 +29,7 @@ return new class extends Migration
             $table->foreign('terminated_by')->references('id')->on('users');
             $table->string(column: 'full_name')->virtualAs('concat(first_name, \' \', middle_name, \' \', third_name, \' \', last_name)');
             $table->unsignedBigInteger('department_id')->nullable()->change();
-            $table->foreign('department_id')->references('id')->on('departments')->nullable()->change();
             $table->unsignedBigInteger('designation_id')->nullable()->change();
-            $table->foreign('designation_id')->references('id')->on('designations')->nullable()->change();
         });
     }
 

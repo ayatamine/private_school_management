@@ -48,7 +48,11 @@ class EmployeeResource extends Resource
                 Forms\Components\Toggle::make('new_employee')->label(trans('main.new_employee'))
                 ->live()
                 ->default(true)
-                ->hiddenOn('edit'),
+                ->hiddenOn('view')
+                ->hiddenOn('edit')
+                ->afterStateUpdated(function (Set $set, $state) {
+                    if($state == true) return redirect()->route('filament.admin.resources.employees.create');
+                }),
                 Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
                             ->preload()
                             ->options(Employee::whereNull('designation_id')->pluck('full_name', 'id'))
@@ -67,24 +71,25 @@ class EmployeeResource extends Resource
                                 $set('third_name', $employee?->third_name );
                                 $set('last_name', $employee?->last_name );
                                 $set('last_name', $employee?->last_name );
-                                $set('gender', trans("main.".$employee?->gender."") );
+                                $set('gender', $employee?->gender );
                                 $set('last_name', $employee?->last_name );
                                 $set('email', $employee?->user?->email );
                                 $set('phone_number', $employee?->user?->phone_number );
                                 $set('national_id', $employee?->user?->national_id );
+                                $set('identity_type', $employee?->identity_type );
+                                $set('identity_expire_date', date('Y-m-d',strtotime($employee?->identity_expire_date )));
                                 // $set('password', $employee?->user?->password );
 
 
-                                if($employee?->finance_document !="" ) $set('finance_document', [ $employee?->finance_document]);
+                                if($employee?->documents !="" ) $set('documents', [ $employee?->documents]);
 
-                                $set('parent_id', $employee?->parent?->id );
-                                $set('parent_relation', $employee?->parent?->relation ? trans("main.".$employee?->parent?->relation) : "");
-                                $set('parent_national_id', $employee?->parent?->user->national_id);
-                                $set('parent_email', $employee?->parent?->user->email);
-                                $set('parent_phone_number', $employee?->parent?->user->phone_number);
-                                $set('parent_gender', $employee?->parent?->user?->gender ? trans("main.".$employee?->parent?->user?->gender."") : "");
-                                //set course id
-                                $set('course_id', $employee?->course_id );
+                                $set('birth_date', date('Y-m-d',strtotime($employee?->birth_date)));
+                                $set('age',  (new Carbon($employee?->birth_date))->diffInYears(Carbon::now())." ".trans_choice('main.year',2) );
+                                $set('social_status', $employee?->social_status );
+                                $set('study_degree', $employee?->study_degree);
+                                $set('study_speciality', $employee?->study_speciality);
+                                $set('national_address', $employee?->national_address);
+                                $set('iban', $employee?->iban);
                             }),
                 Section::make()
                 ->columns(2)
@@ -104,7 +109,7 @@ class EmployeeResource extends Resource
                         ->maxLength(255), 
                     Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
                                 ->required()
-                                ->unique(table:'users',ignoreRecord: true)
+                                // ->unique(table:'users',ignoreRecord: true)
                                 ->maxLength(13),  
                     Forms\Components\Select::make('nationality')->label(trans('main.nationality'))
                         ->options(
@@ -123,9 +128,9 @@ class EmployeeResource extends Resource
                         ->required(),  
                         Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                         ->required()
-                        ->unique(table:'users',ignoreRecord: true)
+                        // ->unique(table:'users',ignoreRecord: true)
                         ->maxLength(10), 
-                    Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date')),
+                    Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date'))->required(),
 
                     
                     // Forms\Components\DatePicker::make('joining_date')->label(trans('main.joining_date')),
@@ -144,16 +149,22 @@ class EmployeeResource extends Resource
                     Forms\Components\TextInput::make('study_speciality')->label(trans('main.study_speciality')),
                     Forms\Components\TextInput::make('national_address')->label(trans('main.national_address')),
                     Forms\Components\TextInput::make('iban')->label(trans('main.iban')),
-                    Forms\Components\FileUpload::make('documents')
-                        ->label(trans('main.documents'))
-                        ->directory('employees')
-                        ->multiple(),
-                    Forms\Components\Select::make('department_id')->label(trans_choice('main.department',1))
+                    // Forms\Components\FileUpload::make('documents')
+                    //     ->label(trans('main.documents'))
+                    //     ->directory('employees')
+                    //     ->columnSpanFull()
+                    //     ->multiple(),
+                    Section::make()
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('department_id')->label(trans_choice('main.department',1))
                         ->relationship('department', 'name')
-                        ->required(),
-                    Forms\Components\Select::make('designation_id')->label(trans_choice('main.designation',1))
-                        ->relationship('designation', 'name')
-                        ->required(),
+                        ->required(fn(Get $get)=>$get('new_employee') == false),
+                        Forms\Components\Select::make('designation_id')->label(trans_choice('main.designation',1))
+                            ->relationship('designation', 'name')
+                            ->required(fn(Get $get)=>$get('new_employee') == false),
+                    ])
+                    
                 ])
                 
             ]);

@@ -26,9 +26,10 @@ return [
     'transport_fee' => 'رسوم المواصلات | رسوم المواصلات',
     'general_fee' => 'رسوم أخرى | رسوم أخرى',
     'finance_account' => 'الحسابات  | حساب ',
+    'add_finance_account' => 'اضافة حساب ',
     'concession_fee' => 'خصم الرسوم | خصم الرسوم',
     'invoice' => 'الفواتير | فاتورة',
-    'receipt_voucher' => 'سندات القبض | سند القبض',
+    'receipt_voucher' => 'سداد الرسوم | سداد الرسوم',
     'name'=>'الاسم',
     'start_date'=>'تاريخ البداية',
     'end_date'=>'تاريخ النهاية',
@@ -197,4 +198,6 @@ return [
      'age'=>'العمر',
      'year' => 'سنوات  | سنة ',
     'new_employee'=>'موظف جديد',
+    'employee_registered_successfully'=>'تم اضافة الموظف بنجاح',
+    'finance_settings'=>'اعدادات المالية',
 ];

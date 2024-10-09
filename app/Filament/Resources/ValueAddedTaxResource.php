@@ -26,7 +26,7 @@ class ValueAddedTaxResource extends Resource
     protected static ?string $navigationIcon = 'icon-vat';
     public static function getNavigationGroup():string
     {
-        return trans('main.finance');
+        return trans('main.finance_settings');
     }
     // public static function canCreate():bool 
     // {
@@ -92,16 +92,16 @@ class ValueAddedTaxResource extends Resource
                 //
             ])
             ->headerActions([
-                Action::make('sendEmail')->label(trans('main.change_tax_number'))
-                ->form([
-                    Forms\Components\TextInput::make('tax_number')->required()->label(trans('main.tax_number'))
-                    ->default(SchoolSetting::first()?->added_value_tax_number),
-                ])
-                ->color('info')
-                ->action(function (array $data) {
-                    SchoolSetting::first()->update(['added_value_tax_number'=>$data['tax_number']]);
-                })
-                ->modalSubmitAction(fn (StaticAction $action) => $action->label(trans('main.confirm')))
+                // Action::make('sendEmail')->label(trans('main.change_tax_number'))
+                // ->form([
+                //     Forms\Components\TextInput::make('tax_number')->required()->label(trans('main.tax_number'))
+                //     ->default(SchoolSetting::first()?->added_value_tax_number),
+                // ])
+                // ->color('info')
+                // ->action(function (array $data) {
+                //     SchoolSetting::first()->update(['added_value_tax_number'=>$data['tax_number']]);
+                // })
+                // ->modalSubmitAction(fn (StaticAction $action) => $action->label(trans('main.confirm')))
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
