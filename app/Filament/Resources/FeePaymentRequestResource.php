@@ -18,10 +18,10 @@ use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ReceiptVoucherResource\Pages;
+use App\Filament\Resources\FeePaymentRequestResource\Pages;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
 
-class ReceiptVoucherResource extends Resource
+class FeePaymentRequestResource extends Resource
 {
     protected static ?string $model = ReceiptVoucher::class;
 
@@ -32,16 +32,20 @@ class ReceiptVoucherResource extends Resource
     }
     public static function getModelLabel():string
     {
-        return trans_choice('main.receipt_voucher',1);
+        return trans_choice('main.fee_payment_requests',1);
     }
     public static function getNavigationLabel():string
     {
-        return trans_choice('main.receipt_voucher',2);
+        return trans_choice('main.fee_payment_requests',2);
     }
 
     public static function getPluralModelLabel():string
     {
-        return trans_choice('main.receipt_voucher',2);
+        return trans_choice('main.fee_payment_requests',2);
+    }
+    public static function canCreate():bool
+    {
+        return false;
     }
     public static function form(Form $form): Form
     {
@@ -84,8 +88,15 @@ class ReceiptVoucherResource extends Resource
                 Forms\Components\FileUpload::make('document')->label(trans('main.document')),
                 Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))
                         ->maxLength(255),
+                Forms\Components\Select::make('status')->label(trans('main.status'))
+                        ->options([
+                        'pending'=>trans('main.pending'),
+                        'paid'=>trans('main.paid'),
+                        'rejected'=>trans('main.rejected')
+                        ] ),
              
-                ])
+                ]),
+              
             ]);
     }
 
@@ -93,6 +104,8 @@ class ReceiptVoucherResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')->label(trans('main.id'))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
@@ -108,8 +121,7 @@ class ReceiptVoucherResource extends Resource
                 Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
-                    ->sortable(),
+                
             ])
             ->filters([
                 //
@@ -117,42 +129,6 @@ class ReceiptVoucherResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Action::make('print_receipt_voucher')
-                    ->icon('icon-print')
-                    ->color('info')
-                    ->label(trans('main.print_receipt_voucher'))
-                    ->action(function(ReceiptVoucher $record) {
-                        $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
-                     
-                        // $pdf = PDF::loadView('pdf.receipt_voucher', $data);
-                        // // return $pdf->download('document.pdf');
-                        // return response()->streamDownload(function () use ($pdf) {
-                        //     echo $pdf->stream();
-                        //     }, 'name.pdf');
-
-                            // $html = view('pdf.receipt_voucher',$data)->toArabicHTML();
-
-                            // $pdf = PDF::loadHTML($html)->output();
-                            
-                            // $headers = array(
-                            //     "Content-type" => "application/pdf",
-                            // );
-                            
-                            // // Create a stream response as a file download
-                            // return response()->streamDownload(
-                            //     fn () => print($pdf), // add the content to the stream
-                            //     "receipt_voucher.pdf", // the name of the file/stream
-                            //     $headers
-                            // );
-
-                            $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
-                            $pdf->simpleTables = true;
-
-                            $pdf->download('document.pdf');
-                            header("Refresh:0");
-
-                    }),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -171,9 +147,10 @@ class ReceiptVoucherResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListReceiptVouchers::route('/'),
-            'create' => Pages\CreateReceiptVoucher::route('/create'),
-            'edit' => Pages\EditReceiptVoucher::route('/{record}/edit'),
+            'index' => Pages\ListFeePaymentRequests::route('/'),
+            'create' => Pages\CreateFeePaymentRequest::route('/create'),
+            'edit' => Pages\EditFeePaymentRequest::route('/{record}/edit'),
+            'view' => Pages\ViewFeePaymentRequest::route('/{record}'),
         ];
     }
 }

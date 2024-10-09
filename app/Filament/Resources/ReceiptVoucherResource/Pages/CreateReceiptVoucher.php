@@ -13,7 +13,7 @@ class CreateReceiptVoucher extends CreateRecord
     public function mutateFormDataBeforeCreate(array $data): array
     {
         $data['registered_by'] =Auth::id();
-        $data['is_approved'] =Auth::id();
+        $data['status'] ='paid';
         return $data;
     }
 }
