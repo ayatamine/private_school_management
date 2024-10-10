@@ -210,4 +210,11 @@ return [
     'paid'=>'تم السداد',
     'rejected'=>'مرفوضة',
     'enter_reject_reason'=>'ادكر سبب الرفض',
+    'expense' => 'المصاريف  | مصروف ',
+    'income' => 'الإيرادات  | إيراد ',
+    'expense_name' => 'اسم المصروف',
+    'income_name' => 'اسم الايراد',
+    'is_tax_included' => 'شامل الضريبة المضافة؟',
+    'add_attachment' => 'اضافة مرفق',
+    'attachment' => ' مرفق',
 ];
