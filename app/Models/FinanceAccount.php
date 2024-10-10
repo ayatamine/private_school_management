@@ -18,6 +18,7 @@ class FinanceAccount extends Model
         'name',
         'type',
         'opening_balance',
+        'balance',
         'is_active',
         'is_visible',
         'bank_name',
@@ -33,6 +34,7 @@ class FinanceAccount extends Model
     protected $casts = [
         'id' => 'integer',
         'opening_balance' => 'double',
+        'balance' => 'double',
         'is_active' => 'boolean',
         'is_visible' => 'boolean',
     ];

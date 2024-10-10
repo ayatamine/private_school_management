@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateFinanceAccount extends CreateRecord
 {
     protected static string $resource = FinanceAccountResource::class;
+    public function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['balance'] = $data['opening_balance'];
+        return $data;
+    }
 }
