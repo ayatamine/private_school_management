@@ -21,7 +21,7 @@ class DepartmentResource extends Resource
     protected static ?string $navigationIcon = 'icon-department';
     public static function getNavigationGroup():string
     {
-        return trans('main.employee_settings');
+        return trans('main.human_resource');
     }
     public static function getModelLabel():string
     {

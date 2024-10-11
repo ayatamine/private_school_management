@@ -175,7 +175,7 @@ class Student extends Model
     }
     public function receiptVoucher():HasMany
     {
-        return $this->hasMany(ReceiptVoucher::class)->where('is_approved',true);
+        return $this->hasMany(ReceiptVoucher::class)->where('status','peid');
     }
     public function balance():Attribute
     {

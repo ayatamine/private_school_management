@@ -211,7 +211,6 @@ return [
     'paid'=>'تم السداد',
     'rejected'=>'مرفوضة',
     'enter_reject_reason'=>'ادكر سبب الرفض',
-<<<<<<< HEAD
     'create_transfer'=>'تحويل بين الحسابات',
     'view_transfers'=>'عرض عمليات التحويل',
     'from_account_id'=>'الحساب من ',
@@ -221,7 +220,6 @@ return [
     'created_success'=>'تم انشاء :model بنجاح',
     'transfer_operation_success'=>'تم التحويل بين الحسابات بنجاح',
     'no_enough_balance'=>'رصيد الحساب غير كافي لعملية التحويل',
-=======
     'expense' => 'المصاريف  | مصروف ',
     'income' => 'الإيرادات  | إيراد ',
     'expense_name' => 'اسم المصروف',
@@ -229,5 +227,10 @@ return [
     'is_tax_included' => 'شامل الضريبة المضافة؟',
     'add_attachment' => 'اضافة مرفق',
     'attachment' => ' مرفق',
->>>>>>> bb30b6ae093ad0cba4a5c2914c72c9b32bd762e7
+    'transfer_operation' => 'عمليات التحويل  | عملية تحويل ',
+    'human_resource' => ' ادارة الموارد البشرية ',
+    'employment_duration' => ' فترة عمل ',
+    'employee_info' => ' معلومات الموظف ',
+    'employment_start_date' => ' تاريخ بداية العمل ',
+    'employment_contract_image' => ' صورة عقد العمل ',
 ];

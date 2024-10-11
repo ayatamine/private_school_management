@@ -2,23 +2,48 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TransferResource\Pages;
-use App\Filament\Resources\TransferResource\RelationManagers;
-use App\Models\Transfer;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Get;
+use App\Models\Transfer;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\FinanceAccount;
+use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\TransferResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TransferResource\RelationManagers;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class TransferResource extends Resource
 {
     protected static ?string $model = Transfer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function getNavigationGroup():string
+    {
+        return trans('main.finance');
+    }
+   
+   
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+    public static function getModelLabel():string
+    {
+        return trans_choice('main.transfer_operation',1);
+    }
+    public static function getNavigationLabel():string
+    {
+        return trans_choice('main.transfer_operation',2);
+    }
 
+    public static function getPluralModelLabel():string
+    {
+        return trans_choice('main.transfer_operation',2);
+    }
     public static function canCreate():bool
     {
         return false;
@@ -27,18 +52,19 @@ class TransferResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('from_account_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('to_account_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('amount')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\DatePicker::make('transfer_date')
+                Forms\Components\Select::make('from_account_id')->label(trans('main.from_account_id'))
+                    ->options(FinanceAccount::whereIsActive(true)->pluck('name','id'))
+                    ->live()
                     ->required(),
-                Forms\Components\Textarea::make('note')
+                    Forms\Components\Select::make('to_account_id')->label(trans('main.to_account_id'))
+                    ->options(fn (Get $get): array =>    FinanceAccount::whereIsActive(true)->whereNot('id',$get('from_account_id'))->pluck('name','id')->toArray())
+                    ->required(),
+                Forms\Components\TextInput::make('amount')->label(trans('main.amount'))
+                    ->required()
+                    ->numeric(),
+                Forms\Components\DatePicker::make('transfer_date')->label(trans('main.date'))
+                    ->required(),
+                Forms\Components\Textarea::make('note')->label(trans('main.note'))
                     ->maxLength(65535)
                     ->columnSpanFull(),
             ]);
@@ -48,34 +74,30 @@ class TransferResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('from_account_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('fromAccount.name')->label(trans('main.from_account_id'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('to_account_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('toAccount.name')->label(trans('main.to_account_id'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('amount')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('amount')->label(trans('main.amount'))
+                    ->formatStateUsing(fn(string $state) =>$state." ".trans('main.'.env('DEFAULT_CURRENCY')) )
                     ->sortable(),
-                Tables\Columns\TextColumn::make('transfer_date')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('transfer_date')->label(trans('main.date'))
+                    ->date(),
+                Tables\Columns\TextColumn::make('note')->label(trans('main.note')),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.transfer_operation',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

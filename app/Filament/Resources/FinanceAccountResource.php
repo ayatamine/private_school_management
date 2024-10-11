@@ -131,7 +131,7 @@ class FinanceAccountResource extends Resource
                     ->options(FinanceAccount::whereIsActive(true)->pluck('name','id'))
                     ->live()
                     ->required(),
-                    Forms\Components\Select::make('to_account_id')->label(trans('main.from_account_id'))
+                    Forms\Components\Select::make('to_account_id')->label(trans('main.to_account_id'))
                     ->options(fn (Get $get): array =>    FinanceAccount::whereIsActive(true)->whereNot('id',$get('from_account_id'))->pluck('name','id')->toArray())
                     ->required(),
                     Forms\Components\TextInput::make('amount')->label(trans('main.amount'))
