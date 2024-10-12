@@ -48,12 +48,7 @@ class EmployeeResource extends Resource
     {
         return $form
             ->schema([
-                Tabs::make('Tabs')
-                ->columnSpanFull()
-                ->tabs([
-                    Tab::make('tab1')
-                        ->label(trans('main.employee_info'))
-                        ->schema([
+                
                             Forms\Components\Toggle::make('new_employee')->label(trans('main.new_employee'))
                             ->live()
                             ->default(true)
@@ -166,26 +161,7 @@ class EmployeeResource extends Resource
                                 
                     
                             ])
-                        ]),
-                    Tabs\Tab::make('Tab 2')
-                        ->label(trans('main.employment_duration'))
-                        ->schema([
-                                Forms\Components\Select::make('department_id')->label(trans_choice('main.department',1))
-                                    ->required(),
-                                Forms\Components\Select::make('designation_id')->label(trans_choice('main.designation',1))
-                                    ->required(),
-                                Forms\Components\DatePicker::make('start_date')->label(trans('main.employment_start_date')),
-                                Forms\Components\FileUpload::make('contract_image')
-                                    ->label(trans('main.employment_contract_image'))
-                                    ->image()
-                                    ->columnSpanFull(),
-                                
-                        ]),
-                    Tabs\Tab::make('Tab 3')
-                        ->schema([
-                            // ...
-                        ]),
-                ])
+                   
                
                 
             ]);

@@ -236,4 +236,6 @@ return [
     'contract_end_date' => ' تاريخ انهاء العقد ',
     'employment_contract_image' => ' صورة عقد العمل ',
     'employment_duration_active' => ' سارية العمل ',
+    'contract_end_attachment' => '  ملف مرفق انهاء العقد ',
+    'contract_end_reason' => 'سبب انهاء العقد',
 ];
