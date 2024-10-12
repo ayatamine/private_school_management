@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ class EmploymentDuration extends Model
      * @var array
      */
     protected $fillable = [
+        'employee_id',
         'department_id',
         'designation_id',
         'contract_start_date',
@@ -33,9 +35,16 @@ class EmploymentDuration extends Model
      * @var array
      */
     protected $casts = [
+        'employee_id' => 'integer',
         'designation_id' => 'integer',
         'department_id' => 'integer',
+        'contract_start_date' => 'date',
+        'contract_end_date' => 'date',
     ];
+    public function employee():BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
     public function department():BelongsTo
     {
         return $this->belongsTo(Department::class);

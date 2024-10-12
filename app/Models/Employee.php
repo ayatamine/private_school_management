@@ -8,6 +8,7 @@ use App\Models\Designation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
 {
@@ -25,8 +26,8 @@ class Employee extends Model
         'middle_name',
         'third_name',
         'last_name',
-        'department_id',
-        'designation_id',
+        // 'department_id',
+        // 'designation_id',
         'gender',
         'joining_date',
         'nationality',
@@ -54,8 +55,8 @@ class Employee extends Model
     protected $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'department_id' => 'integer',
-        'designation_id' => 'integer',
+        // 'department_id' => 'integer',
+        // 'designation_id' => 'integer',
         'joining_date' => 'date',
         'identiry_expire_date' => 'date',
         'birth_date' => 'date',
@@ -69,13 +70,17 @@ class Employee extends Model
         return $this->belongsTo(User::class,'user_id','id');
     }
 
-    public function department(): BelongsTo
+    public function employmentDuration(): HasMany
     {
-        return $this->belongsTo(Department::class);
+        return $this->hasMany(employmentDuration::class)->whereNull('contract_end_date');
     }
+    // public function department(): BelongsTo
+    // {
+    //     return $this->belongsTo(Department::class);
+    // }
 
-    public function designation(): BelongsTo
-    {
-        return $this->belongsTo(Designation::class)->whereIsActive(true);
-    }
+    // public function designation(): BelongsTo
+    // {
+    //     return $this->belongsTo(Designation::class)->whereIsActive(true);
+    // }
 }

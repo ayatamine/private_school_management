@@ -5,6 +5,8 @@ namespace App\Filament\Resources\EmployeeResource\Pages;
 use Carbon\Carbon;
 use App\Models\User;
 use Filament\Actions;
+use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\EmployeeResource;
 
@@ -42,20 +44,46 @@ class EditEmployee extends EditRecord
     }
     protected function mutateFormDataBeforeSave(array $data): array
     {
-dd($data);
-            // unset($data['age']);
-  
-            // User::findOrFail($this->record->user_id)->update([
-            //     'national_id' =>$data['national_id'],
-            //     'gender' =>$data['gender'],
-            //     'phone_number' =>$data['phone_number'],
-            //     'email' =>$data['email'],
-            //     'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
-            // ]);
-           
+
+        try{
+            unset($data['age']);
+            DB::beginTransaction();
+            $employee = $this->record;
+            //update user related
+            $employee->user->update([
+                'national_id' =>$data['national_id'],
+                'gender' =>$data['gender'],
+                'phone_number' =>$data['phone_number'],
+                'email' =>$data['email'],
+                'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+            ]);
+            foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
+                unset($data[$value]);
+            }
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
-        return $data;
+            $employee->update($data);
+           
+            $data = $employee->toArray();
+            Notification::make()
+                        ->title(trans('main.employee_updated_successfully'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('success')
+                        ->send();
+            DB::commit();
+        }
+        catch(\Exception $ex)
+        {
+            DB::rollBack();
+                    Notification::make()
+                        ->title($ex->getMessage())
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('danger')
+                        ->send();
+        }
+        $this->halt();
+        return [];
+
 
     }
 }

@@ -20,6 +20,7 @@ use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\EmployeeResource\RelationManagers\EmploymentDurationRelationManager;
 
 class EmployeeResource extends Resource
 {
@@ -63,7 +64,7 @@ class EmployeeResource extends Resource
                             }),
                             Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
                                         ->preload()
-                                        ->options(Employee::whereNull('designation_id')->pluck('full_name', 'id'))
+                                        ->options(Employee::whereDoesntHave('employmentDuration')->pluck('full_name', 'id'))
                                         ->searchable()
                                         ->columnSpanFull()
                                         ->visible(fn (Get $get) => $get('new_employee') == false )
@@ -170,11 +171,9 @@ class EmployeeResource extends Resource
                         ->label(trans('main.employment_duration'))
                         ->schema([
                                 Forms\Components\Select::make('department_id')->label(trans_choice('main.department',1))
-                                ->relationship('department', 'name')
-                                ->required(fn(Get $get)=>$get('new_employee') == false),
+                                    ->required(),
                                 Forms\Components\Select::make('designation_id')->label(trans_choice('main.designation',1))
-                                    ->relationship('designation', 'name')
-                                    ->required(fn(Get $get)=>$get('new_employee') == false),
+                                    ->required(),
                                 Forms\Components\DatePicker::make('start_date')->label(trans('main.employment_start_date')),
                                 Forms\Components\FileUpload::make('contract_image')
                                     ->label(trans('main.employment_contract_image'))
@@ -256,7 +255,7 @@ class EmployeeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EmploymentDurationRelationManager::class
         ];
     }
 
