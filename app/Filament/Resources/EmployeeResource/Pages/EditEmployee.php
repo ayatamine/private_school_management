@@ -5,6 +5,7 @@ namespace App\Filament\Resources\EmployeeResource\Pages;
 use Carbon\Carbon;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -18,6 +19,19 @@ class EditEmployee extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\Action::make('approve_employee')
+            ->visible(fn(Employee $record)=>$record->contract_end_date == null)
+                ->label(trans('main.approve_employee'))
+                ->color('success')
+                ->requiresConfirmation()
+                ->action(function(Employee $record){
+
+                    Notification::make()
+                        ->title(trans('main.employee_data_not_completed'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('danger')
+                        ->send();
+                }),
         ];
     }
     protected function mutateFormDataBeforeFill(array $data): array
@@ -64,7 +78,7 @@ class EditEmployee extends EditRecord
 
             $employee->update($data);
            
-            $data = $employee->toArray();
+            // $data = $employee->toArray();
             Notification::make()
                         ->title(trans('main.employee_updated_successfully'))
                         ->icon('heroicon-o-document-text')

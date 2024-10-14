@@ -16,6 +16,7 @@ use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Resources\SchoolSettingResource;
+use App\Filament\Resources\StudentResource;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -51,6 +52,12 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('icon-finance_accounts')
                     ->group(trans('main.finance_settings'))
                     ->url(fn (): string => FinanceAccountResource::getUrl('create')),
+                NavigationItem::make('add_student')
+                    ->label(trans('main.add_student'))
+                    ->icon('heroicon-o-plus')
+                    ->group(trans('main.student_settings'))
+                    ->parentItem(trans('main.student_registration'))
+                    ->url(fn (): string => StudentResource::getUrl('create')),
             ])
             ->pages([
                 Pages\Dashboard::class,

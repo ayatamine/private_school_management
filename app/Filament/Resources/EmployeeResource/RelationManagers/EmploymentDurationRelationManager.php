@@ -2,15 +2,18 @@
 
 namespace App\Filament\Resources\EmployeeResource\RelationManagers;
 
-use App\Models\Department;
-use App\Models\Designation;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Department;
 use Filament\Tables\Table;
+use App\Models\Designation;
+use App\Models\EmploymentDuration;
+use BladeUI\Icons\Components\Icon;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class EmploymentDurationRelationManager extends RelationManager
 {
@@ -43,6 +46,18 @@ class EmploymentDurationRelationManager extends RelationManager
                     ->label(trans('main.employment_contract_image'))
                     ->image()
                     ->columnSpanFull(),
+                Forms\Components\DatePicker::make('contract_end_date')->label(trans('main.contract_end_date'))
+                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
+                    ->required(),
+                Forms\Components\TextInput::make('contract_end_reason')->label(trans('main.contract_end_reason'))
+                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
+                    ->required(),
+                Forms\Components\TextInput::make('note')->label(trans('main.note'))
+                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null),
+                Forms\Components\FileUpload::make('attachment')
+                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
+                    ->label(trans('main.attachment'))
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -66,8 +81,37 @@ class EmploymentDurationRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null),
+                Tables\Actions\Action::make('end_duration')
+                ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null)
+                ->label(trans('main.end_employment_duration'))
+                ->icon('icon-close')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->form([
+                    Forms\Components\DatePicker::make('contract_end_date')->label(trans('main.contract_end_date'))->required(),
+                    Forms\Components\TextInput::make('contract_end_reason')->label(trans('main.contract_end_reason'))->required(),
+                    Forms\Components\TextInput::make('note')->label(trans('main.note')),
+                    Forms\Components\FileUpload::make('attachment')
+                    ->label(trans('main.attachment'))
+                    ->columnSpanFull(),
+                ])
+                ->action(function(EmploymentDuration $record,array $data){
+                    $record->update([
+                        'contract_end_date'=>$data['contract_end_date'],
+                        'contract_end_reason'=>$data['contract_end_reason'],
+                        'note'=>$data['note'],
+                        'attachment'=>$data['attachment']
+                    ]);
+
+                    Notification::make()
+                        ->title(trans('main.end_employment_duration_successfully'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('success')
+                        ->send();
+                }),
+                // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

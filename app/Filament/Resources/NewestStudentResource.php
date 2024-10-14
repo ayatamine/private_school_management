@@ -25,16 +25,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
-use App\Filament\Resources\StudentResource\Pages;
+use App\Filament\Resources\NewestStudentResource\Pages;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StudentResource\RelationManagers;
 
-class StudentResource extends Resource
+class NewestStudentResource extends Resource
 {
     protected static ?string $model = Student::class;
 
-    protected static ?string $navigationIcon = 'icon-students';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function getNavigationGroup():string
     {
@@ -46,7 +46,7 @@ class StudentResource extends Resource
     }
     public static function getNavigationLabel():string
     {
-        return trans('main.students_list');
+        return trans('main.student_registration');
     }
 
     public static function getPluralModelLabel():string
@@ -237,7 +237,7 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::query()->whereNull('termination_reason')->whereIsApproved(true))
+            ->query(Student::query()->whereNull('termination_reason')->whereIsApproved(false))
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
                     ->searchable()
@@ -261,6 +261,14 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
                     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                     ->searchable(),
+                Tables\Columns\TextColumn::make('is_approved')->label(trans('main.approvel_status'))
+                    ->badge()
+                    ->color(fn (string $state) => $state ==0 ? "danger" : "success")
+                    ->formatStateUsing(fn (string $state) => $state ==0 ? trans("main.rejected") : trans("main.approved"))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.registration_date'))
                     ->date()
                     ->sortable(),
@@ -269,9 +277,7 @@ class StudentResource extends Resource
                 SelectFilter::make('course_id')->label(trans_choice('main.academic_course',1))
                     ->relationship('course', 'name')->searchable()
                     ->preload(),
-                TernaryFilter::make('accept_status')->label(trans('main.approvel_status'))
-                    ->nullable()
-                    ->attribute('approved_at'),
+                
                 SelectFilter::make('gender')->label(trans('main.gender'))->options([
                     'male' => trans('main.male'),
                     'female' => trans('main.female'),
@@ -279,7 +285,7 @@ class StudentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -393,10 +399,10 @@ class StudentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStudents::route('/'),
-            'create' => Pages\CreateStudent::route('/create'),
-            'edit' => Pages\EditStudent::route('/{record}/edit'),
-            'view' => Pages\ViewStudent::route('/{record}'),
+            'index' => Pages\ListNewestStudents::route('/'),
+            'create' => Pages\CreateNewestStudent::route('/create'),
+            'edit' => Pages\EditNewestStudent::route('/{record}/edit'),
+            'view' => Pages\ViewNewestStudent::route('/{record}'),
         ];
     }
 }

@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends  Authenticatable implements FilamentUser, HasName
 {
-    use HasFactory, HasRoles,HasPanelShield;
+    use HasFactory, HasRoles,HasPanelShield,SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +36,9 @@ class User extends  Authenticatable implements FilamentUser, HasName
         'is_admin',
         'phone_number',
         'gender',
+        'deleted_at',
+        'is_banned',
+        'banned_at',
     ];
 
     /**
@@ -53,21 +59,35 @@ class User extends  Authenticatable implements FilamentUser, HasName
         'id' => 'integer',
         'password' => 'hashed',
         'is_admin' => 'boolean',
+        'is_banned' => 'boolean',
     ];
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        if($this->is_banned )
+        {
+            Notification::make()
+                        ->title(trans('main.you_were_banned'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('info')
+                        ->send();
+        }
+        return $this->is_banned == false;
     }
-    public function getUsernameAttribute()
+    public function username():Attribute
     {
-            if($this->student) return $this->student?->first_name .''. $this->student?->middle_name ;
-            if($this->employee) return $this->employee?->first_name .''. $this->employee?->last_name ;
-            if($this->parent) return $this->parent?->full_name ;
-            return $this->username;
+           
+            return Attribute::make(
+                get: function ($value) {
+                    if($this->student) return $this->student?->first_name .''. $this->student?->middle_name ;
+                    if($this->employee) return $this->employee?->first_name .''. $this->employee?->last_name ;
+                    if($this->parent) return $this->parent?->full_name ;
+                    return $value;
+                }
+            );
     }
     public function getFilamentName(): string
     {
-        return $this->getUsernameAttribute();
+        return $this->username;
     }
 
     public function parent(): HasOne

@@ -26,7 +26,7 @@ class StudentTerminationResource extends Resource
 
     public static function getNavigationGroup():string
     {
-        return trans_choice('main.student',2);
+        return trans('main.student_settings');
     }
     public static function getModelLabel():string
     {

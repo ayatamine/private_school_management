@@ -72,7 +72,7 @@ class Employee extends Model
 
     public function employmentDuration(): HasMany
     {
-        return $this->hasMany(employmentDuration::class)->whereNull('contract_end_date');
+        return $this->hasMany(employmentDuration::class);
     }
     // public function department(): BelongsTo
     // {
