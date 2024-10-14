@@ -256,4 +256,6 @@ return [
     'add_student' => ' اضافة طالب جديد',
     'approved' => 'مقبول',
     'rejected' => 'مرفوض',
+    'contract_end_attachment' => '  ملف مرفق انهاء العقد ',
+    'contract_end_reason' => 'سبب انهاء العقد',
 ];

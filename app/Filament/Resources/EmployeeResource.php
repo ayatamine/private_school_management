@@ -48,7 +48,12 @@ class EmployeeResource extends Resource
     {
         return $form
             ->schema([
+<<<<<<< HEAD
                 Forms\Components\Toggle::make('new_employee')->label(trans('main.new_employee'))
+=======
+                
+                            Forms\Components\Toggle::make('new_employee')->label(trans('main.new_employee'))
+>>>>>>> 8a629dc94642b76b4bc89f5020f936120af16e24
                             ->live()
                             ->default(true)
                             ->hiddenOn('view')
@@ -160,6 +165,11 @@ class EmployeeResource extends Resource
                                 
                     
                             ])
+<<<<<<< HEAD
+=======
+                   
+               
+>>>>>>> 8a629dc94642b76b4bc89f5020f936120af16e24
                 
             ]);
     }
