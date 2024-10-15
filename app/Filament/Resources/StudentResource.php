@@ -237,7 +237,7 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::query()->whereNull('termination_reason')->whereIsApproved(true))
+            ->query(Student::query()->whereNull('termination_reason'))
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
                     ->searchable()
@@ -252,6 +252,7 @@ class StudentResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
+                    ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()

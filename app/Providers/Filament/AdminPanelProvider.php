@@ -10,13 +10,12 @@ use App\Filament\Auth\Login;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
 use Filament\Http\Middleware\Authenticate;
-use App\Filament\Pages\StudentTransportation;
-use App\Filament\Resources\FinanceAccountResource;
 use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use App\Filament\Resources\NewestStudentResource;
 use App\Filament\Resources\SchoolSettingResource;
-use App\Filament\Resources\StudentResource;
+use App\Filament\Resources\FinanceAccountResource;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -57,7 +56,7 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-plus')
                     ->group(trans('main.student_settings'))
                     ->parentItem(trans('main.student_registration'))
-                    ->url(fn (): string => StudentResource::getUrl('create')),
+                    ->url(fn (): string => NewestStudentResource::getUrl('create')),
             ])
             ->pages([
                 Pages\Dashboard::class,

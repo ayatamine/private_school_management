@@ -2,23 +2,16 @@
 
 namespace App\Filament\Resources\EmployeeResource\RelationManagers;
 
-<<<<<<< HEAD
-=======
-use App\Models\EmploymentDuration;
->>>>>>> 8a629dc94642b76b4bc89f5020f936120af16e24
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Department;
 use Filament\Tables\Table;
 use App\Models\Designation;
-<<<<<<< HEAD
 use App\Models\EmploymentDuration;
 use BladeUI\Icons\Components\Icon;
 use Filament\Notifications\Notification;
-=======
 use Filament\Forms\Components\Section;
->>>>>>> 8a629dc94642b76b4bc89f5020f936120af16e24
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -58,7 +51,6 @@ class EmploymentDurationRelationManager extends RelationManager
                     ->label(trans('main.employment_contract_image'))
                     ->image()
                     ->columnSpanFull(),
-<<<<<<< HEAD
                 Forms\Components\DatePicker::make('contract_end_date')->label(trans('main.contract_end_date'))
                     ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
                     ->required(),
@@ -71,7 +63,6 @@ class EmploymentDurationRelationManager extends RelationManager
                     ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
                     ->label(trans('main.attachment'))
                     ->columnSpanFull(),
-=======
                 ]),
                 Section::make()
                 ->hidden(fn(EmploymentDuration $employmentDuration) =>$employmentDuration->contract_end_date == null)
@@ -82,7 +73,6 @@ class EmploymentDurationRelationManager extends RelationManager
                     Forms\Components\TextInput::make('attachment')->label(trans('main.contract_end_attachment'))->visibleOn('view'),
                 ])
 
->>>>>>> 8a629dc94642b76b4bc89f5020f936120af16e24
             ]);
     }
 
@@ -110,7 +100,6 @@ class EmploymentDurationRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-<<<<<<< HEAD
                 Tables\Actions\EditAction::make()->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null),
                 Tables\Actions\Action::make('end_duration')
                 ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null)
@@ -141,10 +130,8 @@ class EmploymentDurationRelationManager extends RelationManager
                         ->send();
                 }),
                 // Tables\Actions\DeleteAction::make(),
-=======
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
->>>>>>> 8a629dc94642b76b4bc89f5020f936120af16e24
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -67,7 +67,7 @@ class Student extends Model
         'email',
         'course_id',
         'parent_id',
-        'is_approved',
+        // 'is_approved',
         'approved_at',
         'registered_by',
         'registration_number',
@@ -80,6 +80,7 @@ class Student extends Model
         'termination_reason',
         'termination_document',
         'terminated_by',
+        'status',
     ];
 
     /**
@@ -92,7 +93,6 @@ class Student extends Model
         'birth_date' => 'date',
         'course_id' => 'integer',
         'parent_id' => 'integer',
-        'is_approved' => 'boolean',
         'approved_at' => 'timestamp',
         'registered_by' => 'integer',
         'user_id' => 'integer',
