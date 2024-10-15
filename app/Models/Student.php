@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Course;
 use App\Models\Invoice;
+use App\Models\Semester;
 use App\Models\Transport;
 use App\Models\GeneralFee;
 use App\Models\TuitionFee;
@@ -31,19 +31,19 @@ class Student extends Model
            if(!$student->registration_number) $student->registration_number = $student->id;
            $student->save();
             //register fees 
-            $tuitionFee = TuitionFee::whereCourseId($student->course_id)->first();
+            $tuitionFee = TuitionFee::whereCourseId($student?->semester?->course_id)->first();
             if($tuitionFee)
             {
               $student->tuitionFees()->attach($tuitionFee->id);
             }
             //create invoice for student
-            $academic_year_id = $student->course()->academic_year_id;
+            $academic_year_id = $student?->semester?->academic_year_id;
             $invoice  = Invoice::whereStudentId($student->id)->whereAcademicYearId($academic_year_id)->first();
             if(!$invoice)
             {
                 $invoice =Invoice::create([
-                    'number'=>$student->course()?->academicYear()?->name."".$student->registration_number,
-                    'name' => trans('main.fees_invoice')." ".$student->course()?->academicYear()?->name,
+                    'number'=>$student->semester?->academicYear?->name."".$student->registration_number,
+                    'name' => trans('main.fees_invoice')." ".$student?->semester?->academicYear?->name,
                     'student_id'=>$student->id,
                     'academic_year_id'=>$academic_year_id,
                 ]);
@@ -65,7 +65,7 @@ class Student extends Model
         'birth_date',
         'nationality',
         'email',
-        'course_id',
+        'semester_id',
         'parent_id',
         // 'is_approved',
         'approved_at',
@@ -91,7 +91,7 @@ class Student extends Model
     protected $casts = [
         'id' => 'integer',
         'birth_date' => 'date',
-        'course_id' => 'integer',
+        'semester_id' => 'integer',
         'parent_id' => 'integer',
         'approved_at' => 'timestamp',
         'registered_by' => 'integer',
@@ -100,9 +100,9 @@ class Student extends Model
         'opening_balance' => 'double',
     ];
     protected $appends=['username','balance'];
-    public function course(): BelongsTo
+    public function semester(): BelongsTo
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Semester::class);
     }
 
     public function parent(): BelongsTo

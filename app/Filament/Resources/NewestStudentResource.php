@@ -9,10 +9,12 @@ use App\Models\Course;
 use App\Models\Student;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use App\Models\Semester;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ParentModel;
 use App\Models\AcademicYear;
+use App\Models\AcademicStage;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
@@ -25,9 +27,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
-use App\Filament\Resources\NewestStudentResource\Pages;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\NewestStudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 
 class NewestStudentResource extends Resource
@@ -63,7 +65,7 @@ class NewestStudentResource extends Resource
                 ->hiddenOn('edit'),
                 Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
                             ->preload()
-                            ->options(Student::whereNull('course_id')->pluck('registration_number', 'id'))
+                            ->options(Student::whereNull('semester_id')->pluck('registration_number', 'id'))
                             ->searchable()
                             ->columnSpanFull()
                             ->visible(fn (Get $get) => $get('new_student') == false )
@@ -73,7 +75,7 @@ class NewestStudentResource extends Resource
                                 $student = Student::with('parent')->with('parent.user')->find($state);
                                 // dd($parent);
                                 $set('created_at', date('Y-m-d' ,strtotime($student?->created_at)) );
-                                $set('academic_year_id', $student?->course?->academic_year_id );
+                                $set('academic_year_id', $student?->semester?->academic_year_id );
                                 $set('opening_balance', $student?->opening_balance );
                                 $set('finance_document', $student?->finance_document );
                                 $set('note', $student?->note );
@@ -85,8 +87,8 @@ class NewestStudentResource extends Resource
                                 $set('parent_email', $student?->parent?->user->email);
                                 $set('parent_phone_number', $student?->parent?->user->phone_number);
                                 $set('parent_gender', $student?->parent?->user?->gender ? trans("main.".$student?->parent?->user?->gender."") : "");
-                                //set course id
-                                $set('course_id', $student?->course_id );
+                                //set semester id
+                                $set('semester_id', $student?->semester_id );
                             }),
                 //when the student already registered
                 Section::make(trans('main.radical_infos'))
@@ -99,8 +101,8 @@ class NewestStudentResource extends Resource
                             ->default(AcademicYear::where('is_registration_active',true)->where('is_default',true)?->first()?->name)
                             ->required()
                             ->live(),
-                        Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
-                            ->options(fn (Get $get): Collection => Course::query()
+                        Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))
+                            ->options(fn (Get $get): Collection => Semester::query()
                             ->where('academic_year_id', $get('academic_year_id'))
                             ->pluck('name', 'id')),
                             ])
@@ -117,9 +119,17 @@ class NewestStudentResource extends Resource
                             ->default(AcademicYear::where('is_registration_active',true)->where('is_default',true)?->first()?->name)
                             ->required()
                             ->live(),
+                        Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
+                            ->options( AcademicStage::pluck('name', 'id'))
+                            ->live(),
                         Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                             ->options(fn (Get $get): Collection => Course::query()
-                            ->where('academic_year_id', $get('academic_year_id'))
+                            ->where('academic_stage_id', $get('academic_stage_id'))
+                            ->pluck('name', 'id'))
+                            ->live(),
+                        Forms\Components\Select::make('semester')->label(trans_choice('main.semester',1))
+                            ->options(fn (Get $get): Collection => Semester::query()
+                            ->where('course_id', $get('course_id'))
                             ->pluck('name', 'id')),
                         Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))
                             ->required()
@@ -174,7 +184,7 @@ class NewestStudentResource extends Resource
                             ->afterStateUpdated(function (Set $set, $state) {
                                 $parent = ParentModel::with('user:id,national_id,email,gender,phone_number')->findOrFail($state);
                                 // dd($parent);
-                                $set('parent_relation', trans("main.$parent->relation"));
+                                $set('parent_relation', $parent->relation);
                                 $set('parent_national_id', $parent?->user->national_id);
                                 $set('parent_email', $parent?->user->email);
                                 $set('parent_phone_number', $parent?->user->phone_number);
@@ -207,7 +217,12 @@ class NewestStudentResource extends Resource
                                     ->maxLength(255),   
                             ]),
                             //parent model only to show 
-                            Forms\Components\TextInput::make('parent_relation')->label(trans('main.relation'))->disabled(),
+                            Forms\Components\Select::make('parent_relation')->label(trans('main.relation'))
+                            ->options(
+                                [
+                                    'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
+                                ]
+                            ),
                             Forms\Components\TextInput::make('parent_national_id')->label(trans('main.national_id'))->disabled(),
                             Forms\Components\TextInput::make('parent_email')->label(trans('main.email'))->disabled(),
                             Forms\Components\TextInput::make('parent_phone_number')->label(trans('main.phone_number'))->disabled(),
@@ -275,8 +290,8 @@ class NewestStudentResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('course_id')->label(trans_choice('main.academic_course',1))
-                    ->relationship('course', 'name')->searchable()
+                SelectFilter::make('semester_id')->label(trans_choice('main.semester',1))
+                    ->relationship('semester', 'name')->searchable()
                     ->preload(),
                 
                 SelectFilter::make('gender')->label(trans('main.gender'))->options([
@@ -307,8 +322,8 @@ class NewestStudentResource extends Resource
                         ->columns(2)
                         ->id('main-section')
                         ->schema([
-                                TextEntry::make('course.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                                TextEntry::make('course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
                                 TextEntry::make('first_name')->label(trans('main.first_name'))->weight(FontWeight::Bold),
                                 TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
                                 TextEntry::make(name: 'third_name')->label(trans('main.third_name'))->weight(FontWeight::Bold),

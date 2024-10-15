@@ -4,7 +4,7 @@ namespace App\Filament\Resources\StudentResource\Pages;
 
 use App\Models\User;
 use Filament\Actions;
-use App\Models\Course;
+use App\Models\Semester;
 use App\Models\ParentModel;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\StudentResource;
@@ -29,9 +29,9 @@ class EditStudent extends EditRecord
         $data['phone_number'] = $user->phone_number;
         $data['email'] = $user->email;
 
-        if( $data['course_id'])
+        if( $data['semester'])
         {
-            $data['academic_year_id'] = Course::find($data['course_id'])->academic_year_id;
+            $data['academic_year_id'] = Semester::find($data['semester_id'])->academic_year_id;
 
         }
        

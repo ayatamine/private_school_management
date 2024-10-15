@@ -54,7 +54,7 @@ class CreateStudent extends CreateRecord
                 $Student->update([
                     "created_at" =>$data['created_at'],
                     "academic_year_id" =>$data['academic_year_id'],
-                    "course_id" =>$data['course_id'],
+                    "semester_id" =>$data['semester_id'],
                     "parent_id" =>$data['parent_id'],
                     "opening_balance" =>$data['opening_balance'],
                     "finance_document" =>$data['finance_document'],
@@ -63,7 +63,7 @@ class CreateStudent extends CreateRecord
                 DB::commit();
                 DB::beginTransaction();
                 //add tuiton fees
-                $tuitionFee = TuitionFee::whereCourseId($Student->course_id)->first();
+                $tuitionFee = TuitionFee::whereCourseId($Student?->semester()?->course_id)->first();
                 if($tuitionFee)
                 {
                     $Student->tuitionFees()->sync($tuitionFee->id);

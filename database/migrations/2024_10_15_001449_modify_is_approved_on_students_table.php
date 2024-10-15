@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            // $table->enum('status',['pending','approved','rejected'])->default('pending');
-            // $table->dropColumn('is_approved');
-            // $table->dropForeign('students_course_id_foreign');
-            // $table->dropColumn('course_id');
-            $table->foreignId('semester_id')->references('id')->on('semesters')->nullable()->constrained();
+            $table->enum('status',['pending','approved','rejected'])->default('pending');
+            $table->dropColumn('is_approved');
+            $table->dropForeign('students_course_id_foreign');
+            $table->dropColumn('course_id');
+            $table->foreignId('semester_id')->nullable()->references('id')->on('semesters')->constrained();
             
         });
     }
@@ -29,7 +29,7 @@ return new class extends Migration
         Schema::table('students', function (Blueprint $table) {
             $table->dropColumn('status');
             $table->boolean('is_approved');
-            $table->unsignedBigInteger('course_id');
+            $table->foreignId('course_id')->nullable()->references('id')->on('courses')->constrained();
             $table->dropForeign('students_semester_id_foreign');
             $table->dropColumn('semester_id');
         });
