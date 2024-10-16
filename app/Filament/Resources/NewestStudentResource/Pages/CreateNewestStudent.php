@@ -63,24 +63,24 @@ class CreateNewestStudent extends CreateRecord
                 DB::commit();
                 DB::beginTransaction();
                 //add tuiton fees
-                $tuitionFee = TuitionFee::whereCourseId($Student?->semester()?->course_id)->first();
-                if($tuitionFee)
-                {
-                    $Student->tuitionFees()->sync($tuitionFee->id);
-                }
-                 //create invoice for student
-                $academic_year_id = $data['academic_year_id'];
-                $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
-                if(!$invoice)
-                {
-                    $invoice =Invoice::create([
-                        'number'=>$Student->semester?->academicYear?->name."".$Student->registration_number,
-                        'name' => trans('main.fees_invoice')." ".$Student->course?->academicYear?->name,
-                        'student_id'=>$Student->id,
-                        'academic_year_id'=>$academic_year_id,
-                    ]);
-                    $Student->invoices()->save($invoice);
-                }
+                // $tuitionFee = TuitionFee::whereCourseId($Student?->semester()?->course_id)->first();
+                // if($tuitionFee)
+                // {
+                //     $Student->tuitionFees()->sync($tuitionFee->id);
+                // }
+                //  //create invoice for student
+                // $academic_year_id = $data['academic_year_id'];
+                // $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
+                // if(!$invoice)
+                // {
+                //     $invoice =Invoice::create([
+                //         'number'=>$Student->semester?->academicYear?->name."".$Student->registration_number,
+                //         'name' => trans('main.fees_invoice')." ".$Student->course?->academicYear?->name,
+                //         'student_id'=>$Student->id,
+                //         'academic_year_id'=>$academic_year_id,
+                //     ]);
+                //     $Student->invoices()->save($invoice);
+                // }
 
                 $data = $Student->toArray();
                 Notification::make()

@@ -2,18 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ParentModelResource\Pages;
-use App\Filament\Resources\ParentModelResource\RelationManagers;
-use App\Models\ParentModel;
+use Closure;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ParentModel;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ParentModelResource\Pages;
+use App\Filament\Resources\ParentModelResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use Filament\Forms\Components\Section;
 
 class ParentModelResource extends Resource
 {
@@ -55,11 +57,17 @@ class ParentModelResource extends Resource
                 //     ->required(),
                 Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                     ->required()
-                    ->unique(table:'users',ignoreRecord: true)
+                    ->rules([
+                        fn (ParentModel $parent): Closure => function (string $attribute, $value, Closure $fail) use ($parent) {
+                            if (User::whereNationalId($value)->whereNot('id',$parent->user_id)->first()) {
+                                $fail(trans('main.national_id_used_before'));
+                            }
+                        },
+                    ])
                     ->maxLength(10),           
                 Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
                     ->required()
-                    ->unique(table:'users',ignoreRecord: true)
+                    // ->unique(table:'users',ignoreRecord: true)
                     ->maxLength(13),   
                 // Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
                 //     ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use Closure;
 use Carbon\Carbon;
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -133,6 +135,13 @@ class EmployeeResource extends Resource
                                     ->required(),  
                                     Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                     ->required()
+                                    ->rules([
+                                        fn (Employee $employee): Closure => function (string $attribute, $value, Closure $fail) use ($employee) {
+                                            if (User::whereNationalId($value)->whereNot('id',$employee->user_id)->first()) {
+                                                $fail(trans('main.national_id_used_before'));
+                                            }
+                                        },
+                                    ])
                                     // ->unique(table:'users',ignoreRecord: true)
                                     ->maxLength(10), 
                                 Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date'))->required(),

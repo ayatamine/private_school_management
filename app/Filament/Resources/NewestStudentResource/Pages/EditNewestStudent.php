@@ -28,19 +28,23 @@ class EditNewestStudent extends EditRecord
         $data['phone_number'] = $user->phone_number;
         $data['email'] = $user->email;
 
+        $data['birt_date'] = date('Y-m-d' ,strtotime($data['birth_date']));
+
         if( $data['semester_id'])
         {
             $data['academic_year_id'] = Semester::find($data['semester_id'])->academic_year_id;
+            $data['academic_stage_id'] = Semester::find($data['semester_id'])->course->academic_stage_id;
+            $data['course_id'] = Semester::find($data['semester_id'])->course_id;
 
         }
        
         
         $parent = ParentModel::find($data['parent_id']);
-        $data['parent_relation']  = $parent?->relation ? trans("main.".$parent?->relation."") : "";
+        $data['parent_relation']  = $parent?->relation ;
         $data['parent_national_id']  = $parent?->user->national_id;
         $data['parent_email']  = $parent?->user->email;
         $data['parent_phone_number']  = $parent?->user->phone_number;
-        $data['parent_gender']  = $parent?->user->gender;
+        $data['parent_gender']  =$data['parent_gender']  = $parent?->user->gender ? trans("main.".$parent?->user?->gender."") : "";
 
         if($data['nationality'] == 'saudian')
         {

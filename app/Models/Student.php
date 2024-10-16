@@ -31,24 +31,24 @@ class Student extends Model
            if(!$student->registration_number) $student->registration_number = $student->id;
            $student->save();
             //register fees 
-            $tuitionFee = TuitionFee::whereCourseId($student?->semester?->course_id)->first();
-            if($tuitionFee)
-            {
-              $student->tuitionFees()->attach($tuitionFee->id);
-            }
+            // $tuitionFee = TuitionFee::whereCourseId($student?->semester?->course_id)->first();
+            // if($tuitionFee)
+            // {
+            //   $student->tuitionFees()->attach($tuitionFee->id);
+            // }
             //create invoice for student
-            $academic_year_id = $student?->semester?->academic_year_id;
-            $invoice  = Invoice::whereStudentId($student->id)->whereAcademicYearId($academic_year_id)->first();
-            if(!$invoice)
-            {
-                $invoice =Invoice::create([
-                    'number'=>$student->semester?->academicYear?->name."".$student->registration_number,
-                    'name' => trans('main.fees_invoice')." ".$student?->semester?->academicYear?->name,
-                    'student_id'=>$student->id,
-                    'academic_year_id'=>$academic_year_id,
-                ]);
-                 $student->invoices()->save($invoice);
-            }
+            // $academic_year_id = $student?->semester?->academic_year_id;
+            // $invoice  = Invoice::whereStudentId($student->id)->whereAcademicYearId($academic_year_id)->first();
+            // if(!$invoice)
+            // {
+            //     $invoice =Invoice::create([
+            //         'number'=>$student->semester?->academicYear?->name."".$student->registration_number,
+            //         'name' => trans('main.fees_invoice')." ".$student?->semester?->academicYear?->name,
+            //         'student_id'=>$student->id,
+            //         'academic_year_id'=>$academic_year_id,
+            //     ]);
+            //      $student->invoices()->save($invoice);
+            // }
             
         });
     }

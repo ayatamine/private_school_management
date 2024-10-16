@@ -74,6 +74,9 @@ class StudentTerminationResource extends Resource
         return $table
             ->query(Student::query()->whereNotNull('termination_reason'))
             ->columns([
+                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('username')->label(trans('main.name'))
                 ->searchable()
                 ->sortable(),
