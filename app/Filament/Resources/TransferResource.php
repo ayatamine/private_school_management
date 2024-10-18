@@ -27,10 +27,10 @@ class TransferResource extends Resource
     }
    
    
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return false;
+    // }
     public static function getModelLabel():string
     {
         return trans_choice('main.transfer_operation',1);
@@ -43,6 +43,10 @@ class TransferResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.transfer_operation',2);
+    }
+    public static function getnavigationParentItem():string
+    {
+        return trans_choice('main.finance_account',2);
     }
     public static function canCreate():bool
     {

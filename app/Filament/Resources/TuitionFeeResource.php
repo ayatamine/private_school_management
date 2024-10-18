@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use Closure;
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\TuitionFee;
 use Filament\Tables\Table;
@@ -47,10 +49,18 @@ class TuitionFeeResource extends Resource
                 ->schema([
                     Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                         ->relationship('academicYear', 'name')
+                        ->live()
                         ->required(),
                     Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                         ->relationship('course', 'name')
-                        ->unique(ignoreRecord:true)
+                        ->live()
+                        ->rules([
+                            fn (TuitionFee $fee,Get $get ): Closure => function (string $attribute, $value, Closure $fail) use($fee,$get) {
+                                if (TuitionFee::whereCourseId($value)->whereAcademicYearId($get('academic_year_id'))->whereNot('id',$fee->id)->first()) {
+                                    $fail(trans('main.cannot_add_same_course_for_current_year'));
+                                }
+                            },
+                        ])
                         ->required(),
                     // Forms\Components\TextInput::make('payment_partition_count')->label(trans('main.payment_partition_count'))
                     //     ->required()
@@ -102,7 +112,10 @@ class TuitionFeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ReplicateAction::make(),
+                Tables\Actions\ReplicateAction::make()
+                ->successRedirectUrl(fn (TuitionFee $replica): string => route('filament.admin.resources.tuition-fees.edit', [
+                    'record' => $replica,
+                ])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

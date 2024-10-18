@@ -16,6 +16,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Resources\NewestStudentResource;
 use App\Filament\Resources\SchoolSettingResource;
 use App\Filament\Resources\FinanceAccountResource;
+use App\Filament\Resources\TransferResource;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -57,6 +58,11 @@ class AdminPanelProvider extends PanelProvider
                     ->group(trans('main.student_settings'))
                     ->parentItem(trans('main.student_registration'))
                     ->url(fn (): string => NewestStudentResource::getUrl('create')),
+                NavigationItem::make('transfer_operation')
+                    ->label(trans_choice('main.transfer_operation',1))
+                    ->group(trans('main.finance'))
+                    ->parentItem(trans('main.finance_account'))
+                    ->url(fn (): string => TransferResource::getUrl('list')),
             ])
             ->pages([
                 Pages\Dashboard::class,

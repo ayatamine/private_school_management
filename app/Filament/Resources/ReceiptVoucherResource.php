@@ -93,6 +93,8 @@ class ReceiptVoucherResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('student.registration_number')->label(trans_choice('main.registration_number',1))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))

@@ -269,4 +269,9 @@ return [
      'national_id_used_before' => 'تم استخدام هدا الرقم من قبل يرجى ادخال رقم اخر',
      'phone_used_before' => 'رقم الهاتف  مدرج من قبل يرجى ادخال رقم اخر',
      'update_balance' => 'تحديث الرصيد',
+     'cannot_add_same_course_for_current_year' => 'لايمكن الحفظ ، يرجى تغيير الصف الدراسي لانه مرتبط برسوم اخرى لنفس السنة',
+     'tuition_fee_reports' => 'تقارير الرسوم الدراسية  | تقرير الرسوم الدراسية ',
+     'total_fees' => 'مجموع الرسوم',
+     'total_paid_fees' => ' الرسوم المدفوعة',
+     'total_fees_discounts' => ' اجمالي الخصم',
 ];
