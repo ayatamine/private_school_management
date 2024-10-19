@@ -2,11 +2,12 @@
     <style>
         td{color: black;font-weight: 600}
     </style>
-     @if($getState() != null && count($getState()))
+    
     <div class=" relative overflow-x-auto shadow-md sm:rounded-lg">
         {{-- <div class="py-2 flex justify-end mb-2">
             {{ $getAction('editPartitions','aùo,e') }}
         </div> --}}
+        @if($getState() != null && count($getState()))
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
                
@@ -48,17 +49,16 @@
             </thead>
             <tbody>
                 @php
-                    $total =[];
+                     $total =[];
                 @endphp
                 @foreach ($getState() as $fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
-                   {{-- if student transport has been terminated after due date --}}
-                    @if( $getRecord()->transport && ($getRecord()->transport->termination_date == null || ($getRecord()->transport->termination_date > $partition['due_date'])) )
-                    
+                  {{-- if student has been terminated after due date --}}
+                    @if($getRecord()->termination_date ==null || $getRecord()->termination_date > $partition['due_date'])
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <td scope="row" class="px-6 py-4 border">
-                           {{trans_choice('main.transport_fee',1)}} {{$fee->academicYear?->name}}
+                           {{trans_choice('main.tuition_fee',1)}} {{$fee->academicYear?->name}}
                         </td>
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
@@ -69,7 +69,7 @@
                         @php
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
-                                        ->where('feeable_type', 'App\Models\TransportFee')
+                                        ->where('feeable_type', 'App\Models\TuitionFee')
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
@@ -126,7 +126,7 @@
                             @endphp
                             {{$total[$i]}}
                         </td>
-                        <td  class="px-6 py-4 border">{{ ($this->editTransportFeePartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TransportFee"]) }}</td>
+                        <td  class="px-6 py-4 border">{{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TuitionFee"]) }}</td>
                     </tr> 
                     @endif
                   @endforeach
@@ -137,6 +137,18 @@
                     <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
                         {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total_paid_fees')}}</td>
+                    <td class="px-6 py-4 border">
+                        {{$getRecord()->payments()}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.balance')}}</td>
+                    <td class="px-6 py-4 border">
+                        {{$getRecord()->balance}} 
                     </td>
                 </tr>
             </tbody>

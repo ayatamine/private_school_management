@@ -421,8 +421,10 @@ class NewestStudentResource extends Resource
                         ->columns(2)
                         ->id('main-section')
                         ->schema([
-                            TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
                                 TextEntry::make('first_name')->label(trans('main.first_name'))->weight(FontWeight::Bold),
                                 TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
                                 TextEntry::make(name: 'third_name')->label(trans('main.third_name'))->weight(FontWeight::Bold),

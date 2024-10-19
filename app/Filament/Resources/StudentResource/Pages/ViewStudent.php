@@ -50,7 +50,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
         ->form([
              //TODO: here you should put concession of the current year
                   Forms\Components\Select::make('concession_fee_id')
-                                ->label(trans('main.name'))
+                                ->label(trans_choice('main.concession_fee',1))
                                 ->options(ConcessionFee::active()->pluck('name','id'))
                                 ->required(),
         ])
@@ -89,7 +89,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
         ->form([
              //TODO: here you should put concession of the current year
                   Forms\Components\Select::make('concession_fee_id')
-                                ->label(trans('main.name'))
+                                ->label(trans_choice('main.concession_fee',1))
                                 ->options(ConcessionFee::active()->pluck('name','id'))
                                 ->required(),
         ])

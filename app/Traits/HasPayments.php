@@ -101,6 +101,10 @@ trait HasPayments {
         return null;
 
     }
+    /**
+     * calculate fees discounts for (transport / tuition) fees reports
+     * @return float
+     */
     public function calculateFeesDiscounts($model,$fee_type) {
 
         $total_sum=0;
@@ -160,4 +164,5 @@ trait HasPayments {
        return $total_sum;
 
     }
+
 }

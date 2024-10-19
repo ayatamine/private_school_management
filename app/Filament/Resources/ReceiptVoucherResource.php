@@ -16,9 +16,11 @@ use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReceiptVoucherResource\Pages;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
 
 class ReceiptVoucherResource extends Resource
@@ -102,11 +104,18 @@ class ReceiptVoucherResource extends Resource
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                    ->formatStateUsing(fn($state)=> $state == $state." ".env('DEFAULT_CURRENCY'))
+                    ->formatStateUsing(fn($state)=>  $state." ".env('DEFAULT_CURRENCY'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')->label(trans('main.approvel_status')),
+                Tables\Columns\TextColumn::make('status')->label(trans('main.approvel_status'))
+                    ->badge()
+                    ->formatStateUsing(fn($state)=> trans("main.$state"))
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'info',
+                        'paid' => 'success',
+                        'rejected' => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
                     ->date()
                     ->sortable(),
@@ -114,11 +123,34 @@ class ReceiptVoucherResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                   ->label(trans('main.status'))
+                   ->options([
+                    'pending'=>trans('main.pending'),
+                    'paid'=>trans('main.paid'),
+                    'rejected'=>trans('main.rejected'),
+                   ])
+                   
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                // Action::make('status')
+                //     ->color('primary')
+                //     ->icon('heroicon-m-check')
+                //     ->label(trans('main.change_receipt_status'))
+                //     ->form([
+                //        Forms\Components\Select::make('status')
+                //        ->label(trans('main.status'))
+                //        ->required()
+                //        ->options([
+                //         'paid'=>trans('main.paid'),
+                //         'rejected'=>trans('main.rejected'),
+                //        ])
+                //     ])
+                //     ->action(function(array $data,ReceiptVoucher $record) {
+                //         $record->update(['status'=>$data['status']]);
+                // }),
                 Action::make('print_receipt_voucher')
                     ->icon('icon-print')
                     ->color('info')
@@ -154,9 +186,13 @@ class ReceiptVoucherResource extends Resource
                             header("Refresh:0");
 
                     }),
-                Tables\Actions\DeleteAction::make(),
+                // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.receipt_voucher',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

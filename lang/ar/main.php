@@ -173,6 +173,7 @@ return [
     'total_without_taxes'=>'الاجمالي بدون ضريبة',
     'total_of_taxes'=>'اجمالي الضريبة',
     'print_receipt_voucher'=>'طباعة السند',
+    'change_receipt_status'=>'تعديل حالة الطلب',
     'receipt_voucher_info'=>'بيانات السند',
     'no_operation_found'=>'لايوجد أي عملية',
     'not_registered_yet'=>'لم يتم الاشتراك بعد',

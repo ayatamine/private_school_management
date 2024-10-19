@@ -136,7 +136,7 @@
             <tr>
                 <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total')}}</td>
                 <td class="px-6 py-4 border">
-                    {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                    {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                 </td>
             </tr>
         </tbody>

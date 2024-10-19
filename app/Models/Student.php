@@ -175,13 +175,13 @@ class Student extends Model
     }
     public function receiptVoucher():HasMany
     {
-        return $this->hasMany(ReceiptVoucher::class)->where('status','peid');
+        return $this->hasMany(ReceiptVoucher::class)->where('status','paid');
     }
     public function balance():Attribute
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees() + $this->opening_balance - $this->payments()  ." " .trans("main.".env('DEFAULT_CURRENCY'));
+                return $this->totalFees() + $this->opening_balance - $this->payments()  ." " .trans("main.".env('DEFAULT_CURRENCY')."");
             }
         );
     }

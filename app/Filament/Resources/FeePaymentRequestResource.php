@@ -19,6 +19,7 @@ use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FeePaymentRequestResource\Pages;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
 
 class FeePaymentRequestResource extends Resource
@@ -103,6 +104,7 @@ class FeePaymentRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(ReceiptVoucher::whereStatus('pending'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label(trans('main.id'))
                     ->sortable(),
@@ -127,10 +129,15 @@ class FeePaymentRequestResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn(ReceiptVoucher $rv)=> $rv->status == 'pending'),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.fee_payment_requests',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

@@ -2,17 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TuitionFeeReportsResource\Pages;
-use App\Filament\Resources\TuitionFeeReportsResource\RelationManagers;
-use App\Models\Student;
-use App\Models\TuitionFeeReports;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Student;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use App\Models\TuitionFeeReports;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TuitionFeeReportsResource\Pages;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\TuitionFeeReportsResource\RelationManagers;
 
 class TuitionFeeReportsResource extends Resource
 {
@@ -76,36 +82,77 @@ class TuitionFeeReportsResource extends Resource
                
                 Tables\Columns\TextColumn::make('total_fees')->label(trans('main.total_fees'))
                     ->getStateUsing(function(Student $record) {
-                        // return whatever you need to show
                         return $record->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
                     }),
                 Tables\Columns\TextColumn::make('total_fees_discounts')->label(trans('main.total_fees_discounts'))
                     ->getStateUsing(function(Student $record) {
-                        // return whatever you need to show
                         return $record->calculateFeesDiscounts('App\Models\TuitionFee',"tuitionFees");
                     }),
                 Tables\Columns\TextColumn::make('total_paid_fees')->label(trans('main.total_paid_fees'))
                     ->getStateUsing(function(Student $record) {
-                        // return whatever you need to show
-                        // return $record->calculateFeesDiscounts('App\Models\TuitionFee',"tuitionFees");
-                    }),
+                        return $record->payments()    ;
+                }),
                 Tables\Columns\TextColumn::make('approved_at')->label(trans('main.approved_at'))
                     ->date()
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('semester_id')->label(trans_choice('main.semester',1))
+                    ->relationship('semester', 'name')->searchable()
+                    ->preload(),
+                
+                SelectFilter::make('gender')->label(trans('main.gender'))->options([
+                    'male' => trans('main.male'),
+                    'female' => trans('main.female'),
+                ]),
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.tuition_fee_reports',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                \Filament\Infolists\Components\Section::make(trans('main.radical_infos'))
+                        ->headerActions([
+                          
+                        ])
+                        ->columns(2)
+                        ->id('main-section')
+                        ->schema([
+                                TextEntry::make('first_name')->label(trans('main.first_name'))->weight(FontWeight::Bold),
+                                TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
+                                TextEntry::make(name: 'third_name')->label(trans('main.third_name'))->weight(FontWeight::Bold),
+                                TextEntry::make('last_name')->label(trans('main.last_name'))->weight(FontWeight::Bold),
+                                TextEntry::make('parent.full_name')->label(trans('main.parent'))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
+                                TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
+                                TextEntry::make('nationality')->label(trans('main.nationality'))->weight(FontWeight::Bold),
+                                TextEntry::make('user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
+                                TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
+                        ]),
+                \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
+                        ->id('tuition_fee-section')
+                        ->schema([
 
+                                ViewEntry::make('tuitionFees')->label(trans_choice('main.tuition_fee',2))->view('infolists.components.view-student-tuition-fees-reports')
+
+                        ]),
+                       
+            ]);
+    }
     public static function getRelations(): array
     {
         return [
@@ -119,6 +166,7 @@ class TuitionFeeReportsResource extends Resource
             'index' => Pages\ListTuitionFeeReports::route('/'),
             'create' => Pages\CreateTuitionFeeReports::route('/create'),
             'edit' => Pages\EditTuitionFeeReports::route('/{record}/edit'),
+            'view' => Pages\ViewTuitionFeeReport::route('/{record}'),
         ];
     }
 }
