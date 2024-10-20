@@ -275,4 +275,7 @@ return [
      'total_fees' => 'مجموع الرسوم',
      'total_paid_fees' => ' الرسوم المدفوعة',
      'total_fees_discounts' => ' اجمالي الخصم',
+     'fees_from' => ' الرسوم أعلى من',
+     'fees_to' => ' الرسوم أقل من',
+     'total_fees_discounts' => ' اجمالي الخصم',
 ];

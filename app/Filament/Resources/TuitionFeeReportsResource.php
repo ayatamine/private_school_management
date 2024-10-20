@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TuitionFeeReportsResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\TuitionFeeReportsResource\RelationManagers;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\Filter;
 
 class TuitionFeeReportsResource extends Resource
 {
@@ -97,6 +99,9 @@ class TuitionFeeReportsResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('academic_year_id')->label(trans_choice('main.academic_year',1))
+                    ->relationship('semester.academicYear', 'name')->searchable()
+                    ->preload(),
                 SelectFilter::make('semester_id')->label(trans_choice('main.semester',1))
                     ->relationship('semester', 'name')->searchable()
                     ->preload(),
@@ -105,6 +110,22 @@ class TuitionFeeReportsResource extends Resource
                     'male' => trans('main.male'),
                     'female' => trans('main.female'),
                 ]),
+                // Filter::make('created_at')
+                // ->form([
+                //     TextInput::make('from')->numeric()->label(trans('main.fees_from')),
+                //     TextInput::make('to')->numeric()->label(trans('main.fees_to')),
+                // ])
+                // ->query(function (Builder $query, array $data): Builder {
+                //     return $query
+                //         ->when(
+                //             $data['to'],
+                //             fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                //         )
+                //         ->when(
+                //             $data['created_until'],
+                //             fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                //         );
+                // })
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
