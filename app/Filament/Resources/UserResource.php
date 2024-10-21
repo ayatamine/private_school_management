@@ -64,6 +64,9 @@ class UserResource extends Resource
                             Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
                                     ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
                                     ->required(), 
+                            Forms\Components\CheckboxList::make('roles')
+                                ->relationship('roles', 'name')
+                                ->searchable()
                         ]
                     )
             ]);

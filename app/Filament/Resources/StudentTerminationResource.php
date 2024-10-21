@@ -16,9 +16,10 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StudentTerminationResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Filament\Resources\StudentTerminationResource\RelationManagers;
 
-class StudentTerminationResource extends Resource
+class StudentTerminationResource extends Resource implements HasShieldPermissions 
 {
     protected static ?string $model = Student::class;
 
@@ -40,6 +41,15 @@ class StudentTerminationResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.termination',2);
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+        ];
     }
     public static function form(Form $form): Form
     {

@@ -37,13 +37,25 @@ use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\NewestStudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class NewestStudentResource extends Resource
+class NewestStudentResource extends Resource implements HasShieldPermissions 
 {
     protected static ?string $model = Student::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
-
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'approve_registeration'
+        ];
+    }
     public static function getNavigationGroup():string
     {
         return trans('main.student_settings');
