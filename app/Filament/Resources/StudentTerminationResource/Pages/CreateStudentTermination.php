@@ -17,7 +17,7 @@ class CreateStudentTermination extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         
-        if(Student::findOrFail($data['student_id'])->balance != 0)
+        if(Student::findOrFail($data['student_id'])->balance != 0 && auth()->user()->can('terminate_student_private'))
         {
             Notification::make()
                 ->title(trans('main.student_termination_balance_error'))

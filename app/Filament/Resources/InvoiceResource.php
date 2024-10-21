@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use MPDF;
 use PDF;
 use Filament\Forms;
@@ -17,7 +18,7 @@ use App\Filament\Resources\InvoiceResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
 
-class InvoiceResource extends Resource
+class InvoiceResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Invoice::class;
 
@@ -42,6 +43,14 @@ class InvoiceResource extends Resource
     public static  function canCreate():bool
     {
         return false;
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'update',
+        ];
     }
     public static function form(Form $form): Form
     {

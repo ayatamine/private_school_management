@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\JobResource\Pages;
 use App\Filament\Resources\JobResource\RelationManagers;
 use App\Models\Job;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,13 +14,33 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class JobResource extends Resource
+class JobResource extends Resource  
 {
     protected static ?string $model = Job::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static bool $shouldRegisterNavigation = false;
+    public static function getNavigationGroup():string
+    {
+        return trans('main.human_resource');
+    }
+    public static function getModelLabel():string
+    {
+        return trans_choice('main.job',1);
+    }
+    public static function getNavigationLabel():string
+    {
+        return trans_choice('main.job',2);
+    }
 
+    public static function getPluralModelLabel():string
+    {
+        return trans_choice('main.job',2);
+    }
+    public static  function canCreate():bool
+    {
+        return false;
+    }
     public static function form(Form $form): Form
     {
         return $form

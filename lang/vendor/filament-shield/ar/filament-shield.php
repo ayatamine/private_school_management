@@ -78,5 +78,7 @@ return [
         'replicate' => 'استنساخ',
         'approve_registeration' => 'قبول / رفض الطالب',
         'termination' => 'انهاء القيد',
+        'approve_employee_registeration' => 'اعتماد اضافة موظف',
+        'finish_employee_duration' => 'انهاء فترة عمل',
     ],
 ];

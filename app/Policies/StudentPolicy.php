@@ -15,7 +15,7 @@ class StudentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_student::termination');
+        return $user->can('view_any_tuition::fee::reports');
     }
 
     /**
@@ -23,7 +23,7 @@ class StudentPolicy
      */
     public function view(User $user, Student $student): bool
     {
-        return $user->can('view_student::termination');
+        return $user->can('view_tuition::fee::reports');
     }
 
     /**
@@ -31,7 +31,7 @@ class StudentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_student::termination');
+        return $user->can('create_tuition::fee::reports');
     }
 
     /**
@@ -39,7 +39,7 @@ class StudentPolicy
      */
     public function update(User $user, Student $student): bool
     {
-        return $user->can('update_student::termination');
+        return $user->can('update_tuition::fee::reports');
     }
 
     /**
@@ -47,7 +47,7 @@ class StudentPolicy
      */
     public function delete(User $user, Student $student): bool
     {
-        return $user->can('{{ Delete }}');
+        return $user->can('delete_tuition::fee::reports');
     }
 
     /**
@@ -55,7 +55,7 @@ class StudentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('{{ DeleteAny }}');
+        return $user->can('delete_any_tuition::fee::reports');
     }
 
     /**
@@ -63,7 +63,7 @@ class StudentPolicy
      */
     public function forceDelete(User $user, Student $student): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_tuition::fee::reports');
     }
 
     /**
@@ -71,7 +71,7 @@ class StudentPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_tuition::fee::reports');
     }
 
     /**
@@ -79,7 +79,7 @@ class StudentPolicy
      */
     public function restore(User $user, Student $student): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_tuition::fee::reports');
     }
 
     /**
@@ -87,7 +87,7 @@ class StudentPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_tuition::fee::reports');
     }
 
     /**
@@ -95,14 +95,19 @@ class StudentPolicy
      */
     public function replicate(User $user, Student $student): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_tuition::fee::reports');
     }
 
     /**
      * Determine whether the user can reorder.
      */
-    public function reorder(User $user): bool
+    public function approve_registeration(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('approve_registeration_newest::student');
+    }
+    public function terminate_student_private(User $user): bool
+    {
+        return $user->can('terminate_student_private::student');
     }
 }
+

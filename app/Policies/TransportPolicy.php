@@ -15,7 +15,7 @@ class TransportPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_transport');
+        return $user->can('view_any_transport::termination');
     }
 
     /**
@@ -23,7 +23,7 @@ class TransportPolicy
      */
     public function view(User $user, Transport $transport): bool
     {
-        return $user->can('view_transport');
+        return $user->can('view_transport::termination');
     }
 
     /**
@@ -31,7 +31,7 @@ class TransportPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_transport');
+        return $user->can('create_transport::termination');
     }
 
     /**
@@ -39,7 +39,7 @@ class TransportPolicy
      */
     public function update(User $user, Transport $transport): bool
     {
-        return $user->can('update_transport');
+        return $user->can('update_transport::termination');
     }
 
     /**
@@ -47,7 +47,7 @@ class TransportPolicy
      */
     public function delete(User $user, Transport $transport): bool
     {
-        return $user->can('delete_transport');
+        return $user->can('delete_transport::termination');
     }
 
     /**
@@ -55,7 +55,7 @@ class TransportPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_transport');
+        return $user->can('delete_any_transport::termination');
     }
 
     /**
@@ -63,7 +63,7 @@ class TransportPolicy
      */
     public function forceDelete(User $user, Transport $transport): bool
     {
-        return $user->can('force_delete_transport');
+        return $user->can('force_delete_transport::termination');
     }
 
     /**
@@ -71,7 +71,7 @@ class TransportPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_transport');
+        return $user->can('force_delete_any_transport::termination');
     }
 
     /**
@@ -79,7 +79,7 @@ class TransportPolicy
      */
     public function restore(User $user, Transport $transport): bool
     {
-        return $user->can('restore_transport');
+        return $user->can('restore_transport::termination');
     }
 
     /**
@@ -87,7 +87,7 @@ class TransportPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_transport');
+        return $user->can('restore_any_transport::termination');
     }
 
     /**
@@ -95,7 +95,7 @@ class TransportPolicy
      */
     public function replicate(User $user, Transport $transport): bool
     {
-        return $user->can('replicate_transport');
+        return $user->can('replicate_transport::termination');
     }
 
     /**
@@ -103,6 +103,6 @@ class TransportPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_transport');
+        return $user->can('reorder_transport::termination');
     }
 }

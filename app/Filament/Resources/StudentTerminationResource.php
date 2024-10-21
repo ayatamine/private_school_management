@@ -42,6 +42,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     {
         return trans_choice('main.termination',2);
     }
+
     public static function getPermissionPrefixes(): array
     {
         return [
@@ -49,6 +50,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
             'view_any',
             'create',
             'update',
+            'terminate_student_private::student'
         ];
     }
     public static function form(Form $form): Form

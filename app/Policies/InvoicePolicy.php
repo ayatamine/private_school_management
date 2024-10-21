@@ -31,7 +31,7 @@ class InvoicePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_invoice');
+        return $user->can('{{ Create }}');
     }
 
     /**
@@ -47,7 +47,7 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        return $user->can('delete_invoice');
+        return $user->can('{{ Delete }}');
     }
 
     /**
@@ -55,7 +55,7 @@ class InvoicePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_invoice');
+        return $user->can('{{ DeleteAny }}');
     }
 
     /**
@@ -63,7 +63,7 @@ class InvoicePolicy
      */
     public function forceDelete(User $user, Invoice $invoice): bool
     {
-        return $user->can('force_delete_invoice');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class InvoicePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_invoice');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class InvoicePolicy
      */
     public function restore(User $user, Invoice $invoice): bool
     {
-        return $user->can('restore_invoice');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class InvoicePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_invoice');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class InvoicePolicy
      */
     public function replicate(User $user, Invoice $invoice): bool
     {
-        return $user->can('replicate_invoice');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,6 @@ class InvoicePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_invoice');
+        return $user->can('{{ Reorder }}');
     }
 }

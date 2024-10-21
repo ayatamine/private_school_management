@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Closure;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -24,10 +25,23 @@ use App\Filament\Resources\EmployeeResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\EmployeeResource\RelationManagers\EmploymentDurationRelationManager;
 
-class EmployeeResource extends Resource
+class EmployeeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Employee::class;
 
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'approve_employee_registeration',
+            'finish_employee_duration'
+        ];
+    }
     protected static ?string $navigationIcon = 'icon-employees';
     public static function getNavigationGroup():string
     {
