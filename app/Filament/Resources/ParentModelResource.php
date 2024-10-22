@@ -168,6 +168,7 @@ class ParentModelResource extends Resource
             'index' => Pages\ListParentModels::route('/'),
             'create' => Pages\CreateParentModel::route('/create'),
             'edit' => Pages\EditParentModel::route('/{record}/edit'),
+            'view' => Pages\EditParentModel::route('/{record}'),
         ];
     }
 }

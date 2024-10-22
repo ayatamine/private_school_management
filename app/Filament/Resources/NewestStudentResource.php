@@ -193,9 +193,17 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                             ->required()
                             ->rules([
-                                fn (): Closure => function (string $attribute, $value, Closure $fail) {
-                                    if (User::whereNationalId($value)->first()) {
-                                        $fail(trans('main.national_id_used_before'));
+                                fn (Student $student): Closure => function (string $attribute, $value, Closure $fail) use ($student) {
+                                  
+                                    if($student?->id)
+                                    {
+                                        if (User::whereNationalId($value)->whereNot('id',$student->user_id)->first() ) {
+                                            $fail(trans('main.national_id_used_before'));
+                                        }
+                                    }else{
+                                        if (User::whereNationalId($value)->first() ) {
+                                            $fail(trans('main.national_id_used_before'));
+                                        }
                                     }
                                 },
                             ])
@@ -362,9 +370,11 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 ->form([
                     Forms\Components\Select::make(name: 'status')->label(trans('main.approvel_status'))
                     ->options(['approved'=>trans('main.approve'), 'rejected'=>trans('main.reject')])
+                    ->live()
                     ->required(),  
                     Forms\Components\DatePicker::make(name: 'approved_at')->label(trans('main.approvel_date'))
-                    ->required(),  
+                    ->required()
+                    ->hidden(fn(Get $get)=>$get('status') == "rejected"),  
                 ])
                 ->action(function(Student $Student,array $data){
                     
@@ -379,6 +389,15 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             {
                                 $Student->tuitionFees()->sync($tuitionFee->id);
                             }
+                            // add concession fees
+                           
+                            $discounts = $tuitionFee->payment_partition;
+                           
+                            $discounts[0]['discount_type'] = "percentage";
+                            $discounts[0]['discount_value'] = 0;
+        
+                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$Student->id]);
+                          
                             //create invoice for student
                             $academic_year_id = $Student->semester?->academicYear?->id;
                             $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();

@@ -32,6 +32,7 @@ use Filament\Infolists\Components\ViewEntry;
 use App\Filament\Resources\StudentResource\Pages;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Components\TextEntry\TextEntrySize;
 use App\Filament\Resources\StudentResource\RelationManagers;
 
 class StudentResource extends Resource
@@ -178,9 +179,17 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                             ->required()
                             ->rules([
-                                fn (Student $student ): Closure => function (string $attribute, $value, Closure $fail) use($student) {
-                                    if (User::whereNationalId($value)->whereNot('id',$student->user_id)->first()) {
-                                        $fail(trans('main.national_id_used_before'));
+                                fn (Student $student): Closure => function (string $attribute, $value, Closure $fail) use ($student) {
+                                  
+                                    if($student?->id)
+                                    {
+                                        if (User::whereNationalId($value)->whereNot('id',$student->user_id)->first() ) {
+                                            $fail(trans('main.national_id_used_before'));
+                                        }
+                                    }else{
+                                        if (User::whereNationalId($value)->first() ) {
+                                            $fail(trans('main.national_id_used_before'));
+                                        }
                                     }
                                 },
                             ])
@@ -265,9 +274,11 @@ class StudentResource extends Resource
                     ->schema([ Grid::make()
                      ->schema([
                         Forms\Components\TextInput::make('opening_balance')->label(trans('main.opening_balance'))
-                            ->numeric(),
+                            ->numeric()
+                            ->columnSpanFull(),
                         Forms\Components\FileUpload::make(name: 'finance_document')->label(trans('main.document'))
-                            ->directory('students_financial_documents'),
+                            ->directory('students_financial_documents')
+                            ->columnSpanFull(),
                         Forms\Components\Textarea::make('note')->label(trans('main.note'))
                             ->columnSpanFull()
                             ->maxLength(255),
@@ -275,7 +286,7 @@ class StudentResource extends Resource
                 ])
                 ])
                 // ->visible(fn (Get $get) => $get('new_student') == false )
-                ->hidden()
+                // ->hidden()
             ]);
     }
 
@@ -352,6 +363,13 @@ class StudentResource extends Resource
                         ->columns(2)
                         ->id('main-section')
                         ->schema([
+                                TextEntry::make('registration_number')->label(trans('main.registration_number'))
+                                        ->formatStateUsing(fn($state)=>$state."#")
+                                        ->weight(FontWeight::Bold)
+                                        ->size(TextEntrySize::Large)
+                                        // ->badge()
+                                        ->color('danger')
+                                        ->columnSpanFull(),
                                 TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
                                 TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
                                 TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),

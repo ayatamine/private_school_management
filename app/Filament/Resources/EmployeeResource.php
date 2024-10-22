@@ -151,8 +151,15 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                     ->required()
                                     ->rules([
                                         fn (Employee $employee): Closure => function (string $attribute, $value, Closure $fail) use ($employee) {
-                                            if (User::whereNationalId($value)->whereNot('id',$employee->user_id)->first()) {
-                                                $fail(trans('main.national_id_used_before'));
+                                            if($employee?->id)
+                                            {
+                                                if (User::whereNationalId($value)->whereNot('id',$employee->user_id)->first() ) {
+                                                    $fail(trans('main.national_id_used_before'));
+                                                }
+                                            }else{
+                                                if (User::whereNationalId($value)->first() ) {
+                                                    $fail(trans('main.national_id_used_before'));
+                                                }
                                             }
                                         },
                                     ])

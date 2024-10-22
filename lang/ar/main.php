@@ -144,7 +144,7 @@ return [
     'value_after_discount'=>'القيمة بعد الخصم',
     'tax_value'=>'قيمة الضريبة',
     'total'=>'اجمالي المبلغ',
-    'edit_partition'=>'تعديل الأقساط | تعديل قسط',
+    'edit_partition'=>'تعديل الخصوم | تعديل الخصم',
     'action'=>'اجراء',
     'partition_updated_successfully'=>'تم تحديث القسط بنجاح',
     'account_ballance'=>'رصيد الحساب',
