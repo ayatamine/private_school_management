@@ -203,6 +203,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->maxLength(10),           
                         Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
                             ->required()
+                            ->numeric()
                             // ->unique(table:'users',ignoreRecord: true)
                             ->maxLength(13),   
                         Forms\Components\TextInput::make('email')->label(trans('main.email'))

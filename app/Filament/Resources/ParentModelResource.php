@@ -59,9 +59,17 @@ class ParentModelResource extends Resource
                     ->required()
                     ->rules([
                         fn (ParentModel $parent): Closure => function (string $attribute, $value, Closure $fail) use ($parent) {
-                            if (User::whereNationalId($value)->whereNot('id',$parent->user_id)->first()) {
-                                $fail(trans('main.national_id_used_before'));
+                            if($parent?->id)
+                            {
+                                if (User::whereNationalId($value)->whereNot('id',$parent->user_id)->first() ) {
+                                    $fail(trans('main.national_id_used_before'));
+                                }
+                            }else{
+                                if (User::whereNationalId($value)->first() ) {
+                                    $fail(trans('main.national_id_used_before'));
+                                }
                             }
+                            
                         },
                     ])
                     ->maxLength(10),           
@@ -73,6 +81,7 @@ class ParentModelResource extends Resource
                 //     ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
                 //     ->required(),        
                 Forms\Components\TextInput::make('email')->label(trans('main.email'))
+                    ->email()     
                     ->maxLength(255),        
                 Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                     ->maxLength(255)        
