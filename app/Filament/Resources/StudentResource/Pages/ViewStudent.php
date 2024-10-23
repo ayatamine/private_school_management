@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\StudentResource\Pages;
 
+use MPDF;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
@@ -9,6 +10,8 @@ use App\Models\TuitionFee;
 use App\Models\ParentModel;
 use Filament\Actions\Action;
 use App\Models\ConcessionFee;
+use App\Models\SchoolSetting;
+use App\Models\ReceiptVoucher;
 use Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
 use Filament\Forms\Contracts\HasForms;
@@ -51,7 +54,59 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
              //TODO: here you should put concession of the current year
                   Forms\Components\Select::make('concession_fee_id')
                                 ->label(trans_choice('main.concession_fee',1))
-                                ->options(ConcessionFee::active()->pluck('name','id'))
+                                ->options([...ConcessionFee::active()->pluck('name','id'),0])
+                                ->required(),
+        ])
+        ->action(function (array $arguments,array $data) {
+            $fee =TuitionFee::findOrFail($arguments['fee_id']);
+            $payment_partition = $fee->payment_partition;
+            if($data['concession_fee_id'] == 0)
+            {
+                $discounts=$payment_partition;
+
+                $discounts[0]['discount_type'] = "percentage";
+                $discounts[0]['discount_value'] = 0;
+
+                DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type']]);
+            }
+            else 
+            {
+                $concession_fee = ConcessionFee::findOrFail($data['concession_fee_id']);
+                
+                if(array_key_exists($arguments['partition'],$payment_partition))
+                {
+                
+                    $discounts=$payment_partition;
+                    // foreach($payment_partition as $key=>$value)
+                    // {
+                    //     $discounts[$key] = $value;
+                    // }
+                    $discounts[0]['discount_type'] = $concession_fee->type;
+                    $discounts[0]['discount_value'] = $concession_fee->value;
+
+                    DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type']]);
+                }
+            }
+            Notification::make()
+            ->title(trans('main.partition_updated_successfully'))
+            ->icon('heroicon-o-document-text')
+            ->iconColor('success')
+            ->send();
+            return redirect(request()->header('Referer'));
+            // dd($fee);
+            // DB::update('update student_fee set name = ? where id = ?',[$name,$arguments['fee_id']]);
+            
+        });
+    }
+    public function editTransportFeePartitions(): Action
+    {
+        return Action::make('editTransportFeePartitions')
+        ->label(trans_choice('main.edit_partition',1))
+        ->form([
+             //TODO: here you should put concession of the current year
+                  Forms\Components\Select::make('concession_fee_id')
+                                ->label(trans_choice('main.concession_fee',1))
+                                ->options([...ConcessionFee::active()->pluck('name','id'),0])
                                 ->required(),
         ])
         ->action(function (array $arguments,array $data) {
@@ -82,43 +137,32 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             
         });
     }
-    public function editTransportFeePartitions(): Action
+    public function printReceipt(): Action
     {
-        return Action::make('editTransportFeePartitions')
-        ->label(trans_choice('main.edit_partition',1))
-        ->form([
-             //TODO: here you should put concession of the current year
-                  Forms\Components\Select::make('concession_fee_id')
-                                ->label(trans_choice('main.concession_fee',1))
-                                ->options(ConcessionFee::active()->pluck('name','id'))
-                                ->required(),
-        ])
-        ->action(function (array $arguments,array $data) {
-            $concession_fee = ConcessionFee::findOrFail($data['concession_fee_id']);
-            $fee =TuitionFee::findOrFail($arguments['fee_id']);
-            $payment_partition = $fee->payment_partition;
-            if(array_key_exists($arguments['partition'],$payment_partition))
-            {
-               
-                $discounts=$payment_partition;
-                // foreach($payment_partition as $key=>$value)
-                // {
-                //     $discounts[$key] = $value;
-                // }
-                $discounts[0]['discount_type'] = $concession_fee->type;
-                $discounts[0]['discount_value'] = $concession_fee->value;
+        try{
+        return Action::make('print_receipt_voucher')
+                    ->icon('icon-print')
+                    ->color('primary')
+                    ->label(trans('main.print_receipt_voucher'))
+                    ->action(function(array $arguments,array $data) {
+                        
+                        $data = ['receipt' => ReceiptVoucher::find($arguments['payment']),'settings'=>SchoolSetting::first()];
+                            $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
+                            $pdf->simpleTables = true;
 
-                DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type']]);
-            }
+                            $pdf->download('document.pdf');
+                            header("Refresh:0");
+
+                    });
             Notification::make()
             ->title(trans('main.partition_updated_successfully'))
             ->icon('heroicon-o-document-text')
             ->iconColor('success')
             ->send();
-            return redirect(request()->header('Referer'));
-            // dd($fee);
-            // DB::update('update student_fee set name = ? where id = ?',[$name,$arguments['fee_id']]);
-            
-        });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
     }
 }

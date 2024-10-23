@@ -31,6 +31,8 @@
         #carousel-inside{
           height: calc(100vh - 164px);
         }
+        [x-cloak] { display: none !important; }
+
       </style>
       <!-- ==== WOW JS ==== -->
       <script src="{{asset('landing/assets/js/wow.min.js')}}"></script>

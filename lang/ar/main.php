@@ -56,6 +56,7 @@ return [
     'is_promotion_active'=>'تفعيل الترفيع',
     'menu'=>'قائمة ',
     'print'=>'طباعة',
+    'new_receipt_payment'=>'سداد جديد',
     'first_name'=>'الاسم الأول',
     'last_name'=>'الاسم الاخير',
     'third_name'=>'الاسم الثالث',

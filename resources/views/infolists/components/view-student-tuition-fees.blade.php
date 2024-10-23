@@ -8,7 +8,7 @@
         {{ $getAction('editPartitions','aùo,e') }}
     </div> --}}
     @if($getState() != null && count($getState()))
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border">
+    <table class="w-full text-sm text-right rtl:text-left text-gray-500 dark:text-gray-400 border">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
            
             <tr>
@@ -126,7 +126,10 @@
                         @endphp
                         {{$total[$i]}}
                     </td>
-                    <td  class="px-6 py-4 border">{{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TuitionFee"]) }}</td>
+                    <td  class="px-6 py-4 border">
+                        {{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TuitionFee"]) }}
+                        {{-- {{ ($this->printReceipt)(['fee_id' => $fee->id]) }} --}}
+                    </td>
                 </tr> 
                 @endif
               @endforeach
