@@ -215,7 +215,7 @@
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2">
                         {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student->registration_number }}</span> <br><br>
-                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $receipt?->student?->course?->name }}</span> <br>
+                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $receipt?->student?->semester?->course?->name }}</span> <br>
                     </td>
                 </tr>
                 

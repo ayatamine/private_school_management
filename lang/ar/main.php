@@ -279,4 +279,6 @@ return [
      'fees_from' => ' الرسوم أعلى من',
      'fees_to' => ' الرسوم أقل من',
      'total_fees_discounts' => ' اجمالي الخصم',
+     'print_all_fees' => ' طباعة فاتورة الرسوم',
+     'fees_invoice' => ' فاتورة الرسوم',
 ];

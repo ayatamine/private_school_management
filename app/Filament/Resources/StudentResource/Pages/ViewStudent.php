@@ -6,6 +6,7 @@ use MPDF;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Student;
 use App\Models\TuitionFee;
 use App\Models\ParentModel;
 use Filament\Actions\Action;
@@ -24,11 +25,31 @@ use Filament\Actions\Concerns\InteractsWithActions;
 
 class ViewStudent extends ViewRecord  implements  HasActions,HasForms
 {
-    use InteractsWithActions;
+    use InteractsWithActions; use InteractsWithForms;
     protected static string $resource = StudentResource::class;
     protected static string $view = 'filament.resources.students.pages.view-student';
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('print_all_fees')
+                    ->color('info')
+                    ->label(trans('main.print_all_fees'))
+                    ->action(function(array $arguments,array $data) {
+                        
+                        $data = ['student' => $this->record,'settings'=>SchoolSetting::first()];
+                            $pdf = MPDF::loadView('pdf.all_fees', $data);
+                            $pdf->simpleTables = true;
 
+                            $pdf->download(`all_fees_for_student_{{$this->record->username}}.pdf`);
+                            header("Refresh:0");
 
+                    })
+        ];
+    }
+    public function getFormStatePath(): string
+    {
+        return 'form';
+    }
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $user = User::findOrFail($data['user_id']);
@@ -140,13 +161,12 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
     public function printReceipt(): Action
     {
         try{
-        return Action::make('print_receipt_voucher')
+        return Action::make('printReceipt')
                     ->icon('icon-print')
                     ->color('primary')
                     ->label(trans('main.print_receipt_voucher'))
                     ->action(function(array $arguments,array $data) {
-                        
-                        $data = ['receipt' => ReceiptVoucher::find($arguments['payment']),'settings'=>SchoolSetting::first()];
+                        $data = ['receipt' => ReceiptVoucher::find($arguments['payment_id']),'settings'=>SchoolSetting::first()];
                             $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
                             $pdf->simpleTables = true;
 
@@ -154,11 +174,6 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                             header("Refresh:0");
 
                     });
-            Notification::make()
-            ->title(trans('main.partition_updated_successfully'))
-            ->icon('heroicon-o-document-text')
-            ->iconColor('success')
-            ->send();
                 }
                 catch(\Exception $ex)
                 {
