@@ -28,7 +28,7 @@ class CreateStudentTermination extends CreateRecord
             return $data;
         }
         $data['terminated_by'] = Auth::id();
-        $data['course_id'] = null;
+        $data['semester_id'] = null;
         $data['is_approved'] = false;
         $student = Student::findOrFail($data['student_id'])->update($data);
         Notification::make()

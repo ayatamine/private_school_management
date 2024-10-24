@@ -136,6 +136,7 @@ return [
     'termination_reason'=>'سبب الانهاء',
     'termination_date'=>'تاريخ الانهاء',
     'termination'=>'إنهاء القيد ',
+    'upgrade_student'=>'ترفيع',
     'transport_termination'=>'إنهاء قيد المواصلات',
     'fees_invoice'=>'فاتورة الرسوم',
     'serial_number'=>'الرقم التسلسلي',
@@ -281,4 +282,5 @@ return [
      'total_fees_discounts' => ' اجمالي الخصم',
      'print_all_fees' => ' طباعة فاتورة الرسوم',
      'fees_invoice' => ' فاتورة الرسوم',
+     'not_yet_implemented' => ' لم يتم انجاز هده الخاصية بعد',
 ];

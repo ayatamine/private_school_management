@@ -341,9 +341,9 @@ class StudentResource extends Resource
                 ]),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
+                // Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -395,40 +395,6 @@ class StudentResource extends Resource
                                 TextEntry::make('parent.user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
                         ]),
-                \Filament\Infolists\Components\Section::make(trans('main.financial_infos'))
-                        ->columns(2)
-                        ->id('financial-section')
-                        ->schema([
-
-
-                                TextEntry::make('opening_balance')->label(trans('main.opening_balance'))
-                                ->formatStateUsing(fn (string $state) => $state." ".trans("main.".env('DEFAULT_CURRENCY')))
-                                ->weight(FontWeight::Bold),
-                                ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
-                                TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold)
-
-                       
-                        ]),
-                \Filament\Infolists\Components\Section::make(trans('main.payments'))
-                        ->id('payments-section')
-                        ->schema([
-                            ViewEntry::make('receiptVoucher')->label(trans_choice('main.payments',2))->view('infolists.components.student-payments')
-                       
-                        ]),
-                \Filament\Infolists\Components\Section::make(trans('main.account_ballance'))
-                        ->columns(2)
-                        ->id('account_ballance-section')
-                        ->schema([
-                                TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
-                                ->color('primary')
-                                ->size(TextEntry\TextEntrySize::Large)
-                                ->weight(FontWeight::Bold)
-                                ->tooltip(function (TextEntry $component): ?string {
-                                    
-                                    return trans('main.balance_calculate_method');
-                                })
-                       
-                        ]),
                 \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
                         ->id('tuition_fee-section')
                         ->schema([
@@ -452,6 +418,47 @@ class StudentResource extends Resource
 
                                 ViewEntry::make('transportFees')->label(trans_choice('main.transport_fee',2))->view('infolists.components.view-student-transport-fee')
                         ]),
+                \Filament\Infolists\Components\Section::make(trans_choice('main.general_fee',2))
+                        ->id('general_fee-section')
+                        ->schema([
+
+                        ]),
+                \Filament\Infolists\Components\Section::make(trans('main.payments'))
+                        ->id('payments-section')
+                        ->schema([
+                            ViewEntry::make('receiptVoucher')->label(trans_choice('main.payments',2))->view('infolists.components.student-payments')
+                       
+                        ]),
+                \Filament\Infolists\Components\Section::make(trans('main.financial_infos'))
+                        ->columns(2)
+                        ->id('financial-section')
+                        ->schema([
+
+
+                                TextEntry::make('opening_balance')->label(trans('main.opening_balance'))
+                                ->formatStateUsing(fn (string $state) => $state." ".trans("main.".env('DEFAULT_CURRENCY')))
+                                ->weight(FontWeight::Bold),
+                                ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
+                                TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold)
+
+                       
+                        ]),
+               
+                \Filament\Infolists\Components\Section::make(trans('main.account_ballance'))
+                        ->columns(2)
+                        ->id('account_ballance-section')
+                        ->schema([
+                                TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
+                                ->color('primary')
+                                ->size(TextEntry\TextEntrySize::Large)
+                                ->weight(FontWeight::Bold)
+                                ->tooltip(function (TextEntry $component): ?string {
+                                    
+                                    return trans('main.balance_calculate_method');
+                                })
+                       
+                        ]),
+
                        
             ]);
     }

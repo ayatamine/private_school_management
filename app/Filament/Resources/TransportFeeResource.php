@@ -96,6 +96,10 @@ class TransportFeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ReplicateAction::make()
+                ->successRedirectUrl(fn (TransportFee $replica): string => route('filament.admin.resources.transport-fees.edit', [
+                    'record' => $replica,
+                ])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

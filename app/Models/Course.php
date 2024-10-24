@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\GeneralFee;
+use App\Models\TuitionFee;
 use App\Models\AcademicYear;
 use App\Models\AcademicStage;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -42,6 +45,14 @@ class Course extends Model
     public function academicStage(): BelongsTo
     {
         return $this->belongsTo(AcademicStage::class);
+    }
+    public function tuitionFee(): HasOne
+    {
+        return $this->hasOne(TuitionFee::class,'course_id','id');
+    }
+    public function generalFee(): HasOne
+    {
+        return $this->hasOne(GeneralFee::class,'course_id','id');
     }
 
 }

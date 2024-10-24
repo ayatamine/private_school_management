@@ -15,6 +15,7 @@ use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
@@ -31,6 +32,67 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('upgrade_student')
+            ->color('success')
+            ->label(trans('main.upgrade_student'))
+            ->action(function(array $arguments,array $data) {
+                    Notification::make()
+                                        ->title(trans('main.not_yet_implemented'))
+                                        ->icon('heroicon-o-document-text')
+                                        ->iconColor('info')
+                                        ->send();
+                
+            
+
+            }),
+            Action::make('termination')
+                    ->color('primary')
+                    ->label(trans_choice('main.termination',1))
+                    ->form([
+                        Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
+                        Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
+                            ->columnSpanFull()
+                            ->maxLength(26663)->required(),
+                        Forms\Components\FileUpload::make(name: 'termination_document')->label(trans('main.document'))
+                            ->columnSpanFull()
+                            ->directory('termination_documents'),
+                    ])
+                    ->action(function(array $arguments,array $data) {
+                        try{
+                            DB::beginTransaction();
+                            if(Student::findOrFail($data['student_id'])->balance != 0 && auth()->user()->can('terminate_student_private'))
+                            {
+                                Notification::make()
+                                    ->title(trans('main.student_termination_balance_error'))
+                                    ->icon('heroicon-o-document-text')
+                                    ->iconColor('danger')
+                                    ->send();
+                                return;
+                            }
+                            $data['terminated_by'] = Auth::id();
+                            $data['semester_id'] = null;
+                            $data['is_approved'] = false;
+                            $this->record->update($data);
+                            DB::commit();
+                            Notification::make()
+                                                ->title(trans('main.student_termination_success'))
+                                                ->icon('heroicon-o-document-text')
+                                                ->iconColor('success')
+                                                ->send();
+                        }
+                        catch(\Exception $ex)
+                        {
+                            DB::rollBack();
+                            Notification::make()
+                            ->title($ex)
+                            ->icon('heroicon-o-document-text')
+                            ->iconColor('danger')
+                            ->send();
+                        }
+                        
+                    
+
+                    }),
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))

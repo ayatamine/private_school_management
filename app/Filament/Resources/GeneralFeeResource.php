@@ -4,17 +4,20 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Course;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use App\Models\GeneralFee;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\GeneralFeeResource\Pages;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\GeneralFeeResource\RelationManagers;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class GeneralFeeResource extends Resource
 {
@@ -47,9 +50,13 @@ class GeneralFeeResource extends Resource
                 ->schema([
                     Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                         ->relationship('academicYear', 'name')
+                        ->live()
                         ->required(),
                     Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
-                        ->relationship('course', 'name')
+                        ->options(fn (Get $get): Collection => Course::query()
+                        ->where('academic_year_id', $get('academic_year_id'))
+                        ->whereDoesntHave('generalFee')
+                        ->pluck('name', 'id'))
                         ->required(),
                     Forms\Components\TextInput::make('name')->label(trans('main.name'))
                         ->required()
@@ -101,6 +108,10 @@ class GeneralFeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ReplicateAction::make()
+                ->successRedirectUrl(fn (GeneralFee $replica): string => route('filament.admin.resources.general-fees.edit', [
+                    'record' => $replica,
+                ])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

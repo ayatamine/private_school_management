@@ -5,11 +5,13 @@ namespace App\Filament\Resources;
 use Closure;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Course;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\TuitionFee;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
@@ -52,8 +54,10 @@ class TuitionFeeResource extends Resource
                         ->live()
                         ->required(),
                     Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
-                        ->relationship('course', 'name')
-                        ->live()
+                        ->options(fn (Get $get): Collection => Course::query()
+                        ->where('academic_year_id', $get('academic_year_id'))
+                        ->whereDoesntHave('tuitionFee')
+                        ->pluck('name', 'id'))
                         ->rules([
                             fn (TuitionFee $fee,Get $get ): Closure => function (string $attribute, $value, Closure $fail) use($fee,$get) {
                                 if (TuitionFee::whereCourseId($value)->whereAcademicYearId($get('academic_year_id'))->whereNot('id',$fee->id)->first()) {

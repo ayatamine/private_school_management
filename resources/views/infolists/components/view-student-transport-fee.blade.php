@@ -27,14 +27,14 @@
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.value_after_discount')}}
                     </th>
-                    @if($getRecord()->nationality != "saudian")
+                    {{-- @if($getRecord()->nationality != "saudian") --}}
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.tax_percentage')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.tax_value')}}
                     </th>
-                    @endif
+                    {{-- @endif --}}
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.due_date')}}
                     </th>
@@ -101,7 +101,7 @@
                          </td>
                          @endif
                          
-                        @if($getRecord()->nationality != "saudian")
+                        {{-- @if($getRecord()->nationality != "saudian") --}}
                         @php
                             $vat = \App\Models\ValueAddedTax::first();
                         @endphp
@@ -116,7 +116,7 @@
                             @endphp
                             {{$value_after_tax}}
                         </td>
-                        @endif
+                        {{-- @endif --}}
                         <td class="px-6 py-4 border">
                             {{$partition['due_date']}}
                         </td>
@@ -134,7 +134,8 @@
                 @endforeach
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total')}}</td>
+                    {{-- <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total')}}</td> --}}
+                    <td class="px-6 py-4 border"colspan="9">{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
                         {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
