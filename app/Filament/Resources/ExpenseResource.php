@@ -17,6 +17,7 @@ use App\Filament\Resources\ExpenseResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ExpenseResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Models\PaymentMethod;
 
 class ExpenseResource extends Resource
 {
@@ -58,7 +59,12 @@ class ExpenseResource extends Resource
                             return TransactionCategory::create($data)->getKey();
                         }),
                     Forms\Components\Select::make('payment_method_id')->label(trans_choice('main.payment_method',1))
-                        ->relationship('paymentMethod', 'name')
+                        // ->relationship('paymentMethod', 'name')
+                        ->relationship(
+                            name: 'paymentMethod',
+                            modifyQueryUsing: fn (Builder $query) => $query->latest(),
+                        )
+                        ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                         ->required(),
                     Forms\Components\TextInput::make('value')->label(trans('main.value'))
                         ->required()
@@ -93,6 +99,11 @@ class ExpenseResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by')),
+                Tables\Columns\TextColumn::make('total')->label(trans('main.total'))
+                ->state(function (Expense $record): float {
+                    $vat = \App\Models\ValueAddedTax::first();
+                    return floatval((($vat->percentage / 100) * ($record->value)) + $record->value);
+                })
             ])
             ->filters([
                 SelectFilter::make('transaction_category_id')->label(trans_choice('main.expense_name',1))

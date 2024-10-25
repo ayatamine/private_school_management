@@ -7,6 +7,7 @@ use Filament\Tables;
 use App\Models\Income;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
 use App\Models\TransactionCategory;
 use Filament\Forms\Components\Section;
@@ -59,7 +60,11 @@ class IncomeResource extends Resource
                             return TransactionCategory::create($data)->getKey();
                         }),
                     Forms\Components\Select::make('payment_method_id')->label(trans_choice('main.payment_method',1))
-                        ->relationship('paymentMethod', 'name')
+                        ->relationship(
+                            name: 'paymentMethod',
+                            modifyQueryUsing: fn (Builder $query) => $query->latest(),
+                        )
+                        ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                         ->required(),
                     Forms\Components\TextInput::make('value')->label(trans('main.value'))
                         ->required()
