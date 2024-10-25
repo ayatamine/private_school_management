@@ -11,6 +11,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\PaymentMethod;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
@@ -75,7 +76,11 @@ class ReceiptVoucherResource extends Resource
                 //     ->hidden(fn(Get $get) =>$get('payment_method_id') != null),
                 Forms\Components\Select::make('payment_method_id')
                     ->label(trans_choice('main.payment_method',1))
-                    ->relationship('paymentMethod', 'name')
+                    ->relationship(
+                        name: 'paymentMethod',
+                        modifyQueryUsing: fn (Builder $query) => $query->latest(),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                     // ->hidden(fn(Get $get) =>$get('payment_method_id') == null)
                     ,
                 

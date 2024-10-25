@@ -38,11 +38,12 @@ class CreateExpense extends CreateRecord
         }
         catch(\Exception $ex)
         {
-            dd($ex);
+            DB::rollBack();
             Notification::make()
             ->danger()
             ->title('There is something wrong')
             ->body('there is an issue when saving this expense');
+            return $this->halt();
         }
     }
 }

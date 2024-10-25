@@ -59,7 +59,7 @@ class PaymentMethodResource extends Resource
                         // ->visible(fn (Get $get) => $get('add_refrence_number') == true)
                         ->maxLength(255)
                         ->default('PM')
-                        ->hidden(),
+                        ->visible(fn(Get $get)=>$get('add_refrence_number')),
                     Forms\Components\Toggle::make('is_code_required')->label(trans('main.is_reference_number_required'))
                         ->columnSpanFull()
                         ->visible(fn (Get $get) => $get('add_refrence_number') == true),
@@ -120,6 +120,7 @@ class PaymentMethodResource extends Resource
             'index' => Pages\ListPaymentMethods::route('/'),
             'create' => Pages\CreatePaymentMethod::route('/create'),
             'edit' => Pages\EditPaymentMethod::route('/{record}/edit'),
+            'view' => Pages\ViewPaymentMethod::route('/{record}'),
         ];
     }
 }

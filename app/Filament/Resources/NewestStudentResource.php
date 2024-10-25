@@ -306,7 +306,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::query()->whereNull('termination_reason')->whereNot('status','approved'))
+            ->query(Student::query()->whereNull('termination_reason'))
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
                     ->searchable()
@@ -430,7 +430,8 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->iconColor('danger')
                             ->send();
                     }
-                }),
+                })
+                ->hidden(fn (Student $student) =>$student->status == "approved"),
                 Tables\Actions\DeleteAction::make(),
                 // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

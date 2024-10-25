@@ -2,14 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Expense;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\PaymentMethod;
 use Filament\Resources\Resource;
 use App\Models\TransactionCategory;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
@@ -17,7 +21,6 @@ use App\Filament\Resources\ExpenseResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ExpenseResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use App\Models\PaymentMethod;
 
 class ExpenseResource extends Resource
 {
@@ -115,6 +118,43 @@ class ExpenseResource extends Resource
                 TernaryFilter::make('is_tax_included')->label(trans('main.is_tax_included'))
                     ->nullable()
                     ->attribute('is_tax_included'),
+                Filter::make('created_at')
+                ->label(trans('main.date_filter'))
+                    ->indicator('date')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label(trans('main.date_from')),
+                        Forms\Components\DatePicker::make('created_until')->label(trans('main.date_to')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        if (!$data['created_from'] && !$data['created_to']) {
+                            return null;
+                        }
+                        $indicators = [];
+ 
+                        if ($data['created_from'] ?? null) {
+                            $indicators[] = Indicator::make(trans('main.date_from') . Carbon::parse($data['created_from'])->toFormattedDateString())
+                                ->removeField('created_from');
+                        }
+                 
+                        if ($data['created_until'] ?? null) {
+                            $indicators[] = Indicator::make(trans('main.date_to') . Carbon::parse($data['created_until'])->toFormattedDateString())
+                                ->removeField('created_until');
+                        }
+                 
+                        return $indicators;
+                      
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
