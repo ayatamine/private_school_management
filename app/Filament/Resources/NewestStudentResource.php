@@ -37,6 +37,7 @@ use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\NewestStudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
+use App\Models\GeneralFee;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class NewestStudentResource extends Resource implements HasShieldPermissions 
@@ -388,6 +389,12 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             if($tuitionFee)
                             {
                                 $Student->tuitionFees()->sync($tuitionFee->id);
+                            }
+                            // add other fees
+                            $general = GeneralFee::whereCourseId($Student?->semester?->course_id)->first();
+                            if($general)
+                            {
+                                $Student->otherFees()->sync($general->id);
                             }
                             // add concession fees
                            

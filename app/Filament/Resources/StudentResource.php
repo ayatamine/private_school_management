@@ -421,8 +421,9 @@ class StudentResource extends Resource
                 \Filament\Infolists\Components\Section::make(trans_choice('main.general_fee',2))
                         ->id('general_fee-section')
                         ->schema([
-
+                                ViewEntry::make('otherFees')->label(trans_choice('main.general_fee',2))->view('infolists.components.view-student-general-fee')
                         ]),
+
                 \Filament\Infolists\Components\Section::make(trans('main.payments'))
                         ->id('payments-section')
                         ->schema([

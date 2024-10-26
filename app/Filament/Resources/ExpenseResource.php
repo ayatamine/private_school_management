@@ -137,8 +137,8 @@ class ExpenseResource extends Resource
                             );
                     })
                     ->indicateUsing(function (array $data): array {
-                        if (!$data['created_from'] && !$data['created_to']) {
-                            return null;
+                        if (!$data['created_from'] && !$data['created_until']) {
+                            return [];
                         }
                         $indicators = [];
  
