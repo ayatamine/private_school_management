@@ -103,7 +103,16 @@
                          
                         @if($getRecord()->nationality != "saudian")
                         @php
-                            $vat = \App\Models\ValueAddedTax::first();
+                            $vat = null;
+                            if(\App\Models\ValueAddedTax::count() == 1)
+                            {
+                                $vat = \App\Models\ValueAddedTax::first();
+                            }
+                            else
+                            {
+                                $payment_due_date = $partition['due_date'];
+                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',$payment_due_date))->first();   
+                            }
                         @endphp
                         
                         <td class="px-6 py-4 border">

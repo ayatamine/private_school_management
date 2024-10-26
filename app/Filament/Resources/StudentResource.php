@@ -378,7 +378,9 @@ class StudentResource extends Resource
                                 TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
                                 TextEntry::make(name: 'third_name')->label(trans('main.third_name'))->weight(FontWeight::Bold),
                                 TextEntry::make('last_name')->label(trans('main.last_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('nationality')->label(trans('main.nationality'))->weight(FontWeight::Bold),
+                                TextEntry::make('nationality')->label(trans('main.nationality'))
+                                ->formatStateUsing(fn($state)=>$state == "saudian" ? trans('main.saudian') : $state)
+                                ->weight(FontWeight::Bold),
                                 TextEntry::make('user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
