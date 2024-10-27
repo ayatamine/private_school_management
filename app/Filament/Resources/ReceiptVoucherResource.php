@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use ArPHP\I18N\Arabic;
+
 use MPDF;
 use NumberToWord;
 use Filament\Forms;
@@ -184,11 +187,30 @@ class ReceiptVoucherResource extends Resource
                             //     $headers
                             // );
 
-                            $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
-                            $pdf->simpleTables = true;
+                            // $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
+                            // $pdf->simpleTables = true;
 
-                            $pdf->download('document.pdf');
-                            header("Refresh:0");
+                            // $pdf->download('document.pdf');
+                            // header("Refresh:0");
+
+                            // $pdf = Pdf::loadView('pdf.receipt_voucher', $data);
+                            // return response()->streamDownload(function () use ($pdf) {
+                            //     echo $pdf->stream();
+                            //     }, 'name.pdf');
+                                $reportHtml = view('pdf.receipt_voucher', $data)->render();
+        
+                                $arabic = new Arabic();
+                                $p = $arabic->arIdentify($reportHtml);
+
+                                for ($i = count($p)-1; $i >= 0; $i-=2) {
+                                    $utf8ar = $arabic->utf8Glyphs(substr($reportHtml, $p[$i-1], $p[$i] - $p[$i-1]));
+                                    $reportHtml = substr_replace($reportHtml, $utf8ar, $p[$i-1], $p[$i] - $p[$i-1]);
+                                }
+
+                                $pdf = PDF::loadHTML($reportHtml);
+                                return response()->streamDownload(function () use ($pdf) {
+                                        echo $pdf->stream();
+                                        }, 'name.pdf');
 
                     }),
                 // Tables\Actions\DeleteAction::make(),

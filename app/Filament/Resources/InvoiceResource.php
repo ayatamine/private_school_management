@@ -4,7 +4,8 @@ namespace App\Filament\Resources;
 
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use MPDF;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
+use ArPHP\I18N\Arabic;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Invoice;
@@ -125,10 +126,20 @@ class InvoiceResource extends Resource implements HasShieldPermissions
                             //     $headers
                             // );
 
-                            $pdf = MPDF::loadView('pdf.invoice', $data);
-                            $pdf->simpleTables = true;
+                            $reportHtml = view('pdf.invoice', $data)->render();
+        
+                                $arabic = new Arabic();
+                                $p = $arabic->arIdentify($reportHtml);
 
-                            return $pdf->download('document.pdf');
+                                for ($i = count($p)-1; $i >= 0; $i-=2) {
+                                    $utf8ar = $arabic->utf8Glyphs(substr($reportHtml, $p[$i-1], $p[$i] - $p[$i-1]));
+                                    $reportHtml = substr_replace($reportHtml, $utf8ar, $p[$i-1], $p[$i] - $p[$i-1]);
+                                }
+
+                                $pdf = PDF::loadHTML($reportHtml);
+                                return response()->streamDownload(function () use ($pdf) {
+                                        echo $pdf->stream();
+                                        }, 'name.pdf');
                     })
             ])
             ->bulkActions([
