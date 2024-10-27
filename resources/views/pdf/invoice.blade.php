@@ -526,7 +526,12 @@
             ]);
         @endphp
         <div>
-            {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}}
+            @php
+                $qr_code =\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content);
+                $code = (string)$qr_code;
+                 echo substr($code,38);
+            @endphp     
+            {{-- {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}} --}}
         </div>
    
 
