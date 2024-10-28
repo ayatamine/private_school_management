@@ -242,4 +242,26 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     dd($ex);
                 }
     }
+    public function printAllPayments(): Action
+    {
+        try{
+        return Action::make('printAllPayments')
+                    ->icon('icon-print')
+                    ->color('info')
+                    ->label(trans('main.print_all_payments'))
+                    ->action(function(array $arguments) {
+                        $data = ['student' => $this->record,'settings'=>SchoolSetting::first()];
+                            $pdf = MPDF::loadView('pdf.all_payments', $data);
+                            $pdf->simpleTables = true;
+
+                            $pdf->download('document.pdf');
+                            header("Refresh:0");
+
+                    });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
 }

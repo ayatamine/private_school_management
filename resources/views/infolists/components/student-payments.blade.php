@@ -14,7 +14,12 @@
         <x-html-print>
             <div class=" flex items-center justify-end gap-2">
                 <div class="print:hidden relative mb-2 top-3 right-4 hover:opacity-0">
-                    <button type="button" id="pirnt-btn" x-on:click="printDiv(e)"  class="bg-opacity-50 text-gray-700 shadow-sm border px-2 py-1 rounded-md bg-white flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-1 h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>{{trans('main.print')}}</button>
+                    {{ ($this->printAllPayments)([]) }}
+                    {{-- <button type="button" id="pirnt-btn"
+                     x-on:click="printDiv(e)"  
+                     
+                     class="bg-opacity-50 text-gray-700 shadow-sm border px-2 py-1 rounded-md bg-white flex items-center">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-1 h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>{{trans('main.print')}}</button> --}}
                 </div>
 
                 <x-filament::button  
@@ -36,7 +41,7 @@
                         {{trans('main.payment_date')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.payment_method')}}
+                        {{trans_choice('main.payment_method',1)}}
                     </th>
                    
                     <th scope="col" class="px-6 py-3 border">
@@ -82,7 +87,7 @@
                 <tr>
                     <td class="px-6 py-4 border" colspan="3" >{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
-                       {{$total}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                       {{$total}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
             </tbody>

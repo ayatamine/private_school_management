@@ -213,7 +213,7 @@
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
                         {{ trans('main.name') }} : <span style="">{{ $student->username }}</span> <br><br>
-                        {{ trans('main.nationality') }} : <span style="">{{ $student->nationality }}</span> <br>
+                        {{ trans('main.nationality') }} : <span style="">{{ $student->nationality =="saudian" ? trans('main.saudian') : $student->nationality}}</span> <br>
                        
                     </td>
                     

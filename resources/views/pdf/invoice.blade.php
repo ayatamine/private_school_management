@@ -213,7 +213,7 @@
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
                         {{ trans('main.name') }} : <span style="">{{ $invoice?->student->username }}</span> <br><br>
-                        {{ trans('main.nationality') }} : <span style="">{{ $invoice?->student->nationality }}</span> <br>
+                        {{ trans('main.nationality') }} : <span style="">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</span> <br>
                        
                     </td>
                     
@@ -354,21 +354,21 @@
                 <tr>
                     <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_without_taxes')}}</td>
                     <td>
-                        {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                        {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 {{-- total without taxes --}}
                 <tr>
                     <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}({{\App\Models\ValueAddedTax::first()->percentage }}%)</td>
                     <td>
-                        {{array_sum($total_of_taxes)}}  {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                        {{array_sum($total_of_taxes)}}  {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 {{-- total sum --}}
                 <tr>
                     <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total')}}</td>
                     <td>
-                        {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                        {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
             </tbody>
@@ -497,21 +497,21 @@
                  <tr>
                     <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_without_taxes')}}</td>
                     <td>
-                        {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                        {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 {{-- total without taxes --}}
                 <tr>
                     <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}({{\App\Models\ValueAddedTax::first()->percentage }}%)</td>
                     <td>
-                        {{array_sum($total_of_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                        {{array_sum($total_of_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 {{-- total sum --}}
                 <tr>
                     <td  @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total')}}</td>
                     <td >
-                        {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                        {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
             </tbody>

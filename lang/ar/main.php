@@ -284,6 +284,7 @@ return [
      'fees_to' => ' الرسوم أقل من',
      'total_fees_discounts' => ' اجمالي الخصم',
      'print_all_fees' => ' طباعة فاتورة الرسوم',
+     'print_all_payments' => ' طباعة المدفوعات',
      'fees_invoice' => ' فاتورة الرسوم',
      'not_yet_implemented' => ' لم يتم انجاز هده الخاصية بعد',
      'error' => ' حدث خطأ يرجى اعادة المحاولة',
