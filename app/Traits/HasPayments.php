@@ -74,14 +74,14 @@ trait HasPayments {
                                         ->value('discounts');
                             $decodedDiscounts = json_decode($discounts, true);
                         
-                            if(isset($decodedDiscounts[0]))
+                            if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                             {
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                     {
-                                        $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                        $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                     }
                                     else{
-                                        $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
+                                        $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['value'];
                                     }
                             }
                             if($this->nationality != "saudian")
@@ -98,7 +98,6 @@ trait HasPayments {
         }
        return $total_sum;
 
-        return null;
 
     }
     /**

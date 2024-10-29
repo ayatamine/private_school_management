@@ -55,7 +55,7 @@ class GeneralFeeResource extends Resource
                     Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                         ->options(fn (Get $get): Collection => Course::query()
                         ->where('academic_year_id', $get('academic_year_id'))
-                        ->whereDoesntHave('generalFee')
+                        // ->whereDoesntHave('generalFee')
                         ->pluck('name', 'id'))
                         ->required(),
                     Forms\Components\TextInput::make('name')->label(trans('main.name'))

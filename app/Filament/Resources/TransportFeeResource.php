@@ -113,6 +113,7 @@ class TransportFeeResource extends Resource
             ]);
     }
 
+
     public static function getRelations(): array
     {
         return [

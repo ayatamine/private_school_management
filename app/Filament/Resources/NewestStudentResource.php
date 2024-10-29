@@ -167,6 +167,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))
                             ->options(fn (Get $get): Collection => Semester::query()
                             ->where('course_id', $get('course_id'))
+                            ->where('is_registration_active', true)
                             ->pluck('name', 'id')),
                         Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))
                             ->required()

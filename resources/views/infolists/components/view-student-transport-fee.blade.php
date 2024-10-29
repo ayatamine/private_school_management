@@ -48,11 +48,13 @@
             </thead>
             <tbody>
                 @php
-                    $total =[];
+                    $total= $value_after_discount=$value_after_tax=[];
                 @endphp
+                
                 @foreach ($getState() as $fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
+                    
                    {{-- if student transport has been terminated after due date --}}
                     @if( $getRecord()->transport && ($getRecord()->transport->termination_date == null || ($getRecord()->transport->termination_date > $partition['due_date'])) )
                     
@@ -68,28 +70,38 @@
                         </td>
                         @php
                             $discounts = DB::table('student_fee')
+                                        ->where('student_id', $getRecord()->id)
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\TransportFee')
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
-                        @if(isset($decodedDiscounts[0]))
+                       
+                        @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td class="px-6 py-4 border" >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td class="px-6 py-4 border">
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if(array_key_exists('discount_type',$decodedDiscounts[$i]))
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                    if($decodedDiscounts[$i]['discount_type'] == 'percentage')
+                                    {
+                                        $value_after_discount[$i] =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                                    }
+                                    else{
+                                        
+                                        $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['value'];
+                                    }
+                                }else
+                                {
+                                    $value_after_discount[$i] =$partition['value'];
                                 }
-                                else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
-                                }
+                           
                                    
                             @endphp
                             
-                            {{$value_after_discount}}
+                            {{$value_after_discount[$i]}}
                         </td>
                          @else 
     
@@ -97,7 +109,7 @@
                             0
                          </td>
                          <td class="px-6 py-4 border" >
-                            0
+                            {{$partition['value']}}
                          </td>
                          @endif
                          
@@ -112,9 +124,9 @@
                         <td class="px-6 py-4 border">
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value'])
+                                $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? $partition['value'])
                             @endphp
-                            {{$value_after_tax}}
+                            {{$value_after_tax[$i]}}
                         </td>
                         {{-- @endif --}}
                         <td class="px-6 py-4 border">
@@ -122,11 +134,12 @@
                         </td>
                         <td class="px-6 py-4 border">
                             @php
-                                $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
+                                $total[$i] = ($value_after_discount[$i] ?? $partition['value']) + ($value_after_tax[$i] ?? 0);
                             @endphp
                             {{$total[$i]}}
+                            
                         </td>
-                        <td  class="px-6 py-4 border">{{ ($this->editTransportFeePartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TransportFee"]) }}</td>
+                        <td  class="px-6 py-4 border">{{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TransportFee"]) }}</td>
                     </tr> 
                     @endif
                   @endforeach
