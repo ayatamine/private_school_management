@@ -56,9 +56,9 @@ class CreateNewestStudent extends CreateRecord
                     "academic_year_id" =>$data['academic_year_id'],
                     "semester_id" =>$data['semester_id'],
                     "parent_id" =>$data['parent_id'],
-                    "opening_balance" =>$data['opening_balance'],
-                    "finance_document" =>$data['finance_document'],
-                    "note" =>$data['note'],
+                    // "opening_balance" =>$data['opening_balance'],
+                    // "finance_document" =>$data['finance_document'],
+                    // "note" =>$data['note'],
                 ]);
                 DB::commit();
                 DB::beginTransaction();

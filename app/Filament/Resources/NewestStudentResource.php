@@ -220,7 +220,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->required(),
                             // ->unique(table:'users',ignoreRecord: true),   
                         Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                            ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
+                            ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')])
                             ->required(),        
                         Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                             ->maxLength(255)
@@ -259,11 +259,10 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                     ->required(),
                                 Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                     ->required()
-                                    ->unique(table:'users',ignoreRecord: true)
+                                    // ->unique(table:'users',ignoreRecord: true)
                                     ->maxLength(10),           
                                 Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
                                     ->required()
-                                    ->unique(table:'users',ignoreRecord: true)
                                     ->maxLength(13),   
                                 Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
                                     ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
@@ -403,8 +402,9 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                            
                             $discounts[0]['discount_type'] = "percentage";
                             $discounts[0]['discount_value'] = 0;
-        
-                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$Student->id]);
+                            
+                            if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$Student->id]);
+                            if($general) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$general->id,GeneralFee::class,$Student->id]);
                           
                             //create invoice for student
                             $academic_year_id = $Student->semester?->academicYear?->id;

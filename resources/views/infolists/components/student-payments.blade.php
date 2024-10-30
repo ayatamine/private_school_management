@@ -13,22 +13,22 @@
         </div> --}}
         <x-html-print>
             <div class=" flex items-center justify-end gap-2">
-                <div class="print:hidden relative mb-2 top-3 right-4 hover:opacity-0">
-                    {{ ($this->printAllPayments)([]) }}
+                {{-- <div class="print:hidden relative mb-2 top-3 right-4 hover:opacity-0">
+                    {{ ($this->printAllPayments)([]) }} --}}
                     {{-- <button type="button" id="pirnt-btn"
                      x-on:click="printDiv(e)"  
                      
                      class="bg-opacity-50 text-gray-700 shadow-sm border px-2 py-1 rounded-md bg-white flex items-center">
                      <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-1 h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>{{trans('main.print')}}</button> --}}
-                </div>
+                {{-- </div> --}}
 
-                <x-filament::button  
+                {{-- <x-filament::button  
                     class="mb-2"
                     href="{{route('filament.admin.resources.receipt-vouchers.create')}}"
                     tag="a"
                 >
                     {{trans('main.new_receipt_payment')}}
-                </x-filament::button>
+                </x-filament::button> --}}
             </div>
         <table class="w-full text-sm text-right ltr:text-left text-gray-500 dark:text-gray-400 border" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
@@ -76,8 +76,12 @@
                         @php
                             $total+=$payment->value;
                         @endphp
-                        <td>
+                        <td class="px-2">
                             {{ ($this->printReceipt)(['payment_id' => $payment->id]) }}
+                            {{ ($this->viewReceipt)(['payment_id' => $payment->id]) }}
+                            {{ ($this->editReceipt)(['payment_id' => $payment->id]) }}
+                            {{ ($this->deleteReceipt)(['payment_id' => $payment->id]) }}
+                            {{-- <a href="{{route("filament.admin.resources.receipt-vouchers.edit",['record'=>$payment->id])}}">edit</a> --}}
                         </td>
                     </tr> 
                 @empty 

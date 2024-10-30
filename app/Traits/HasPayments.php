@@ -84,7 +84,7 @@ trait HasPayments {
                                         $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['value'];
                                     }
                             }
-                            if($this->nationality != "saudian")
+                            if($this->nationality != "saudian" && $model =='App\Models\TuitionFee')
                             {
                                 $vat = \App\Models\ValueAddedTax::first();
                                 $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);

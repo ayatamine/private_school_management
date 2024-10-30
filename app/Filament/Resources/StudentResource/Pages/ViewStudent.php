@@ -22,6 +22,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\Contracts\HasActions;
 use App\Filament\Resources\StudentResource;
 use Filament\Forms\Concerns\InteractsWithForms;
+use App\Filament\Resources\ReceiptVoucherResource;
 use Filament\Actions\Concerns\InteractsWithActions;
 
 class ViewStudent extends ViewRecord  implements  HasActions,HasForms
@@ -157,7 +158,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                 $discounts[0]['discount_type'] = "percentage";
                 $discounts[0]['discount_value'] = 0;
 
-                DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type']]);
+                DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
             }
             else 
             {
@@ -174,7 +175,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     $discounts['discount_type'] = $concession_fee->type;
                     $discounts['discount_value'] = $concession_fee->value;
                     $payment_partition[$arguments['partition']] = $discounts;
-                    DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?',[json_encode($payment_partition),$arguments['fee_id'],$arguments['feeable_type']]);
+                    DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($payment_partition),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
                 }
             }
             Notification::make()
@@ -231,9 +232,9 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
     {
         try{
         return Action::make('printReceipt')
-                    ->icon('icon-print')
+                    // ->icon('icon-print')
                     ->color('primary')
-                    ->label(trans('main.print_receipt_voucher'))
+                    ->label(trans('main.print'))
                     ->action(function(array $arguments,array $data) {
                         $data = ['receipt' => ReceiptVoucher::find($arguments['payment_id']),'settings'=>SchoolSetting::first()];
                             $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
@@ -265,6 +266,64 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                             header("Refresh:0");
 
                     });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
+    public function viewReceipt(): Action
+    {
+        try{
+            
+        return Action::make('viewReceipt')
+                    // ->icon('icon-eye')
+                    ->color('gray')
+                    ->label(trans(key: 'main.view'))
+                    ->action(function(array $arguments) {
+                        return redirect(ReceiptVoucherResource::getUrl('view',['record'=>$arguments['payment_id']]));
+
+                    });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
+    public function editReceipt(): Action
+    {
+                try{
+                    
+                return Action::make('editReceipt')
+                            ->label(trans(key: 'main.edit'))
+                            // ->icon('icon-edit')
+                             ->color('info')
+                            ->action(function(array $arguments) {
+                                     return redirect(ReceiptVoucherResource::getUrl('edit',['record'=>$arguments['payment_id']]));
+                            });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
+    public function deleteReceipt(): Action
+    {
+                try{
+                    
+                return Action::make('deleteReceipt')
+                            // ->icon('icon-delete')
+                            ->label(trans(key: 'main.delete'))
+                             ->color('danger')
+                             ->requiresConfirmation()
+                            ->action(function(array $arguments) {
+                                    ReceiptVoucher::findOrFail($arguments['payment_id'])->delete();
+                                    Notification::make()
+                                    ->title(trans('main.deleted_success'))
+                                    ->icon(icon: 'heroicon-o-document-text')
+                                    ->iconColor('danger')
+                                    ->send();
+                            });
                 }
                 catch(\Exception $ex)
                 {

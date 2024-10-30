@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Closure;
+use MPDF;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -16,6 +17,7 @@ use Filament\Tables\Table;
 use App\Models\ParentModel;
 use App\Models\AcademicYear;
 use App\Models\AcademicStage;
+use App\Models\SchoolSetting;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
@@ -203,7 +205,7 @@ class StudentResource extends Resource
                             ->required(),
                             // ->unique(table:'users',ignoreRecord: true),   
                         Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                            ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
+                            ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')])
                             ->required(),        
                         Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                             ->maxLength(255)
@@ -428,6 +430,27 @@ class StudentResource extends Resource
 
                 \Filament\Infolists\Components\Section::make(trans('main.payments'))
                         ->id('payments-section')
+                        ->headerActions([
+                            Action::make('edit')
+                                ->label(trans('main.new_receipt_payment'))
+                                ->url(route('filament.admin.resources.receipt-vouchers.create'))
+                                ->openUrlInNewTab(),
+                            Action::make('printAllPayments')
+                    ->icon('icon-print')
+                                ->color('info')
+                                ->label(trans('main.print_all_payments'))
+                                ->action(function(Student $student,array $arguments) {
+                                  
+                                    $data = ['student' => $student,'settings'=>SchoolSetting::first()];
+                                        $pdf = MPDF::loadView('pdf.all_payments', $data);
+                                        $pdf->simpleTables = true;
+
+                                        $pdf->download('document.pdf');
+                                        header("Refresh:0");
+
+                                })
+                                ->visible(fn(Student $student)=>count($student->receiptVoucher) != 0)
+                        ])
                         ->schema([
                             ViewEntry::make('receiptVoucher')->label(trans_choice('main.payments',2))->view('infolists.components.student-payments')
                        

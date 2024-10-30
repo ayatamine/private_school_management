@@ -217,6 +217,7 @@ class ReceiptVoucherResource extends Resource
             'index' => Pages\ListReceiptVouchers::route('/'),
             'create' => Pages\CreateReceiptVoucher::route('/create'),
             'edit' => Pages\EditReceiptVoucher::route('/{record}/edit'),
+            'view' => Pages\ViewReceiptVoucher::route('/{record}'),
         ];
     }
 }

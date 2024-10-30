@@ -59,6 +59,8 @@ return [
     'is_promotion_active'=>'تفعيل الترفيع',
     'menu'=>'قائمة ',
     'print'=>'طباعة',
+    'delete'=>'حدف',
+    'deleted_success'=>'تم الحدف بنجاح',
     'new_receipt_payment'=>'سداد جديد',
     'first_name'=>'الاسم الأول',
     'last_name'=>'الاسم الاخير',
