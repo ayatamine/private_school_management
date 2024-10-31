@@ -44,7 +44,9 @@ class ParentModelResource extends Resource
     {
         return $form
             ->schema([
-                
+                Section::make(trans('main.parent_data'))
+                  ->columns(2)
+                  ->schema([   
                 Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
                     ->required()
                     ->maxLength(255),
@@ -86,25 +88,23 @@ class ParentModelResource extends Resource
                 Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                     ->maxLength(255)        
                     ->hiddenOn('view'),
+                ]),
                 Section::make(trans('main.student_info'))
                   ->columns(2)
                   ->schema([   
-                    Forms\Components\TextInput::make('student.username')->label(trans('main.student_name'))
-                        ->visibleOn('view'),        
-                    Forms\Components\TextInput::make('student.user.national_id')->label(trans('main.national_id'))
-                        ->visibleOn('view'),   
-                    Forms\Components\TextInput::make('student.course.name')->label(trans_choice('main.academic_course',1))
-                        ->visibleOn('view'),   
+                    Forms\Components\TextInput::make('username')->label(trans('main.student_name')),        
+                    Forms\Components\TextInput::make('national_id')->label(trans('main.national_id')),   
+                    Forms\Components\TextInput::make('course')->label(trans_choice('main.academic_course',1)),   
                     Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
                             ->options(
                                 [
                                     'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
                                     ]
                             )
-                            ->visibleOn('view')
                             ->disabled(),  
                           
                   ])
+                  ->visibleOn('view')
             ]);
     }
 
@@ -168,7 +168,7 @@ class ParentModelResource extends Resource
             'index' => Pages\ListParentModels::route('/'),
             'create' => Pages\CreateParentModel::route('/create'),
             'edit' => Pages\EditParentModel::route('/{record}/edit'),
-            'view' => Pages\EditParentModel::route('/{record}'),
+            'view' => Pages\ViewParent::route('/{record}'),
         ];
     }
 }

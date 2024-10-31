@@ -38,8 +38,8 @@ class ParentModel extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function student(): HasMany
+    public function student(): HasOne
     {
-        return $this->hasMany(Student::class,'parent_id','id');
+        return $this->hasOne(Student::class,'parent_id','id');
     }
 }

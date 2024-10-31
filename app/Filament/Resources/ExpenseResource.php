@@ -17,6 +17,7 @@ use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Columns\Summarizers\Sum;
 use App\Filament\Resources\ExpenseResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ExpenseResource\RelationManagers;
@@ -102,11 +103,28 @@ class ExpenseResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by')),
-                Tables\Columns\TextColumn::make('total')->label(trans('main.total'))
-                ->state(function (Expense $record): float {
+                // Tables\Columns\TextColumn::make('total')->label(trans('main.total'))
+                // ->state(function (Expense $record): float {
+                //     $vat = \App\Models\ValueAddedTax::first();
+                //     return floatval((($vat->percentage / 100) * ($record->value)) + $record->value);
+                // })
+                Tables\Columns\TextColumn::make('value')->label(trans('main.total'))
+                 ->summarize(Sum::make()->label('Total')  
+                 ->using(function(Builder $query): string {
                     $vat = \App\Models\ValueAddedTax::first();
-                    return floatval((($vat->percentage / 100) * ($record->value)) + $record->value);
-                })
+                    $total =0;
+                    foreach(Expense::get() as $exp)
+                    {
+                        if($exp->is_tax_included) {
+                            if($vat->created_at > $exp->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$exp->created_at)->first() ?? $vat;
+                            $total+=floatval((($vat->percentage / 100) * ($exp->value)) + $exp->value);
+                        }else
+                        {
+                            $total+=$exp->value;
+                        }
+                    }
+                    return $total;
+                 } ))
             ])
             ->filters([
                 SelectFilter::make('transaction_category_id')->label(trans_choice('main.expense_name',1))
