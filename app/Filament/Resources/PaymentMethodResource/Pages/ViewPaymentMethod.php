@@ -18,7 +18,7 @@ class ViewPaymentMethod extends ViewRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
       
-        $data['add_refrence_number']  = $data['code'] ? true : false;
+        $data['add_refrence_number']  = $data['is_code_required'] ? true : false;
 
         return $data;
     }

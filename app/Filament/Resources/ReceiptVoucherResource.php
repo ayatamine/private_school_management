@@ -80,10 +80,17 @@ class ReceiptVoucherResource extends Resource
                         name: 'paymentMethod',
                         modifyQueryUsing: fn (Builder $query) => $query->latest(),
                     )
+                    ->live()
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                     // ->hidden(fn(Get $get) =>$get('payment_method_id') == null)
                     ,
                 
+                Forms\Components\TextInput::make('refrence_number')->label(trans('main.refrence_number'))
+                    ->hidden(function(Get $get){
+                        $payment_method = PaymentMethod::find($get('payment_method_id'));
+                        return !$payment_method?->is_code_required ?? true ;
+                    })
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('payment_date')->label(trans('main.payment_date'))

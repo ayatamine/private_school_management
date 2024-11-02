@@ -20,17 +20,7 @@ class EditStudent extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Action::make('update_balance')
-                    ->color('info')
-                    ->label(trans('main.update_balance'))
-                    ->form([
-                        TextInput::make('opening_balance')->label(trans('main.balance'))
-                            ->numeric()
-                            ->required(),
-                    ])
-                    ->action(function (array $data, Student $record) {
-                        $record->update($data);
-                    }),
+          
         ];
     }
     

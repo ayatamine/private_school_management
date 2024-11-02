@@ -19,7 +19,17 @@ class EditPaymentMethod extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
       
-        $data['add_refrence_number']  = $data['code'] ? true : false;
+        $data['add_refrence_number']  = $data['is_code_required'] ? true : false;
+
+        return $data;
+    }
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['code']  = '';
+        if($data['add_refrence_number'] == false){
+           
+            $data['is_code_required']  = false;
+        }   
 
         return $data;
     }

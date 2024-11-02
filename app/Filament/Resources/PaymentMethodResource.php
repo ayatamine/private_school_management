@@ -55,11 +55,11 @@ class PaymentMethodResource extends Resource
                         ->columnSpanFull()
                         ->default(false)
                         ->live(),
-                    Forms\Components\TextInput::make('code')->label(trans('main.reference_number'))
-                        // ->visible(fn (Get $get) => $get('add_refrence_number') == true)
-                        ->maxLength(255)
-                        ->default('PM')
-                        ->visible(fn(Get $get)=>$get('add_refrence_number')),
+                    // Forms\Components\TextInput::make('code')->label(trans('main.reference_number'))
+                    //     // ->visible(fn (Get $get) => $get('add_refrence_number') == true)
+                    //     ->maxLength(255)
+                    //     ->default('PM')
+                    //     ->visible(fn(Get $get)=>$get('add_refrence_number')),
                     Forms\Components\Toggle::make('is_code_required')->label(trans('main.is_reference_number_required'))
                         ->columnSpanFull()
                         ->visible(fn (Get $get) => $get('add_refrence_number') == true),

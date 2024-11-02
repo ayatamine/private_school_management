@@ -27,9 +27,10 @@ trait HasPayments {
      */
     public function totalFees() {
         $tuition_fees_total = $this->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
+        $general_fees_total = $this->calculatePaymentPartitions('App\Models\GeneralFee',"otherFees");
         $transport_fees_total = $this->calculatePaymentPartitions('App\Models\TransportFee',"transportFees");
 
-        return $tuition_fees_total + $transport_fees_total;
+        return $tuition_fees_total + $transport_fees_total+  $transport_fees_total;
     }
  
     /**

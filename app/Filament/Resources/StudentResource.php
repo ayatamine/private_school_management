@@ -276,6 +276,7 @@ class StudentResource extends Resource
                     ->schema([ Grid::make()
                      ->schema([
                         Forms\Components\TextInput::make('opening_balance')->label(trans('main.opening_balance'))
+                            ->disabled()
                             ->numeric()
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make(name: 'finance_document')->label(trans('main.document'))
@@ -286,6 +287,20 @@ class StudentResource extends Resource
                             ->maxLength(255),
                         
                 ])
+                ])
+                ->headerActions([
+                    Forms\Components\Actions\Action::make('update_balance')
+                    ->color('info')
+                    ->label(trans('main.update_balance'))
+                    ->form([
+                        Forms\Components\TextInput::make('opening_balance')->label(trans('main.balance'))
+                            ->numeric()
+                            ->required(),
+                    ])
+                    ->action(function (array $data, Student $record) {
+                        dd($record);
+                        $record->update($data);
+                    }),
                 ])
                 // ->visible(fn (Get $get) => $get('new_student') == false )
                 // ->hidden()
@@ -481,6 +496,22 @@ class StudentResource extends Resource
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.balance_calculate_method');
+                                }),
+                                TextEntry::make('total_fees_to_pay')->label(trans('main.total_fees_to_pay'))
+                                ->color('primary')
+                                ->size(TextEntry\TextEntrySize::Large)
+                                ->weight(FontWeight::Bold)
+                                ->tooltip(function (TextEntry $component): ?string {
+                                    
+                                    return trans('main.total_fees_to_pay_method');
+                                }),
+                                TextEntry::make('total_fees_rest')->label(trans('main.total_fees_rest'))
+                                ->color('primary')
+                                ->size(TextEntry\TextEntrySize::Large)
+                                ->weight(FontWeight::Bold)
+                                ->tooltip(function (TextEntry $component): ?string {
+                                    
+                                    return trans('main.total_fees_to_rest_method');
                                 })
                        
                         ]),
