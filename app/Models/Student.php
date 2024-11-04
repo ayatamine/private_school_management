@@ -181,7 +181,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees() + $this->opening_balance - $this->payments()  ." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                return $this->totalFees()   ." " .trans("main.".env('DEFAULT_CURRENCY')."");
             }
         );
     }

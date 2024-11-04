@@ -53,8 +53,9 @@
                 
                 @foreach ($getState() as $fee)
                  @if(count($fee->payment_partition))
+                
                   @foreach ($fee->payment_partition as $i=> $partition)
-                    
+
                    {{-- if student transport has been terminated after due date --}}
                     @if( $getRecord()->transport && ($getRecord()->transport->termination_date == null || ($getRecord()->transport->termination_date > $partition['due_date'])) )
                     
