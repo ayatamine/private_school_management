@@ -40,9 +40,10 @@ trait HasPayments {
      */
     public function calculatePaymentPartitions():float {
 
-        $fee_types = ["tuitionFees","otherFees","transportFees"];
+        $fee_types = ["tuitionFees"];
 
         $total_sum=0;
+        $total= $value_after_discount=$value_after_tax=[];
         foreach ($fee_types as $fee_type)
         {
             foreach ($this->{$fee_type} as $ind=>$fee)
@@ -95,25 +96,27 @@ trait HasPayments {
                                 {
                                     if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                         {
-                                            $value_after_discount[$i] =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                                            $value_after_discount[$i] =floatval($partition['value']) * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                         }
                                         else{
-                                            $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['value'];
+                                            $value_after_discount[$i] = floatval($partition['value']) - $decodedDiscounts[$i]['value'];
                                         }
                                 }
-                                if($this->nationality != "saudian")
+                                if($this->nationality == "saudian" && $fee_type =='tuitionFees')
                                 {
-                                    $vat = \App\Models\ValueAddedTax::first();
-                                    $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? $partition['value']);
+                                    // $vat = \App\Models\ValueAddedTax::first();
+                                    $value_after_tax[$i] = $value_after_discount[$i] ?? floatval($partition['value']);
                                 }else{
-                                    if($fee_type !='tuitionFees')
-                                    {
+                                    // if($fee_type !='tuitionFees')
+                                    // {
+                                    
                                         $vat = \App\Models\ValueAddedTax::first();
-                                        $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? $partition['value']);
-                                    }
+                                        $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? floatval($partition['value']));
+                                    // }
                                     
                                 }
-                                $total[$i] = ($value_after_discount[$i] ?? $partition['value']) + ($value_after_tax[$i] ?? 0);
+                                
+                                $total[$i] = ($value_after_discount[$i] ?? floatval($partition['value'])) + ($value_after_tax[$i] ?? 0);
 
                             }
                         }

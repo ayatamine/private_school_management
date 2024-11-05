@@ -111,7 +111,7 @@
                          </td>
                          @endif
                          
-                        @if($getRecord()->nationality != "saudian")
+                        {{-- @if($getRecord()->nationality != "saudian") --}}
                         @php
                             $vat = null;
                             if(\App\Models\ValueAddedTax::count() == 1)
@@ -135,15 +135,14 @@
                             @endphp
                             {{$value_after_tax[$i]}}
                         </td>
-                        @else 
+                        {{-- @else 
                         <td class="px-6 py-4 border">
                            0%
                         </td>
                         <td class="px-6 py-4 border">
-                            {{-- here you can check if the orginal value or value_after_discount[$i] is with vat or not  --}}
                             {{$value_after_discount[$i] ?? $partition['value']}}
                         </td>
-                        @endif
+                        @endif --}}
                         <td class="px-6 py-4 border">
                             {{$partition['due_date']}}
                         </td>
