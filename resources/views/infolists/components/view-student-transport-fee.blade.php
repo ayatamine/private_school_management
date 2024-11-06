@@ -111,7 +111,7 @@
                          @else 
     
                          <td class="px-6 py-4 border" >
-                            0
+                            0%
                          </td>
                          <td class="px-6 py-4 border" >
                             {{$partition['value']}}

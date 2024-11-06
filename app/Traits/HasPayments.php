@@ -40,35 +40,38 @@ trait HasPayments {
      */
     public function calculatePaymentPartitions():float {
 
-        $fee_types = ["tuitionFees"];
+        $fee_types = ["tuitionFees","transportFees","otherFees"];
 
         $total_sum=0;
         $total= $value_after_discount=$value_after_tax=[];
         foreach ($fee_types as $fee_type)
-        {
+        {   
             foreach ($this->{$fee_type} as $ind=>$fee)
-            {
+            {   
                     if(count($fee->payment_partition))
                     {
+                        $can_be_calculated =[];
                         foreach ($fee->payment_partition as $i=> $partition)
                         {
-                            $can_be_calculated  =false;
+                            $can_be_calculated[$i]  =false;
                             if($fee_type =='tuitionFees')
                             {
                                 if($this->termination_date ==null || $this->termination_date > $partition['due_date'])
                                 {
-                                    $can_be_calculated = true;
+                                    $can_be_calculated[$i] = true;
                                 }
                             }
                             else //transport fee
                             {
                                 if($this->transport && ( $this->transport->termination_date == null || $this->transport->termination_date > $partition['due_date']))
                                 {
-                                    $can_be_calculated = true;
+                                    $can_be_calculated[$i] = true;
                                 }
                             }
+                            //if student registered after due_date_end
+                            if($this->approved_at && ($partition['due_date_end_at'] < $this->approved_at)) $partition['value'] =  0;
                             //calculate only if the requirement is ok
-                            if($can_be_calculated)
+                            if($can_be_calculated[$i])
                             {
                                 switch ($fee_type) {
                                     case 'tuitionFees':
@@ -101,6 +104,10 @@ trait HasPayments {
                                         else{
                                             $value_after_discount[$i] = floatval($partition['value']) - $decodedDiscounts[$i]['value'];
                                         }
+                                }
+                                else
+                                {
+                                    $value_after_discount[$i] =   floatval($partition['value']);
                                 }
                                 if($this->nationality == "saudian" && $fee_type =='tuitionFees')
                                 {
