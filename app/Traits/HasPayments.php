@@ -40,7 +40,7 @@ trait HasPayments {
      */
     public function calculatePaymentPartitions():float {
 
-        $fee_types = ["tuitionFees","transportFees","otherFees"];
+        $fee_types = ["transportFees"];
 
         $total_sum=0;
         $total= $value_after_discount=$value_after_tax=[];
@@ -123,8 +123,9 @@ trait HasPayments {
                                     
                                 }
                                 
-                                $total[$i] = ($value_after_discount[$i] ?? floatval($partition['value'])) + ($value_after_tax[$i] ?? 0);
-
+                                
+                                $total[$i] = $value_after_tax[$i] ?? 0;
+                                
                             }
                         }
                     }
