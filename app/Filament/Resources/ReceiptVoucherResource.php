@@ -167,8 +167,9 @@ class ReceiptVoucherResource extends Resource
                     ->icon('icon-print')
                     ->color('info')
                     ->label(trans('main.print_receipt_voucher'))
-                    ->action(function(ReceiptVoucher $record) {
-                        $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
+                    ->url(fn(ReceiptVoucher $record) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$record->id]))
+                    // ->action(function(ReceiptVoucher $record) {
+                    //     $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
                      
                         // $pdf = PDF::loadView('pdf.receipt_voucher', $data);
                         // // return $pdf->download('document.pdf');
@@ -191,13 +192,13 @@ class ReceiptVoucherResource extends Resource
                             //     $headers
                             // );
 
-                            $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
-                            $pdf->simpleTables = true;
+                    //         $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
+                    //         $pdf->simpleTables = true;
 
-                            $pdf->download("fee_payment_receipt_$record->id.pdf");
-                            header("Refresh:0");
+                    //         $pdf->download("fee_payment_receipt_$record->id.pdf");
+                    //         header("Refresh:0");
 
-                    }),
+                    // }),
                 // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

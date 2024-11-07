@@ -97,16 +97,8 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))
-                    ->action(function(array $arguments,array $data) {
-                        
-                        $data = ['student' => $this->record,'settings'=>SchoolSetting::first()];
-                            $pdf = MPDF::loadView('pdf.all_fees', $data);
-                            $pdf->simpleTables = true;
-
-                            $pdf->download(`all_fees_for_student_{{$this->record->username}}.pdf`);
-                            header("Refresh:0");
-
-                    })
+                    ->url(route('print_pdf',['type'=>"all_fees",'id'=>$this->record->id]))
+                    
         ];
     }
     public function getFormStatePath(): string
@@ -235,15 +227,16 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     // ->icon('icon-print')
                     ->color('primary')
                     ->label(trans('main.print'))
-                    ->action(function(array $arguments,array $data) {
-                        $data = ['receipt' => ReceiptVoucher::find($arguments['payment_id']),'settings'=>SchoolSetting::first()];
-                            $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
-                            $pdf->simpleTables = true;
+                    ->url(fn(array $arguments) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$arguments['payment_id']]));
+                    // ->action(function(array $arguments,array $data) {
+                    //     $data = ['receipt' => ReceiptVoucher::find($arguments['payment_id']),'settings'=>SchoolSetting::first()];
+                    //         $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
+                    //         $pdf->simpleTables = true;
 
-                            $pdf->download('document.pdf');
-                            header("Refresh:0");
+                    //         $pdf->download('document.pdf');
+                    //         header("Refresh:0");
 
-                    });
+                    // });
                 }
                 catch(\Exception $ex)
                 {
@@ -257,15 +250,16 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     ->icon('icon-print')
                     ->color('info')
                     ->label(trans('main.print_all_payments'))
-                    ->action(function(array $arguments) {
-                        $data = ['student' => $this->record,'settings'=>SchoolSetting::first()];
-                            $pdf = MPDF::loadView('pdf.all_payments', $data);
-                            $pdf->simpleTables = true;
+                    ->url( route('print_pdf',['type'=>"all_payments",'id'=>$this->record->id]));
+                    // ->action(function(array $arguments) {
+                    //     $data = ['student' => $this->record,'settings'=>SchoolSetting::first()];
+                    //         $pdf = MPDF::loadView('pdf.all_payments', $data);
+                    //         $pdf->simpleTables = true;
 
-                            $pdf->download('document.pdf');
-                            header("Refresh:0");
+                    //         $pdf->download('document.pdf');
+                    //         header("Refresh:0");
 
-                    });
+                    // });
                 }
                 catch(\Exception $ex)
                 {

@@ -454,16 +454,7 @@ class StudentResource extends Resource
                     ->icon('icon-print')
                                 ->color('info')
                                 ->label(trans('main.print_all_payments'))
-                                ->action(function(Student $student,array $arguments) {
-                                  
-                                    $data = ['student' => $student,'settings'=>SchoolSetting::first()];
-                                        $pdf = MPDF::loadView('pdf.all_payments', $data);
-                                        $pdf->simpleTables = true;
-
-                                        $pdf->download('document.pdf');
-                                        header("Refresh:0");
-
-                                })
+                                ->url(fn(Student $student)=> route('print_pdf',['type'=>"all_payments",'id'=>$student->id]))
                                 ->visible(fn(Student $student)=>count($student->receiptVoucher) != 0)
                         ])
                         ->schema([
