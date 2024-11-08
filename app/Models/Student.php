@@ -181,15 +181,15 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees()   ." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                return $this->totalFees()  + $this->opening_balance  ." " .trans("main.".env('DEFAULT_CURRENCY')."");
             }
         );
     }
-    public function totalFeesToPay():Attribute
+    public function totalFeesAfterDueDate():Attribute //اجمالي الرسوم بعد تاريخ الاستحقاق
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees() + $this->opening_balance ." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                return $this->totalFeesAfterDueDate() + $this->opening_balance ." " .trans("main.".env('DEFAULT_CURRENCY')."");
             }
         );
     }

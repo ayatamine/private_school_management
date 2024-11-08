@@ -40,7 +40,7 @@ trait HasPayments {
      */
     public function calculatePaymentPartitions():float {
 
-        $fee_types = ["transportFees"];
+        $fee_types = ["tuitionFees","transportFees","otherFees"];
 
         $total_sum=0;
         $total= $value_after_discount=$value_after_tax=[];
@@ -54,7 +54,7 @@ trait HasPayments {
                         foreach ($fee->payment_partition as $i=> $partition)
                         {
                             $can_be_calculated[$i]  =false;
-                            if($fee_type =='tuitionFees')
+                            if($fee_type =='tuitionFees'  || $fee_type =='otherFees')
                             {
                                 if($this->termination_date ==null || $this->termination_date > $partition['due_date'])
                                 {
@@ -100,6 +100,7 @@ trait HasPayments {
                                     if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                         {
                                             $value_after_discount[$i] =floatval($partition['value']) * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                                            
                                         }
                                         else{
                                             $value_after_discount[$i] = floatval($partition['value']) - $decodedDiscounts[$i]['value'];
@@ -112,20 +113,26 @@ trait HasPayments {
                                 if($this->nationality == "saudian" && $fee_type =='tuitionFees')
                                 {
                                     // $vat = \App\Models\ValueAddedTax::first();
-                                    $value_after_tax[$i] = $value_after_discount[$i] ?? floatval($partition['value']);
+                                    $value_after_tax[$i] = 0;
+                                   
                                 }else{
-                                    // if($fee_type !='tuitionFees')
-                                    // {
-                                    
-                                        $vat = \App\Models\ValueAddedTax::first();
+                                        $vat = null;
+                                        if(\App\Models\ValueAddedTax::count() == 1)
+                                        {
+                                            $vat = \App\Models\ValueAddedTax::first();
+                                        }
+                                        else
+                                        {
+                                            $payment_due_date = $partition['due_date'];
+                                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',$payment_due_date))->first();   
+                                        }
                                         $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? floatval($partition['value']));
-                                    // }
                                     
                                 }
                                 
                                 
-                                $total[$i] = $value_after_tax[$i] ?? 0;
-                                
+                                $total[$i] = $value_after_tax[$i]  + $value_after_discount[$i] ;
+                               
                             }
                         }
                     }
@@ -201,5 +208,6 @@ trait HasPayments {
        return $total_sum;
 
     }
+
 
 }
