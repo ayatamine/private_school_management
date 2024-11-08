@@ -121,17 +121,17 @@
                             else
                             {
                                 $payment_due_date = $partition['due_date'];
-                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',$payment_due_date))->first();   
+                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                             }
                         @endphp
                         
                         <td class="px-6 py-4 border">
-                            {{$vat->percentage}} %
+                            {{$vat?->percentage ?? 0}} %
                         </td>
                         <td class="px-6 py-4 border">
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? $partition['value'])
+                                $value_after_tax[$i] = ($vat?->percentage ??0 / 100) * ($value_after_discount[$i] ?? $partition['value'])
                             @endphp
                             {{$value_after_tax[$i]}}
                         </td>

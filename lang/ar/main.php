@@ -114,6 +114,7 @@ return [
     'payment_method_name'=>'اسم طريقة الدفع',
     'is_reference_number_required'=>'هل الرقم المرجعي الزامي؟',
     'add_refrence_number'=>'هل تريد إضافة رقم مرجعي؟',
+    'refrence_number'=>'الرقم المرجعي',
     'reference_number'=>'الرقم المرجعي',
     'tax_name'=>'اسم الضريبة',
     'tax_percentage'=>'نسبة الضريبة',

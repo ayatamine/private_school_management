@@ -99,7 +99,7 @@ class Student extends Model
         'terminated_by' => 'integer',
         'opening_balance' => 'double',
     ];
-    protected $appends=['username','balance','total_fees_to_pay','total_fees_rest'];
+    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest'];
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
@@ -181,7 +181,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees()  + $this->opening_balance  ." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                return $this->totalFees()  + $this->opening_balance - $this->payments() ;
             }
         );
     }
@@ -189,7 +189,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFeesAfterDueDate() + $this->opening_balance ." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                return $this->calculatePaymentPartitions(true) + $this->opening_balance;
             }
         );
     }
@@ -197,7 +197,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees() + $this->opening_balance -  $this->payments()  ." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                return $this->totalFeesAfterDueDate -  $this->payments() ;
             }
         );
     }

@@ -321,16 +321,25 @@
                          
                         @if($invoice->student->nationality != "saudian")
                         @php
-                            $vat = \App\Models\ValueAddedTax::first();
+                            $vat = null;
+                            if(\App\Models\ValueAddedTax::count() == 1)
+                            {
+                                $vat = \App\Models\ValueAddedTax::first();
+                            }
+                            else
+                            {
+                                $payment_due_date = $partition['due_date'];
+                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                            }
                         @endphp
                         
                         <td >
-                            {{$vat->percentage}} %
+                            {{$vat?->percentage}} %
                         </td>
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
+                                $value_after_tax = ($vat?->percentage / 100) * ($value_after_discount ?? $partition['value']);
 
                                 $total_of_taxes[$i]=$value_after_tax;
                             @endphp

@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Income;
+use App\Models\Expense;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FinanceAccount extends Model
 {
@@ -38,4 +42,44 @@ class FinanceAccount extends Model
         'is_active' => 'boolean',
         'is_visible' => 'boolean',
     ];
+    public function paymentMethods():HasMany
+    {
+        return $this->hasMany(PaymentMethod::class,'finance_account_id','id');
+    }
+    public function balance():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                return $this->opening_balance  + $this->totalTransfert() + $this->totalPayment() + $this->totalIncomes() - $this->totalExpenses();
+            }
+        );
+    }
+    public function totalTransfert():float
+    {
+        $transfers_out = Transfer::where('from_account_id',$this->id)->count('amount');
+        $transfers_in = Transfer::where('to_account_id',$this->id)->count('amount');
+        return floatval($transfers_in - $transfers_out);
+    }
+   
+    public function totalPayment():float
+    {
+        $payment_methods = $this->paymentMethods()->pluck('id');
+    
+        $receipt_vouchers = ReceiptVoucher::whereIn('payment_method_id',$payment_methods)->count();
+        return $receipt_vouchers;
+    }
+    public function totalIncomes():float
+    {
+        $payment_methods = $this->paymentMethods()->pluck('id');
+    
+        $incomes = Income::whereIn('payment_method_id',$payment_methods)->count();
+        return $incomes;
+    }
+    public function totalExpenses():float
+    {
+        $payment_methods = $this->paymentMethods()->pluck('id');
+    
+        $expenses = Expense::whereIn('payment_method_id',$payment_methods)->count();
+        return $expenses;
+    }
 }

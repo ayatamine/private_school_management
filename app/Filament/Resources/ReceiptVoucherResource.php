@@ -54,11 +54,13 @@ class ReceiptVoucherResource extends Resource
                 ->schema([
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                     ->relationship('student', 'username')
+                    ->preload()
                     ->searchable()
                     ->getSearchResultsUsing(fn (string $search): array => Student::where('username', 'like', "%{$search}%")
                                                             ->orWhereHas('user',function($query) use ($search){
                                                                  $query->where('national_id', 'like', "%{$search}%");
-                                                            })->pluck('username', 'id')->toArray())
+                                                            })
+                                                            ->pluck('username', 'id')->toArray())
                     ->required(),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()

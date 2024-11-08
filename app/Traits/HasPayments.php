@@ -38,7 +38,7 @@ trait HasPayments {
      * @param string $fee_type
      * @return $number
      */
-    public function calculatePaymentPartitions():float {
+    public function calculatePaymentPartitions($only_need_to_pay=false):float {
 
         $fee_types = ["tuitionFees","transportFees","otherFees"];
 
@@ -68,6 +68,11 @@ trait HasPayments {
                                     $can_be_calculated[$i] = true;
                                 }
                             }
+                            //here if only partitions need to pay that has due_date  lower then today
+                             if($only_need_to_pay && $partition['due_date'] > now())
+                             {
+                                 $can_be_calculated[$i] = false;
+                             }
                             //if student registered after due_date_end
                             if($this->approved_at && ($partition['due_date_end_at'] < $this->approved_at)) $partition['value'] =  0;
                             //calculate only if the requirement is ok
@@ -124,9 +129,9 @@ trait HasPayments {
                                         else
                                         {
                                             $payment_due_date = $partition['due_date'];
-                                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',$payment_due_date))->first();   
+                                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                                         }
-                                        $value_after_tax[$i] = ($vat->percentage / 100) * ($value_after_discount[$i] ?? floatval($partition['value']));
+                                        $value_after_tax[$i] = ($vat->percentage ?? 0 / 100) * ($value_after_discount[$i] ?? floatval($partition['value']));
                                     
                                 }
                                 

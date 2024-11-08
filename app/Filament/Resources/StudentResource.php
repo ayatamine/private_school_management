@@ -484,14 +484,16 @@ class StudentResource extends Resource
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
+                                ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.balance_calculate_method');
                                 }),
-                                TextEntry::make('total_fees_to_pay')->label(trans('main.total_fees_to_pay'))
+                                TextEntry::make('total_fees_after_due_date')->label(trans('main.total_fees_to_pay'))
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
+                                ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.total_fees_to_pay_method');
@@ -500,6 +502,7 @@ class StudentResource extends Resource
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
+                                ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.total_fees_to_rest_method');

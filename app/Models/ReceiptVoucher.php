@@ -30,6 +30,7 @@ class ReceiptVoucher extends Model
         'simple_note',
         'reject_note',
         'status',
+        'refrence_number',
     ];
 
     /**
@@ -48,7 +49,7 @@ class ReceiptVoucher extends Model
     ];
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class)->where('termination_date',null);
+        return $this->belongsTo(Student::class)->where('termination_date',null)->where('status','approved');
     }
 
     public function paymentMethod(): BelongsTo
