@@ -48,7 +48,7 @@ class Course extends Model
     }
     public function tuitionFee(): HasOne
     {
-        return $this->hasOne(TuitionFee::class,'course_id','id');
+        return $this->hasOne(TuitionFee::class,'course_id','id')->where('academic_year_id',$this->academic_year_id);
     }
     public function generalFee(): HasOne
     {
