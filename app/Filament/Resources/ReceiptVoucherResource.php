@@ -61,7 +61,8 @@ class ReceiptVoucherResource extends Resource
                                                                  $query->where('national_id', 'like', "%{$search}%");
                                                             })
                                                             ->pluck('username', 'id')->toArray())
-                    ->required(),
+                    ->required()
+                    ->default(request()['student']),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric()

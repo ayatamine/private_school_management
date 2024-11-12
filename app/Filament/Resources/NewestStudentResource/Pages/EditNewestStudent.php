@@ -28,7 +28,7 @@ class EditNewestStudent extends EditRecord
         $data['phone_number'] = $user->phone_number;
         $data['email'] = $user->email;
 
-        $data['birt_date'] = date('Y-m-d' ,strtotime($data['birth_date']));
+        $data['birth_date'] = date('Y-m-d' ,strtotime($data['birth_date']));
 
         if( $data['semester_id'])
         {

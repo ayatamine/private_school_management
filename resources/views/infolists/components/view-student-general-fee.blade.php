@@ -90,7 +90,7 @@
                                     }
                                     else{
                                         
-                                        $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['value'];
+                                        $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                     }
                                 }else
                                 {
@@ -131,7 +131,7 @@
                         <td class="px-6 py-4 border">
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax[$i] = ($vat?->percentage ??0 / 100) * ($value_after_discount[$i] ?? $partition['value'])
+                                $value_after_tax[$i] = (($vat?->percentage ? $vat?->percentage : 0) / 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value'])
                             @endphp
                             {{$value_after_tax[$i]}}
                         </td>
@@ -148,7 +148,7 @@
                         </td>
                         <td class="px-6 py-4 border">
                             @php
-                                $total[$i] = ($value_after_discount[$i] ?? $partition['value']) + ($value_after_tax[$i] ?? 0);
+                                $total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + ($value_after_tax[$i] ? $value_after_tax[$i] : 0);
                             @endphp
                             {{$total[$i]}}
                         </td>

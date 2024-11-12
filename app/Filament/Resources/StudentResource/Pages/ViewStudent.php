@@ -151,7 +151,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
         ->action(function (array $arguments,array $data) {
          
             $fee =$arguments['feeable_type']::findOrFail($arguments['fee_id']);
-          
+            
             $payment_partition = $fee->payment_partition;
 
             if($data['concession_fee_id'] == 0)
@@ -167,6 +167,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             {
        
                 $concession_fee = ConcessionFee::findOrFail($data['concession_fee_id']);
+               
                 if(array_key_exists($arguments['partition'],$payment_partition))
                 {
                 
@@ -178,6 +179,8 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     $discounts['discount_type'] = $concession_fee->type;
                     $discounts['discount_value'] = $concession_fee->value;
                     $payment_partition[$arguments['partition']] = $discounts;
+                    dd($payment_partition);
+                    dd($discounts);
                     DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($payment_partition),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
                 }
             }

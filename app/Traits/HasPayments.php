@@ -108,7 +108,7 @@ trait HasPayments {
                                             
                                         }
                                         else{
-                                            $value_after_discount[$i] = floatval($partition['value']) - $decodedDiscounts[$i]['value'];
+                                            $value_after_discount[$i] = floatval($partition['value']) - $decodedDiscounts[$i]['discount_value'];
                                         }
                                 }
                                 else
@@ -131,7 +131,7 @@ trait HasPayments {
                                             $payment_due_date = $partition['due_date'];
                                             $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                                         }
-                                        $value_after_tax[$i] = ($vat->percentage ?? 0 / 100) * ($value_after_discount[$i] ?? floatval($partition['value']));
+                                        $value_after_tax[$i] = (($vat?->percentage ? $vat->percentage : 0 )/ 100) * ($value_after_discount[$i] ? $value_after_discount[$i] : floatval($partition['value']));
                                     
                                 }
                                 

@@ -56,8 +56,8 @@ class FinanceAccount extends Model
     }
     public function totalTransfert():float
     {
-        $transfers_out = Transfer::where('from_account_id',$this->id)->count('amount');
-        $transfers_in = Transfer::where('to_account_id',$this->id)->count('amount');
+        $transfers_out = Transfer::where('from_account_id',$this->id)->sum('amount');
+        $transfers_in = Transfer::where('to_account_id',$this->id)->sum('amount');
         return floatval($transfers_in - $transfers_out);
     }
    
@@ -65,21 +65,21 @@ class FinanceAccount extends Model
     {
         $payment_methods = $this->paymentMethods()->pluck('id');
     
-        $receipt_vouchers = ReceiptVoucher::whereIn('payment_method_id',$payment_methods)->count();
+        $receipt_vouchers = ReceiptVoucher::whereIn('payment_method_id',$payment_methods)->sum('value');
         return $receipt_vouchers;
     }
     public function totalIncomes():float
     {
         $payment_methods = $this->paymentMethods()->pluck('id');
     
-        $incomes = Income::whereIn('payment_method_id',$payment_methods)->count();
+        $incomes = Income::whereIn('payment_method_id',$payment_methods)->sum('value');
         return $incomes;
     }
     public function totalExpenses():float
     {
         $payment_methods = $this->paymentMethods()->pluck('id');
     
-        $expenses = Expense::whereIn('payment_method_id',$payment_methods)->count();
+        $expenses = Expense::whereIn('payment_method_id',$payment_methods)->sum('value');
         return $expenses;
     }
 }

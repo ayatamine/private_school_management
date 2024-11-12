@@ -301,7 +301,7 @@
                                      $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['discount_value'];
                                 }
                                    
                                 $total_without_taxes[$i]=$value_after_discount;
@@ -339,7 +339,7 @@
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ($vat?->percentage / 100) * ($value_after_discount ?? $partition['value']);
+                                $value_after_tax = (($vat?->percentage ? $vat?->percentage : 0) / 100) * (isset($value_after_discount) ? $value_after_discount :  $partition['value']);
 
                                 $total_of_taxes[$i]=$value_after_tax;
                             @endphp
@@ -351,7 +351,7 @@
                         </td>
                         <td >
                             @php
-                                $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
+                                $total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? : 0);
                             @endphp
                             {{$total[$i]}}
                         </td>
@@ -361,14 +361,28 @@
                 @endforeach
                 {{-- total without taxes --}}
                 <tr>
-                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_without_taxes')}}</td>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>
+                        {{trans('main.total_without_taxes')}}</td>
                     <td>
                         {{array_sum($total_without_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 {{-- total without taxes --}}
+                @php
+                    $vat = null;
+                    if(\App\Models\ValueAddedTax::count() == 1)
+                    {
+                        $vat = \App\Models\ValueAddedTax::first();
+                    }
+                    else
+                    {
+                        $payment_due_date = $partition['due_date'];
+                        $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                    }
+                @endphp
                 <tr>
-                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}({{\App\Models\ValueAddedTax::first()->percentage }}%)</td>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>
+                        {{trans('main.total_of_taxes')}}({{$vat?->percentage }}%)</td>
                     <td>
                         {{array_sum($total_of_taxes)}}  {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
@@ -445,7 +459,7 @@
                         @endphp
                         @if(isset($decodedDiscounts[0]))
                         <td  >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{isset($decodedDiscounts[0]['discount_value']) ? $decodedDiscounts[0]['discount_value'] : 0}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
@@ -482,7 +496,7 @@
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ($vat->percentage / 100) * ($value_after_discount ?? $partition['value']);
+                                $value_after_tax = (($vat?->percentage ? $vat?->percentage : 0) / 100) * (isset($value_after_discount) ? $value_after_discount :  $partition['value']);
 
                                 $total_of_taxes[$i]=$value_after_tax;
                             @endphp
@@ -494,7 +508,7 @@
                         </td>
                         <td >
                             @php
-                                $total[$i] = ($value_after_discount ?? $partition['value']) + ($value_after_tax ?? 0);
+                                $total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0);
                             @endphp
                             {{$total[$i]}}
                         </td>
@@ -510,8 +524,22 @@
                     </td>
                 </tr>
                 {{-- total without taxes --}}
+                @php
+                    $vat = null;
+                    if(\App\Models\ValueAddedTax::count() == 1)
+                    {
+                        $vat = \App\Models\ValueAddedTax::first();
+                    }
+                    else
+                    {
+                        $payment_due_date = $partition['due_date'];
+                        $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                    }
+                @endphp
                 <tr>
-                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}({{\App\Models\ValueAddedTax::first()->percentage }}%)</td>
+                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>
+                        {{trans('main.total_of_taxes')}}({{$vat?->percentage }}%)
+                    </td>
                     <td>
                         {{array_sum($total_of_taxes)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>

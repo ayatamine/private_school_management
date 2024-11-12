@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use Closure;
 use MPDF;
+use Closure;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -26,6 +26,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\Request;
+use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
@@ -298,8 +299,16 @@ class StudentResource extends Resource
                             ->required(),
                     ])
                     ->action(function (array $data, Student $record) {
-                        dd($record);
+                        
                         $record->update($data);
+                        Notification::make()
+                            ->title(trans('main.balance_updated_successfully'))
+                            ->icon('heroicon-o-document-text')
+                            ->iconColor('success')
+                            ->send();
+                        return redirect()->route('filament.admin.resources.students.edit',['record'=>$record->id]);
+
+
                     }),
                 ])
                 // ->visible(fn (Get $get) => $get('new_student') == false )
@@ -448,7 +457,7 @@ class StudentResource extends Resource
                         ->headerActions([
                             Action::make('edit')
                                 ->label(trans('main.new_receipt_payment'))
-                                ->url(route('filament.admin.resources.receipt-vouchers.create'))
+                                ->url(fn(STudent $student) =>route('filament.admin.resources.receipt-vouchers.create',['student'=>$student->id]))
                                 ->openUrlInNewTab(),
                             Action::make('printAllPayments')
                     ->icon('icon-print')
