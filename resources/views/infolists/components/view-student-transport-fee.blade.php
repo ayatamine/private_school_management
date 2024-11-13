@@ -50,7 +50,6 @@
                 @php
                     $total= $value_after_discount=$value_after_tax=[];
                 @endphp
-                
                 @foreach ($getState() as $fee)
                  @if(count($fee->payment_partition))
                 
@@ -69,7 +68,7 @@
                         <td class="px-6 py-4 border">
                             {{-- added --}}
                             @php
-                                if($getRecord()->approved_at && ($partition['due_date_end_at'] < $getRecord()->approved_at)) $partition['value'] =  0;
+                                if(\App\Models\Transport::whereStudentId($getRecord()->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
@@ -146,7 +145,7 @@
                         </td>
                         <td class="px-6 py-4 border">
                             @php
-                                $total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + ($value_after_tax[$i] ? $value_after_tax[$i] : 0);
+                                $total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                             @endphp
                             {{$total[$i]}}
                             

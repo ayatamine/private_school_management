@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\Transport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -67,6 +68,7 @@ trait HasPayments {
                                 {
                                     $can_be_calculated[$i] = true;
                                 }
+                                if(Transport::whereStudentId($this->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
                             }
                             //here if only partitions need to pay that has due_date  lower then today
                              if($only_need_to_pay && $partition['due_date'] > now())
@@ -131,7 +133,7 @@ trait HasPayments {
                                             $payment_due_date = $partition['due_date'];
                                             $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                                         }
-                                        $value_after_tax[$i] = (($vat?->percentage ? $vat->percentage : 0 )/ 100) * ($value_after_discount[$i] ? $value_after_discount[$i] : floatval($partition['value']));
+                                        $value_after_tax[$i] = (($vat?->percentage ? $vat->percentage : 0 )/ 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : floatval($partition['value']));
                                     
                                 }
                                 
