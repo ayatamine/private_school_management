@@ -521,14 +521,14 @@
                     <th scope="col" >
                         {{trans('main.value_after_discount')}}
                     </th>
-                    @if($invoice->student->nationality != "saudian")
+                    
                     <th scope="col" >
                         {{trans('main.tax_percentage')}}
                     </th>
                     <th scope="col" >
                         {{trans('main.tax_value')}}
                     </th>
-                    @endif
+                    
                     <th scope="col" >
                         {{trans('main.due_date')}}
                     </th>
@@ -590,8 +590,7 @@
                             0
                          </td>
                          @endif
-                         
-                        @if($invoice->student->nationality != "saudian")
+                       
                         @php
                             $vat = null;
                             if(\App\Models\ValueAddedTax::count() == 1)
@@ -617,7 +616,7 @@
                             @endphp
                             {{$value_after_tax}}
                         </td>
-                        @endif
+                      
                         <td >
                             {{$partition['due_date']}}
                         </td>
@@ -644,14 +643,14 @@
                 @endphp
                                 {{-- total without taxes --}}
                                 <tr>
-                                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_without_taxes')}}</td>
+                                    <td>{{trans('main.total_without_taxes')}}</td>
                                     <td>
                                         {{$total_without_tax}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
                                 {{-- total without taxes --}}
                                 <tr>
-                                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total_of_taxes')}}
+                                    <td>{{trans('main.total_of_taxes')}}
                                         ({{$vat?->percentage }}%)
                                     </td>
                                     <td>
@@ -660,7 +659,7 @@
                                 </tr>
                                 {{-- total sum --}}
                                 <tr>
-                                    <td @if($invoice->student->nationality != "saudian") colspan="8" @else colspan="6" @endif>{{trans('main.total')}}</td>
+                                    <td>{{trans('main.total')}}</td>
                                     <td>
                                         {{$total}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>

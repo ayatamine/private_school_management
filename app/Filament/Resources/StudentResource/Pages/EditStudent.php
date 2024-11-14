@@ -81,7 +81,7 @@ class EditStudent extends EditRecord
                 'email' =>$data['email'],
                 'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
             ]);
-            dd($data['semester_id']);
+           
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
             $this->record->update($data);
                 // add tuiton fees
