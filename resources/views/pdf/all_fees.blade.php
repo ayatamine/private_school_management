@@ -167,7 +167,7 @@
                 <tr>
                     @if($settings->logo)
                     <td class="border-0 pl-0" style="border: none" colspan="2" >
-                        <img style="margin:auto;text-align:center" src="{{ url("storage/$settings->logo") }}" alt="logo" height="100">
+                        <img style="margin:auto;text-align:center" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->logo" )) }}"  alt="logo" height="90">
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
@@ -284,6 +284,9 @@
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
                         </td>
+                        @php
+                            if($student->approved_at && ($partition['due_date_end_at'] < $student->approved_at)) $partition['value'] =  0;
+                        @endphp
                         <td >
                             {{$partition['value']}}
                         </td>

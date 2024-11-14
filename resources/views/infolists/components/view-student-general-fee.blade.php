@@ -64,7 +64,7 @@
                         <td class="px-6 py-4 border">
                            {{-- added --}}
                             @php
-                                if($getRecord()->approved_at && ($partition['due_date_end_at'] < $getRecord()->approved_at)) $partition['value'] =  0;
+                                if($getRecord()->approved_at && ($partition['due_date'] < $getRecord()->approved_at)) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
