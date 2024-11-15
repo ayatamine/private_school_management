@@ -151,12 +151,14 @@ class StudentResource extends Resource
                             ->options(fn (Get $get): Collection => Course::query()
                             ->where('academic_stage_id', $get('academic_stage_id'))
                             ->pluck('name', 'id'))
-                            ->live(),
+                            ->live()
+                            ->afterStateUpdated(function (Forms\Set $set,) {
+                                $set('semester_id', null);
+                            }),
                         Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))
                             ->options(fn (Get $get): Collection => Semester::query()
                             ->where('course_id', $get('course_id'))
-                            ->pluck('name', 'id'))
-                            ->live(),
+                            ->pluck('name', 'id'))->live(),
                         Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))
                             ->required()
                             ->maxLength(255),

@@ -87,6 +87,7 @@ class EditStudent extends EditRecord
             ]);
             
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
+            
             $this->record->update($data);
                 // add tuiton fees
                 $tuitionFee = TuitionFee::whereCourseId($data['course_id'])->first();
@@ -96,9 +97,13 @@ class EditStudent extends EditRecord
                 }
                 // add other fees
                 $general = GeneralFee::whereCourseId($data['course_id'])->first();
+              
                 if($general)
                 {   
                     $this->record->otherFees()->sync($general->id);
+                }else
+                {
+                    $this->record->otherFees()->detach();
                 }
                 // add concession fees
                
@@ -142,7 +147,7 @@ class EditStudent extends EditRecord
                     ->send();
            }
 
-            // $this->halt();
+            $this->halt();
         return $data;
 
     }

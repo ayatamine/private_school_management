@@ -281,7 +281,7 @@
                             {{$partition['partition_name']}}
                         </td>
                         @php
-                            if($invoice->student->approved_at && ($partition['due_date_end_at'] < $invoice->student->approved_at)) $partition['value'] =  0;
+                            if($invoice->student->approved_at && ($partition['due_date'] < $invoice->student->approved_at)) $partition['value'] =  0;
                         @endphp
                         <td >
                             {{$partition['value']}}
@@ -290,9 +290,11 @@
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\TuitionFee')
+                                        ->where('student_id', $invoice->student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
+                        
                         @if(isset($decodedDiscounts[0]))
                         <td  >
                             {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
@@ -429,6 +431,7 @@
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\TransportFee')
+                                        ->where('student_id', $invoice->student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
@@ -550,7 +553,7 @@
                             {{$partition['partition_name']}}
                         </td>
                         @php
-                            if($invoice->student->approved_at && ($partition['due_date_end_at'] < $invoice->student->approved_at)) $partition['value'] =  0;
+                            if($invoice->student->approved_at && ($partition['due_date'] < $invoice->student->approved_at)) $partition['value'] =  0;
                         @endphp
                         <td >
                             {{$partition['value']}}
@@ -559,6 +562,7 @@
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\TuitionFee')
+                                        ->where('student_id', $invoice->student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp

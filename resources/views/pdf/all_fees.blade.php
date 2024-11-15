@@ -294,21 +294,22 @@
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\TuitionFee')
+                                        ->where('student_id', $student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
-                        @if(isset($decodedDiscounts[0]))
+                        @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['discount_value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
                                    
                                 $total_tuition_without_taxes[$i]=$value_after_discount;
@@ -326,7 +327,7 @@
                          </td>
                          @endif
                          
-                        @if($student->nationality != "saudian")
+                         @if($student->nationality != "saudian")
                         @php
                             if(\App\Models\ValueAddedTax::count() == 1)
                             {
@@ -394,14 +395,14 @@
                     <th scope="col" >
                         {{trans('main.value_after_discount')}}
                     </th>
-                    @if($student->nationality != "saudian")
+                  
                     <th scope="col" >
                         {{trans('main.tax_percentage')}}
                     </th>
                     <th scope="col" >
                         {{trans('main.tax_value')}}
                     </th>
-                    @endif
+                  
                     <th scope="col" >
                         {{trans('main.due_date')}}
                     </th>
@@ -432,21 +433,22 @@
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\TransportFee')
+                                        ->where('student_id', $student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
-                        @if(isset($decodedDiscounts[0]))
+                        @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['discount_value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
                                 $total_transport_without_taxes[$i]=$value_after_discount;
                             @endphp
@@ -463,7 +465,7 @@
                          </td>
                          @endif
                          
-                        @if($student->nationality != "saudian")
+                      
                         @php
                             if(\App\Models\ValueAddedTax::count() == 1)
                             {
@@ -488,7 +490,6 @@
                             @endphp
                             {{$value_after_tax}}
                         </td>
-                        @endif
                         <td >
                             {{$partition['due_date']}}
                         </td>
@@ -531,14 +532,14 @@
                     <th scope="col" >
                         {{trans('main.value_after_discount')}}
                     </th>
-                    @if($student->nationality != "saudian")
+                    {{-- @if($student->nationality != "saudian") --}}
                     <th scope="col" >
                         {{trans('main.tax_percentage')}}
                     </th>
                     <th scope="col" >
                         {{trans('main.tax_value')}}
                     </th>
-                    @endif
+                    {{-- @endif --}}
                     <th scope="col" >
                         {{trans('main.due_date')}}
                     </th>
@@ -570,21 +571,23 @@
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
                                         ->where('feeable_type', 'App\Models\GeneralFee')
+                                        ->where('student_id', $student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
-                        @if(isset($decodedDiscounts[0]))
+                     
+                        @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['discount_value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
                                    
                                 $total_other_without_taxes[$i]=$value_after_discount;
@@ -654,7 +657,7 @@
                 @endphp
                                 {{-- total without taxes --}}
                                 <tr>
-                                    <t>{{trans('main.total_without_taxes')}}</td>
+                                    <td>{{trans('main.total_without_taxes')}}</td>
                                     <td>
                                         {{$total_without_tax}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
