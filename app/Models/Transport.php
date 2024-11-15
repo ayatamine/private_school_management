@@ -35,7 +35,7 @@ class Transport extends Model
         'transport_fee_id',
         'termination_date',
         'termination_reason',
-        'terminated_by',
+        'terminated_by','created_at'
     ];
 
     /**

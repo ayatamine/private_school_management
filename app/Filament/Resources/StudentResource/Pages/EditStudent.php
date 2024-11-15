@@ -25,6 +25,7 @@ class EditStudent extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\ViewAction::make(),
           
         ];
     }
@@ -42,9 +43,10 @@ class EditStudent extends EditRecord
 
         if( $data['semester_id'])
         {
-            $data['academic_year_id'] = Semester::find($data['semester_id'])->academic_year_id;
-            $data['academic_stage_id'] = Semester::find($data['semester_id'])->course->academic_stage_id;
-            $data['course_id'] = Semester::find($data['semester_id'])->course_id;
+            $semester = Semester::find($data['semester_id']);
+            $data['academic_year_id'] = $semester->academic_year_id;
+            $data['academic_stage_id'] = $semester->course->academic_stage_id;
+            $data['course_id'] = $semester->course_id;
 
         }
        
@@ -68,11 +70,13 @@ class EditStudent extends EditRecord
       
         return $data;
     }
+    
     protected function mutateFormDataBeforeSave(array $data): array
     {
 
  
            try{
+          
             DB::beginTransaction();
             User::findOrFail($this->record->user_id)->update([
                 'national_id' =>$data['national_id'],
@@ -81,7 +85,7 @@ class EditStudent extends EditRecord
                 'email' =>$data['email'],
                 'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
             ]);
-           
+            
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
             $this->record->update($data);
                 // add tuiton fees

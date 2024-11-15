@@ -81,6 +81,7 @@ class Student extends Model
         'termination_document',
         'terminated_by',
         'status',
+        'created_at',
     ];
 
     /**
