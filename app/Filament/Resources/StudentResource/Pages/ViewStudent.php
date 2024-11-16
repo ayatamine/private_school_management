@@ -172,22 +172,35 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     // if($arguments['partition'] == $k)
                     // {
                     
-                        $discounts=$payment_partition[$arguments['partition']];
+                        // $discounts=$payment_partition[$arguments['partition']];
                         // foreach($payment_partition as $key=>$value)
                         // {
                         //     $discounts[$key] = $value;
                         // }
-                        $discounts['discount_type'] = $concession_fee->type;
-                        $discounts['discount_value'] = $concession_fee->value;
+                        // $discounts['discount_type'] = $concession_fee->type;
+                        // $discounts['discount_value'] = $concession_fee->value;
                         // $payment_partition[$arguments['partition']] = $discounts;
                         // dd($payment_partition);
                         // dd($discounts);
                         $existing_discounts = DB::table('student_fee')->where('feeable_id',$arguments['fee_id'])->where('student_id',$this->record->id)->where('feeable_type',$arguments['feeable_type'])->first();
-                        $existing_discounts_decoded = json_decode($existing_discounts->discounts,true)[$arguments['partition']];
+                    
+                        $existing_discounts_decoded = json_decode($existing_discounts->discounts,true);
+                        if(array_key_exists($arguments['partition'],$existing_discounts_decoded))
+                        {
+
+                            $existing_discounts_decoded[$arguments['partition']]['discount_type'] =$concession_fee->type;
+                            $existing_discounts_decoded[$arguments['partition']]['discount_value'] =$concession_fee->value;
+                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($existing_discounts_decoded),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
                        
-                        $existing_discounts_decoded['discount_type'] =$concession_fee->type;
-                        $existing_discounts_decoded['discount_value'] =$concession_fee->value;
-                        DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($existing_discounts_decoded),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
+                        }
+                        else 
+                        {
+                            $discounts=$payment_partition[$arguments['partition']];
+                            $discounts['discount_type'] = $concession_fee->type;
+                            $discounts['discount_value'] = $concession_fee->value;
+                            array_push($existing_discounts_decoded,$discounts);
+                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($existing_discounts_decoded),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
+                        }
                     }
                     // else
                     // {

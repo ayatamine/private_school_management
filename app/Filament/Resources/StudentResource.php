@@ -517,7 +517,7 @@ class StudentResource extends Resource
                                 ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
-                                    return trans('main.total_fees_to_rest_method');
+                                    return trans('main.total_fees_rest_method');
                                 })
                        
                         ]),
