@@ -61,14 +61,16 @@ trait HasPayments {
                                 {
                                     $can_be_calculated[$i] = true;
                                 }
+                                if($this->termination_date < $partition['due_date']) $partition['value'] =  0;
                             }
                             else //transport fee
                             {
-                                if($this->transport && ( $this->transport->termination_date == null || $this->transport->termination_date > $partition['due_date']))
+                                if(($this->transport && ( $this->transport->termination_date == null || $this->transport->termination_date > $partition['due_date'])) || $this->termination_date > $partition['due_date'] )
                                 {
                                     $can_be_calculated[$i] = true;
                                 }
-                                if(Transport::whereStudentId($this->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
+                                if(Transport::whereStudentId($this->id)?->first()?->created_at > $partition['due_date_end_at'] ) $partition['value'] =  0;
+                                
                             }
                             //here if only partitions need to pay that has due_date  lower then today
                              if($only_need_to_pay && $partition['due_date'] > now())

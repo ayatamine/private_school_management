@@ -32,7 +32,7 @@ class CreateGeneralFee extends CreateRecord
             })->whereStatus('approved')->get();
 
             foreach ($students as  $student) {
-                $student->otherFees()->sync($record->id);
+                $student->otherFees()->attach($record->id);
                 // add concession fees
                             
             $discounts = $record->payment_partition;

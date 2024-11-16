@@ -87,53 +87,66 @@ class EditStudent extends EditRecord
             ]);
             
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
-            
+            $is_semester_changed = false;
+            $last_semester_id = $this->record->semester_id;
+           
             $this->record->update($data);
-                // add tuiton fees
-                $tuitionFee = TuitionFee::whereCourseId($data['course_id'])->first();
-                if($tuitionFee)
+             if($last_semester_id !== $this->record->semester_id)
+             {
+                $is_semester_changed =true;
+             }
+             return [];
+                if($is_semester_changed)
                 {
-                    $this->record->tuitionFees()->sync($tuitionFee->id);
-                }
-                // add other fees
-                $general = GeneralFee::whereCourseId($data['course_id'])->first();
-              
-                if($general)
-                {   
-                    $this->record->otherFees()->sync($general->id);
-                }else
-                {
-                    $this->record->otherFees()->detach();
-                }
-                // add concession fees
-               
-                $discounts = $tuitionFee->payment_partition;
-               
-                $discounts[0]['discount_type'] = "percentage";
-                $discounts[0]['discount_value'] = 0;
+                    // add tuiton fees
+                    $tuitionFee = TuitionFee::whereCourseId($data['course_id'])->first();
+                    if($tuitionFee)
+                    {
+                        $this->record->tuitionFees()->sync($tuitionFee->id);
+                    }
+                    // add other fees
+                    $general = GeneralFee::whereCourseId($data['course_id'])->get();
                 
-                if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$this->record->id]);
-                if($general) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$general->id,GeneralFee::class,$this->record->id]);
-              
-                //create invoice for student
-                $academic_year_id = $this->record->semester?->academicYear?->id;
-                $invoice  = Invoice::whereStudentId($this->record->id)->whereAcademicYearId($academic_year_id)->first();
-                if(!$invoice)
-                {
-                    $invoice =Invoice::create([
-                        'number'=>$this->record->semester?->academicYear?->name."".$this->record->registration_number,
-                        'name' => trans('main.fees_invoice')." ".$this->record->semester?->academicYear?->name,
-                        'student_id'=>$this->record->id,
-                        'academic_year_id'=>$academic_year_id,
-                    ]);
-                    $this->record->invoices()->save($invoice);
-                }
-                DB::commit();     
+                    if($general)
+                    {   
+                        foreach ($general as $key => $fee) {
+                            $this->record->otherFees()->sync($fee->id);
+                        }
+                    }else
+                    {
+                        $this->record->otherFees()->detach();
+                    }
+                    // add concession fees
+                
+                    $discounts = $tuitionFee->payment_partition;
+                
+                    $discounts[0]['discount_type'] = "percentage";
+                    $discounts[0]['discount_value'] = 0;
+                    
+                    if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$this->record->id]);
+                    if($general) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$general->id,GeneralFee::class,$this->record->id]);
+                
+                    //create invoice for student
+                    $academic_year_id = $this->record->semester?->academicYear?->id;
+                    $invoice  = Invoice::whereStudentId($this->record->id)->whereAcademicYearId($academic_year_id)->first();
+                    if(!$invoice)
+                    {
+                        $invoice =Invoice::create([
+                            'number'=>$this->record->semester?->academicYear?->name."".$this->record->registration_number,
+                            'name' => trans('main.fees_invoice')." ".$this->record->semester?->academicYear?->name,
+                            'student_id'=>$this->record->id,
+                            'academic_year_id'=>$academic_year_id,
+                        ]);
+                        $this->record->invoices()->save($invoice);
+                    }
+                    DB::commit(); 
+                }    
                 Notification::make()
                     ->title(trans('main.student_updated_successfully'))
                     ->icon('heroicon-o-document-text')
                     ->iconColor('success')
                     ->send();
+                
                 
            }
            catch(\Exception $ex)

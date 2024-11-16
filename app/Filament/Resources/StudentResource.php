@@ -414,7 +414,7 @@ class StudentResource extends Resource
                                 TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
-                                TextEntry::make('created_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
+                                TextEntry::make('approved_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.parent_data'))
                         ->columns(2)

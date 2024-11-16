@@ -56,7 +56,7 @@
                   @foreach ($fee->payment_partition as $i=> $partition)
 
                    {{-- if student transport has been terminated after due date --}}
-                    @if( $getRecord()->transport && ($getRecord()->transport->termination_date == null || ($getRecord()->transport->termination_date > $partition['due_date'])) )
+                    @if( $getRecord()->transport && ($getRecord()->transport->termination_date == null || ($getRecord()->transport->termination_date > $partition['due_date_end_at'])) )
                     
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <td scope="row" class="px-6 py-4 border">
@@ -68,7 +68,8 @@
                         <td class="px-6 py-4 border">
                             {{-- added --}}
                             @php
-                                if(\App\Models\Transport::whereStudentId($getRecord()->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
+                                if(\App\Models\Transport::whereStudentId($getRecord()->id)?->first()?->created_at > $partition['due_date_end_at'] ) $partition['value'] =  0;
+                                if($getRecord()->termination_date < $partition['due_date']) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
@@ -83,7 +84,8 @@
                        
                         @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td class="px-6 py-4 border" >
-                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
+                            {{isset($decodedDiscounts[$i]['discount_value']) ? $decodedDiscounts[$i]['discount_value'] : 0}}
+                            @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td class="px-6 py-4 border">
                             @php
@@ -125,7 +127,7 @@
                             }
                             else
                             { 
-                                $payment_due_date = $partition['due_date'];
+                                $payment_due_date = $partition['due_date_end_at'];
                                 $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();  
                                 
                             }

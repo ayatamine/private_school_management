@@ -49,11 +49,12 @@
                 @php
                      $total =$value_after_discount=$value_after_tax=[];
                 @endphp
+                {{dd($getState())}}
                 @foreach ($getState() as $fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
                   {{-- if student has been terminated after due date --}}
-                    @if($getRecord()->termination_date ==null || $getRecord()->termination_date > $partition['due_date'])
+                    @if($getRecord()->termination_date ==null || $getRecord()->termination_date > $partition['due_date_end_at'])
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <td scope="row" class="px-6 py-4 border">
                            {{trans_choice('main.tuition_fee',1)}} {{$fee->academicYear?->name}}
@@ -64,7 +65,8 @@
                         <td class="px-6 py-4 border">
                            {{-- added --}}
                             @php
-                                if($getRecord()->approved_at && ($partition['due_date'] < $getRecord()->approved_at)) $partition['value'] =  0;
+                                if($getRecord()->approved_at && ($partition['due_date_end_at'] < $getRecord()->approved_at)) $partition['value'] =  0;
+                                if($getRecord()->termination_date < $partition['due_date']) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
@@ -120,7 +122,7 @@
                             }
                             else
                             {
-                                $payment_due_date = $partition['due_date'];
+                                $payment_due_date = $partition['due_date_end_at'];
                                 $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                             }
                         @endphp

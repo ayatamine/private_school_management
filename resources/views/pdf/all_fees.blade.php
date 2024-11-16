@@ -286,6 +286,7 @@
                         </td>
                         @php
                             if($student->approved_at && ($partition['due_date_end_at'] < $student->approved_at)) $partition['value'] =  0;
+                            if($student->termination_date < $partition['due_date']) $partition['value'] =  0;
                         @endphp
                         <td >
                             {{$partition['value']}}
@@ -304,18 +305,25 @@
                         </td>
                         <td >
                             @php
+                            if(array_key_exists('discount_type',$decodedDiscounts[$i]))
+                            {
                                 if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                                     $value_after_discount[$i] =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
+                                    $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
-                                   
-                                $total_tuition_without_taxes[$i]=$value_after_discount;
+                                 
+                            }
+                            else
+                            {
+                                 $value_after_discount[$i][$i] =$partition['value'];
+                            }
+                                $total_tuition_without_taxes[$i]=$value_after_discount[$i];
                             @endphp
                             
-                            {{$value_after_discount}}
+                            {{$value_after_discount[$i]}}
                         </td>
                          @else 
     
@@ -335,7 +343,7 @@
                             }
                             else
                             {
-                                $payment_due_date = $partition['due_date'];
+                                $payment_due_date = $partition['due_date_end_at'];
                                 $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                             }
                         @endphp
@@ -344,13 +352,13 @@
                             {{$vat?->percentage ? $vat?->percentage : 0}} %
                         </td>
                         <td >
-                            {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
+                            {{-- here you can check if the orginal value or value_after_discount[$i] is with vat or not  --}}
                             @php
-                                $value_after_tax = ((isset($vat?->percentage) ? $vat?->percentage : 0) / 100) * (isset($value_after_discount) ? $value_after_discount : $partition['value']);
+                                $value_after_tax[$i] = ((isset($vat?->percentage) ? $vat?->percentage : 0) / 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']);
 
-                                $total_of_tuition_taxes[$i]=$value_after_tax;
+                                $total_of_tuition_taxes[$i]=$value_after_tax[$i];
                             @endphp
-                            {{$value_after_tax}}
+                            {{$value_after_tax[$i]}}
                         </td>
                         @endif
                         <td >
@@ -358,7 +366,7 @@
                         </td>
                         <td >
                             @php
-                                $tuition_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0);
+                                $tuition_total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                             @endphp
                             {{$tuition_total[$i]}}
                         </td>
@@ -428,7 +436,8 @@
                         </td>
                         <td >
                             @php
-                                if(\App\Models\Transport::whereStudentId($student?->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
+                                if(\App\Models\Transport::whereStudentId($student?->id)?->first()?->created_at > $partition['due_date_end_at'] ) $partition['value'] =  0;
+                                if($student->termination_date < $partition['due_date']) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
@@ -443,29 +452,38 @@
                         @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
                             {{isset($decodedDiscounts[$i]['discount_value']) ? $decodedDiscounts[$i]['discount_value'] : 0}}
-                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
+                             @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if(isset($decodedDiscounts[$i]['discount_type']) && $decodedDiscounts[$i]['discount_type'] == 'percentage')
+                            if(array_key_exists('discount_type',$decodedDiscounts[$i]))
+                            {
+                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                                     $value_after_discount[$i] =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
+                                    $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
-                                $total_transport_without_taxes[$i]=$value_after_discount;
+                                
+                                
+                            }
+                            else
+                            {
+                                 $value_after_discount[$i] =$partition['value'];
+                            }
+                            $total_transport_without_taxes[$i]=$value_after_discount[$i];
                             @endphp
                             
-                            {{$value_after_discount}}
+                            {{$value_after_discount[$i]}}
                         </td>
                          @else 
     
                          <td  >
-                            0
+                            0%
                          </td>
                          <td  >
-                            0
+                            {{$partition['value']}}
                          </td>
                          @endif
                          
@@ -477,29 +495,29 @@
                             }
                             else
                             {
-                                $payment_due_date = $partition['due_date'];
+                                $payment_due_date = $partition['due_date_end_at'];
                                 $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                             }
                         @endphp
                         
                         <td >
-                            {{$vat?->percentage}} %
+                            {{isset($vat?->percentage) ? $vat?->percentage : 0}} %
                         </td>
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ((isset($vat->percentage) ? $vat->percentage  : 0 )/ 100) * (isset($value_after_discount) ? $value_after_discount : $partition['value']);
+                                $value_after_tax[$i] = ((isset($vat->percentage) ? $vat->percentage  : 0 )/ 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']);
 
-                                $total_of_transport_taxes[$i]=$value_after_tax;
+                                $total_of_transport_taxes[$i]=$value_after_tax[$i];
                             @endphp
-                            {{$value_after_tax}}
+                            {{$value_after_tax[$i]}}
                         </td>
                         <td >
                             {{$partition['due_date']}}
                         </td>
                         <td >
                             @php
-                                $transport_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0);
+                                $transport_total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                             @endphp
                             {{$transport_total[$i]}}
                         </td>
@@ -569,7 +587,8 @@
                             {{$partition['partition_name']}}
                         </td>
                         @php
-                            if($student->approved_at && ($partition['due_date'] < $student->approved_at)) $partition['value'] =  0;
+                            if($student->approved_at && ($partition['due_date_end_at'] < $student->approved_at)) $partition['value'] =  0;
+                            if($student->termination_date < $partition['due_date']) $partition['value'] =  0;
                         @endphp
                         <td >
                             {{$partition['value']}}
@@ -590,23 +609,29 @@
                         </td>
                         <td >
                             @php
+                            if(array_key_exists('discount_type',$decodedDiscounts[$i]))
+                            {
                                 if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                                     $value_after_discount[$i] =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
+                                    $value_after_discount[$i] = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
-                                   
-                                $total_other_without_taxes[$i]=$value_after_discount;
+                            }
+                            else
+                            {
+                                $value_after_discount[$i] =$partition['value'];
+                            }     
+                                $total_other_without_taxes[$i]=$value_after_discount[$i];
                             @endphp
                             
-                            {{$value_after_discount}}
+                            {{$value_after_discount[$i]}}
                         </td>
                          @else 
     
                          <td  >
-                            0
+                            0%
                          </td>
                          <td  >
                             0
@@ -621,7 +646,7 @@
                             }
                             else
                             {
-                                $payment_due_date = $partition['due_date'];
+                                $payment_due_date = $partition['due_date_end_at'];
                                 $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                             }
                         @endphp
@@ -632,11 +657,11 @@
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = ((isset($vat?->percentage) ? $vat?->percentage : 0) / 100) * (isset($value_after_discount) ? $value_after_discount : $partition['value']);
+                                $value_after_tax[$i] = ((isset($vat?->percentage) ? $vat?->percentage : 0) / 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']);
 
-                                $total_of_other_taxes[$i]=$value_after_tax;
+                                $total_of_other_taxes[$i]=$value_after_tax[$i];
                             @endphp
-                            {{$value_after_tax}}
+                            {{$value_after_tax[$i]}}
                         </td>
                      
                         <td >
@@ -644,7 +669,7 @@
                         </td>
                         <td >
                             @php
-                                $other_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0);
+                                $other_total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                             @endphp
                             {{$other_total[$i]}}
                         </td>
