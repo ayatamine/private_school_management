@@ -427,6 +427,9 @@
                             {{$partition['partition_name']}}
                         </td>
                         <td >
+                            @php
+                                if(\App\Models\Transport::whereStudentId($student?->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
+                            @endphp
                             {{$partition['value']}}
                         </td>
                         @php
@@ -439,11 +442,12 @@
                         @endphp
                         @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
+                            {{isset($decodedDiscounts[$i]['discount_value']) ? $decodedDiscounts[$i]['discount_value'] : 0}}
                             {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
+                                if(isset($decodedDiscounts[$i]['discount_type']) && $decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
                                      $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
@@ -495,7 +499,7 @@
                         </td>
                         <td >
                             @php
-                                $transport_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + ($value_after_tax ?? 0);
+                                $transport_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0);
                             @endphp
                             {{$transport_total[$i]}}
                         </td>
@@ -564,6 +568,9 @@
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
                         </td>
+                        @php
+                            if($student->approved_at && ($partition['due_date'] < $student->approved_at)) $partition['value'] =  0;
+                        @endphp
                         <td >
                             {{$partition['value']}}
                         </td>
@@ -578,7 +585,8 @@
                      
                         @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
-                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
+                            {{isset($decodedDiscounts[$i]['discount_value']) ? $decodedDiscounts[$i]['discount_value'] : 0}}
+                            @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php

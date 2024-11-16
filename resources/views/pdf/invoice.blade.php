@@ -230,7 +230,7 @@
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.tuition_fee',2)}}</strong>
         </h5>
         @php
-          $total_tuition_without_taxes =$total_of_tuition_taxes = $tuition_total =[];
+          $total_tuition_without_taxes =$total_of_tuition_taxes = $tuition_total =[]; $vat = null;
         @endphp
         <table   style="width: 100%;border-collapse: collapse;">
             <thead >
@@ -295,18 +295,18 @@
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
                         
-                        @if(isset($decodedDiscounts[0]))
+                        @if(isset($decodedDiscounts[$i]))
                         <td  >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if(isset($decodedDiscounts[$i]['discount_type']) && $decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['discount_value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
                                    
                                 $total_tuition_without_taxes[$i]=$value_after_discount;
@@ -339,7 +339,7 @@
                         @endphp
                         
                         <td >
-                            {{$vat?->percentage}} %
+                            {{$vat?->percentage ? $vat?->percentage : 0}} %
                         </td>
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
@@ -356,7 +356,7 @@
                         </td>
                         <td >
                             @php
-                                $tuition_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? : 0);
+                                $tuition_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0)
                             @endphp
                             {{$tuition_total[$i]}}
                         </td>
@@ -393,14 +393,12 @@
                     <th scope="col" >
                         {{trans('main.value_after_discount')}}
                     </th>
-                    @if($invoice->student->nationality != "saudian")
                     <th scope="col" >
                         {{trans('main.tax_percentage')}}
                     </th>
                     <th scope="col" >
                         {{trans('main.tax_value')}}
                     </th>
-                    @endif
                     <th scope="col" >
                         {{trans('main.due_date')}}
                     </th>
@@ -422,7 +420,7 @@
                             {{$partition['partition_name']}}
                         </td>
                         @php
-                            if(\App\Models\Transport::whereStudentId($invoice->student)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
+                            if(\App\Models\Transport::whereStudentId($invoice?->student?->id)?->first()?->created_at > $partition['due_date'] ) $partition['value'] =  0;
                         @endphp
                         <td >
                             {{$partition['value']}}
@@ -435,18 +433,19 @@
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
-                        @if(isset($decodedDiscounts[0]))
+                        @if(isset($decodedDiscounts[$i])  && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
-                            {{isset($decodedDiscounts[0]['discount_value']) ? $decodedDiscounts[0]['discount_value'] : 0}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{isset($decodedDiscounts[$i]['discount_value']) ? $decodedDiscounts[$i]['discount_value'] : 0}}
+                             @if(isset($decodedDiscounts[$i]['discount_type'] ) && $decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if(isset($decodedDiscounts[$i]['discount_type']) && $decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['value'];
                                 }
                                 $total_transport_without_taxes[$i]=$value_after_discount;
                             @endphp
@@ -465,11 +464,19 @@
                          
                         @if($invoice->student->nationality != "saudian")
                         @php
-                            $vat = \App\Models\ValueAddedTax::first();
+                            $vat = null;
+                            if(\App\Models\ValueAddedTax::count() == 1)
+                            {
+                                $vat = \App\Models\ValueAddedTax::first();
+                            }
+                            else
+                            {
+                                $payment_due_date = $partition['due_date'];
+                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                            }
                         @endphp
-                        
                         <td >
-                            {{$vat->percentage}} %
+                            {{$vat?->percentage}} %
                         </td>
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
@@ -561,23 +568,24 @@
                         @php
                             $discounts = DB::table('student_fee')
                                         ->where('feeable_id', $fee->id)
-                                        ->where('feeable_type', 'App\Models\TuitionFee')
+                                        ->where('feeable_type', 'App\Models\GeneralFee')
                                         ->where('student_id', $invoice->student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
                         @endphp
-                        @if(isset($decodedDiscounts[0]))
+                        @if(isset($decodedDiscounts[$i]))
                         <td  >
-                            {{$decodedDiscounts[0]['discount_value']}} @if($decodedDiscounts[0]['discount_type'] == 'percentage')% @endif
+                            {{isset($decodedDiscounts[$i]['discount_value']) ? $decodedDiscounts[$i]['discount_value'] : 0}}
+                             @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
                         </td>
                         <td >
                             @php
-                                if($decodedDiscounts[0]['discount_type'] == 'percentage')
+                                if($decodedDiscounts[$i]['discount_type'] == 'percentage')
                                 {
-                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[0]['discount_value'] / 100));
+                                     $value_after_discount =$partition['value'] * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
                                 }
                                 else{
-                                    $value_after_discount = $partition['value'] - $decodedDiscounts[0]['discount_value'];
+                                    $value_after_discount = $partition['value'] - $decodedDiscounts[$i]['discount_value'];
                                 }
                                    
                                 $total_other_without_taxes[$i]=$value_after_discount;
@@ -614,7 +622,7 @@
                         <td >
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
                             @php
-                                $value_after_tax = (($vat?->percentage ? $vat?->percentage : 0) / 100) * (isset($value_after_discount) ? $value_after_discount :  $partition['value']);
+                                $value_after_tax = ((isset($vat?->percentage) ? $vat?->percentage : 0) / 100) * (isset($value_after_discount) ? $value_after_discount : $partition['value']);
 
                                 $total_of_other_taxes[$i]=$value_after_tax;
                             @endphp
@@ -626,9 +634,9 @@
                         </td>
                         <td >
                             @php
-                                $tuition_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? : 0);
+                                $other_total[$i] = (isset($value_after_discount) ? $value_after_discount : $partition['value']) + (isset($value_after_tax) ? $value_after_tax : 0);
                             @endphp
-                            {{$tuition_total[$i]}}
+                            {{$other_total[$i]}}
                         </td>
                     </tr> 
                   @endforeach
@@ -655,6 +663,13 @@
                                 {{-- total without taxes --}}
                                 <tr>
                                     <td>{{trans('main.total_of_taxes')}}
+                                        @php
+                                            $vat = null;
+                                            if(\App\Models\ValueAddedTax::count() == 1)
+                                            {
+                                                $vat = \App\Models\ValueAddedTax::first();
+                                            }
+                                        @endphp
                                         ({{$vat?->percentage }}%)
                                     </td>
                                     <td>
@@ -685,21 +700,20 @@
         <table>
             <tbody>
                 <tr style="border:none">
-                    <th style="text-align: left;border:none" colspan="3">
-                        @php
-                            $qr_code =\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content);
-                            $code = (string)$qr_code;
-                             echo substr($code,38);
-                        @endphp     
-                        {{-- {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}} --}}
-                    </th>
-                    <th style="text-algin: right;border:none" colspan="3">
+                    
+                    <th style="display:block;text-algin: right;border:none;float:right:margin:left:2rem" colspan="3">
                         <img style="margin:auto;text-align:center" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="90">
                     </th>
                 </tr>
             </tbody>
         </table>
-   
-
+        <div style="text-align: left;border:none;float:left:margin-right:3rem" colspan="3">
+            @php
+                $qr_code =\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content);
+                $code = (string)$qr_code;
+                 echo substr($code,38);
+            @endphp     
+            {{-- {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}} --}}
+        </div>
     </body>
 </html>
