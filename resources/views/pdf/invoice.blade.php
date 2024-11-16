@@ -462,7 +462,7 @@
                          </td>
                          @endif
                          
-                        @if($invoice->student->nationality != "saudian")
+                        
                         @php
                             $vat = null;
                             if(\App\Models\ValueAddedTax::count() == 1)
@@ -487,7 +487,7 @@
                             @endphp
                             {{$value_after_tax}}
                         </td>
-                        @endif
+              
                         <td >
                             {{$partition['due_date']}}
                         </td>

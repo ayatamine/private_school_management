@@ -28,14 +28,14 @@
                 <th scope="col" class="px-6 py-3 border">
                     {{trans('main.value_after_discount')}}
                 </th>
-                @if($getRecord()->nationality != "saudian")
+                {{-- @if($getRecord()->nationality != "saudian") --}}
                 <th scope="col" class="px-6 py-3 border">
                     {{trans('main.tax_percentage')}}
                 </th>
                 <th scope="col" class="px-6 py-3 border">
                     {{trans('main.tax_value')}}
                 </th>
-                @endif
+                {{-- @endif --}}
                 <th scope="col" class="px-6 py-3 border">
                     {{trans('main.due_date')}}
                 </th>
