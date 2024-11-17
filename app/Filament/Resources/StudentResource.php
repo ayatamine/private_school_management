@@ -415,8 +415,8 @@ class StudentResource extends Resource
                                 TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                                 TextEntry::make('approved_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
-                                TextEntry::make('transport_registered_at')->label(trans('main.transport_registeration_date'))
-                                ->state(fn(Student $record)=>\App\Models\Transport::whereStudentId($record->id)?->first()?->created_at ?? trans('main.not_registered_yet'))
+                                TextEntry::make('transport_registration_date')->label(trans('main.transport_registeration_date'))
+                                ->formatStateUsing(fn($state)=> $state!='' ? $state : trans('main.not_registered_yet') )
                                 ->date()->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.parent_data'))

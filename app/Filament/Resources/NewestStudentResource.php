@@ -209,6 +209,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                     }
                                 },
                             ])
+                            
                             // ->unique(table:'users',ignoreRecord: true,column:'user.national_id')
                             ->maxLength(10),           
                         Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
@@ -386,25 +387,44 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         {
                             // add tuiton fees
                             $tuitionFee = TuitionFee::whereCourseId($Student?->semester?->course_id)->first();
+                            if(!$Student?->semester)
+                            {
+                                Notification::make()
+                                    ->title(trans('main.student_not_yet_attached_to_course'))
+                                    ->icon('heroicon-o-document-text')
+                                    ->iconColor('danger')
+                                    ->send();
+                                return redirect()->route('filament.admin.resources.newest-students.edit',['record'=>$Student?->id]);
+                            }
                             if($tuitionFee)
                             {
                                 $Student->tuitionFees()->sync($tuitionFee->id);
                             }
                             // add other fees
-                            $general = GeneralFee::whereCourseId($Student?->semester?->course_id)->first();
-                            if($general)
+                            // add other fees
+                            $generalFees = GeneralFee::whereCourseId($Student?->semester?->course_id)->get();
+                            if($generalFees)
                             {
-                                $Student->otherFees()->sync($general->id);
+                                foreach($generalFees as $fee)
+                                {
+                                    $Student->otherFees()->sync($fee->id);
+                                    $discounts = $fee->payment_partition;
+                                    $discounts[0]['discount_type'] = "percentage";
+                                    $discounts[0]['discount_value'] = 0;
+                                    DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$fee->id,GeneralFee::class,$Student->id]);
+
+                                }
+                                
                             }
                             // add concession fees
-                           
+                        
                             $discounts = $tuitionFee->payment_partition;
                            
                             $discounts[0]['discount_type'] = "percentage";
                             $discounts[0]['discount_value'] = 0;
                             
                             if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$Student->id]);
-                            if($general) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$general->id,GeneralFee::class,$Student->id]);
+                            
                           
                             //create invoice for student
                             $academic_year_id = $Student->semester?->academicYear?->id;

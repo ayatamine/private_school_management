@@ -100,7 +100,7 @@ class Student extends Model
         'terminated_by' => 'integer',
         'opening_balance' => 'double',
     ];
-    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest'];
+    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','transport_registration_date'];
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
@@ -199,6 +199,15 @@ class Student extends Model
         return Attribute::make(
             get: function ($value) {
                 return floatval($this->totalFeesAfterDueDate) -  $this->payments() ;
+            }
+        );
+    }
+    public function transportRegistrationDate():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                $transport = $this->transport;
+                return $transport?->created_at;
             }
         );
     }

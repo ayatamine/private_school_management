@@ -298,4 +298,5 @@ return [
      'not_yet_implemented' => ' لم يتم انجاز هده الخاصية بعد',
      'error' => ' حدث خطأ يرجى اعادة المحاولة',
      'transport_registeration_date' => ' تاريخ التسجيل في المواصلات',
+     'student_not_yet_attached_to_course' => ' لم يتم اختيار الصف للطالب بعد!',
 ];
