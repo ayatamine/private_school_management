@@ -198,7 +198,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFeesAfterDueDate -  $this->payments() ;
+                return floatval($this->totalFeesAfterDueDate) -  $this->payments() ;
             }
         );
     }

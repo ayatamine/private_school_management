@@ -69,7 +69,7 @@
                             {{-- added --}}
                             @php
                                 if(\App\Models\Transport::whereStudentId($getRecord()->id)?->first()?->created_at > $partition['due_date_end_at'] ) $partition['value'] =  0;
-                                if($getRecord()->termination_date < $partition['due_date']) $partition['value'] =  0;
+                                if($getRecord()->termination_date && $getRecord()->termination_date < $partition['due_date']) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
@@ -150,6 +150,7 @@
                         <td class="px-6 py-4 border">
                             @php
                                 $total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
+                                $total_fees_to_pay[$i] =(now() > $partition['due_date'] ) ? ((isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0)) : 0;
                             @endphp
                             {{$total[$i]}}
                             
@@ -166,6 +167,12 @@
                     <td class="px-6 py-4 border"colspan="9">{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
                         {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-6 py-4 border"  colspan="9">{{trans('main.total_fees_to_pay')}}</td>
+                    <td class="px-6 py-4 border">
+                        {{array_sum($total_fees_to_pay)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
             </tbody>

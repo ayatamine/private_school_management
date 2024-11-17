@@ -297,4 +297,5 @@ return [
      'fees_invoice' => ' فاتورة الرسوم',
      'not_yet_implemented' => ' لم يتم انجاز هده الخاصية بعد',
      'error' => ' حدث خطأ يرجى اعادة المحاولة',
+     'transport_registeration_date' => ' تاريخ التسجيل في المواصلات',
 ];

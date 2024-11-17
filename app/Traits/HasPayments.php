@@ -28,8 +28,8 @@ trait HasPayments {
      */
     public function totalFees() {
         
-        $tuition_fees_total = $this->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
-        $general_fees_total = $this->calculatePaymentPartitions('App\Models\GeneralFee',"otherFees");
+        // $tuition_fees_total = $this->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
+        // $general_fees_total = $this->calculatePaymentPartitions('App\Models\GeneralFee',"otherFees");
         // $transport_fees_total = $this->calculatePaymentPartitions('App\Models\TransportFee',"transportFees");
         return  $this->calculatePaymentPartitions();
     }
@@ -49,6 +49,7 @@ trait HasPayments {
         {   
             foreach ($this->{$fee_type} as $ind=>$fee)
             {   
+                    $value_after_tax = $value_after_discount =[];
                     if(count($fee->payment_partition))
                     {
                         $can_be_calculated =[];
@@ -61,7 +62,7 @@ trait HasPayments {
                                 {
                                     $can_be_calculated[$i] = true;
                                 }
-                                if($this->termination_date < $partition['due_date']) $partition['value'] =  0;
+                                if($this->termination_date && ($this->termination_date < $partition['due_date'])) $partition['value'] =  0;
                             }
                             else //transport fee
                             {
@@ -79,6 +80,7 @@ trait HasPayments {
                              }
                             //if student registered after due_date_end
                             if($this->approved_at && ($partition['due_date_end_at'] < $this->approved_at)) $partition['value'] =  0;
+                            if($this->termination_date && $this->termination_date < $partition['due_date']) $partition['value'] =  0;
                             //calculate only if the requirement is ok
                             if($can_be_calculated[$i])
                             {
@@ -141,6 +143,7 @@ trait HasPayments {
                                 
                                 
                                 $total[$i] = $value_after_tax[$i]  + $value_after_discount[$i] ;
+                                
                                
                             }
                         }
