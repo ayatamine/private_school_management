@@ -195,11 +195,12 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                         }
                         else 
                         {
+                           
                             $discounts=$payment_partition[$arguments['partition']];
                             $discounts['discount_type'] = $concession_fee->type;
                             $discounts['discount_value'] = $concession_fee->value;
-                            array_push($existing_discounts_decoded,$discounts);
-                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($existing_discounts_decoded),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
+                            // array_push($existing_discounts_decoded,$discounts);
+                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ?  AND student_id = ?',[json_encode($discounts),$arguments['fee_id'],$arguments['feeable_type'],$this->record->id]);
                         }
                     }
                     // else

@@ -106,12 +106,11 @@ class EditStudent extends EditRecord
                     }
                     // add other fees
                     $general = GeneralFee::whereCourseId($data['course_id'])->get();
-                
                     if($general)
-                    {   
-                        foreach ($general as $key => $fee) {
-                            $this->record->otherFees()->sync($fee->id);
-                        }
+                    {   $this->record->otherFees()->sync($general->pluck('id'));
+                        // foreach ($general as $key => $fee) {
+                        //     $this->record->otherFees()->sync($fee->id);
+                        // }
                     }else
                     {
                         $this->record->otherFees()->detach();
@@ -122,9 +121,20 @@ class EditStudent extends EditRecord
                 
                     $discounts[0]['discount_type'] = "percentage";
                     $discounts[0]['discount_value'] = 0;
-                    
+                   
                     if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$this->record->id]);
-                    if($general) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$general->id,GeneralFee::class,$this->record->id]);
+                    if($general)
+                    {   
+                        
+                        foreach ($general as $key => $fee) {
+                            
+                            $discounts = $fee->payment_partition;
+                
+                            $discounts[0]['discount_type'] = "percentage";
+                            $discounts[0]['discount_value'] = 0;
+                            DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$fee->id,GeneralFee::class,$this->record->id]);
+                        }
+                    }
                 
                     //create invoice for student
                     $academic_year_id = $this->record->semester?->academicYear?->id;

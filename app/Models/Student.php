@@ -94,7 +94,7 @@ class Student extends Model
         'birth_date' => 'date',
         'semester_id' => 'integer',
         'parent_id' => 'integer',
-        'approved_at' => 'timestamp',
+        'approved_at' => 'date',
         'registered_by' => 'integer',
         'user_id' => 'integer',
         'terminated_by' => 'integer',

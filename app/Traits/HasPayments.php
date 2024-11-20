@@ -79,8 +79,8 @@ trait HasPayments {
                                  $can_be_calculated[$i] = false;
                              }
                             //if student registered after due_date_end
-                            if($this->approved_at && ($partition['due_date_end_at'] < $this->approved_at)) $partition['value'] =  0;
-                            if($this->termination_date && $this->termination_date < $partition['due_date']) $partition['value'] =  0;
+                            if($this->approved_at && ($partition['due_date_end_at'] <= \Carbon\Carbon::createFromTimestamp($this->approved_at)->format('Y-m-d'))) $partition['value'] =  0;
+                            if($this->termination_date && $this->termination_date <= $partition['due_date']) $partition['value'] =  0;
                             //calculate only if the requirement is ok
                             if($can_be_calculated[$i])
                             {

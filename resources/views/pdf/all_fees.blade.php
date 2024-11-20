@@ -285,7 +285,7 @@
                             {{$partition['partition_name']}}
                         </td>
                         @php
-                            if($student->approved_at && ($partition['due_date_end_at'] < $student->approved_at)) $partition['value'] =  0;
+                            if($student->approved_at && ($partition['due_date_end_at'] < \Carbon\Carbon::createFromTimestamp($student->approved_at)->format('Y-m-d'))) $partition['value'] =  0;
                             if($student->termination_date && $student->termination_date < $partition['due_date']) $partition['value'] =  0;
                         @endphp
                         <td >
@@ -588,8 +588,8 @@
                             {{$partition['partition_name']}}
                         </td>
                         @php
-                            if($student->approved_at && ($partition['due_date_end_at'] < $student->approved_at)) $partition['value'] =  0;
-                            if($student->termination_date && $student->termination_date < $partition['due_date']) $partition['value'] =  0;
+                            if($student->approved_at && ($partition['due_date_end_at'] <= \Carbon\Carbon::createFromTimestamp($student->approved_at)->format('Y-m-d'))) $partition['value'] =  0;
+                            if($student->termination_date && $student->termination_date <= $partition['due_date']) $partition['value'] =  0;
                         @endphp
                         <td >
                             {{$partition['value']}}

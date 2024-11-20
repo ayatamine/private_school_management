@@ -66,8 +66,8 @@
                         <td class="px-6 py-4 border">
                             {{-- added --}}
                             @php
-                                if($getRecord()->approved_at && ($partition['due_date_end_at'] < $getRecord()->approved_at)) $partition['value'] =  0;
-                                if($getRecord()->termination_date && $getRecord()->termination_date < $partition['due_date']) $partition['value'] =  0;
+                                if($getRecord()->approved_at && ($partition['due_date_end_at'] <= \Carbon\Carbon::createFromTimestamp($getRecord()->approved_at)->format('Y-m-d'))) $partition['value'] =  0;
+                                if($getRecord()->termination_date && $getRecord()->termination_date <= $partition['due_date']) $partition['value'] =  0;
                             @endphp
                             {{$partition['value']}}
                         </td>
