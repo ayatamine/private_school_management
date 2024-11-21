@@ -94,7 +94,7 @@ class Student extends Model
         'birth_date' => 'date',
         'semester_id' => 'integer',
         'parent_id' => 'integer',
-        'approved_at' => 'date',
+        'approved_at' => 'timestamp',
         'registered_by' => 'integer',
         'user_id' => 'integer',
         'terminated_by' => 'integer',
@@ -182,7 +182,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees()  + $this->opening_balance - $this->payments() ;
+                return $this->totalFees() + $this->opening_balance - $this->payments() ;
             }
         );
     }
@@ -190,7 +190,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->calculatePaymentPartitions(true) + $this->opening_balance;
+                return $this->totalFees(after_due_date:true) ;
             }
         );
     }

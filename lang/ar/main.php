@@ -157,7 +157,7 @@ return [
     'partition_updated_successfully'=>'تم تحديث القسط بنجاح',
     'student_updated_successfully'=>'تم تحديث بيانات الطالب بنجاح',
     'account_ballance'=>'رصيد الحساب',
-    'account_ballance_actual'=>'رصيد الحساب الحالي هو ',
+  'account_ballance_actual'=>'اجمالي الرسوم  ',
     'SAR'=>'ر.س',
     'balance_calculate_method'=>'الرصيد الافتتاحي + اجمالي الرسوم الد ارسية + رسوم المواصلات + الرسوم الاخرى – اجمالي المدفوعات',
     'total_fees_to_pay'=>'اجمالي الرسوم المستحقة',

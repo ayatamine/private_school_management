@@ -26,12 +26,13 @@ trait HasPayments {
      *  
      * @return $number
      */
-    public function totalFees() {
+    public function totalFees($after_due_date=false) {
         
         // $tuition_fees_total = $this->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
         // $general_fees_total = $this->calculatePaymentPartitions('App\Models\GeneralFee',"otherFees");
         // $transport_fees_total = $this->calculatePaymentPartitions('App\Models\TransportFee',"transportFees");
-        return  $this->calculatePaymentPartitions();
+        if(!$after_due_date) return  $this->calculatePaymentPartitions(false,"transportFees") + $this->calculatePaymentPartitions(false,"tuitionFees") +$this->calculatePaymentPartitions(false,"otherFees");
+        return  $this->calculatePaymentPartitions(true,"tuitionFees") + $this->calculatePaymentPartitions(true,"transportFees") +  $this->calculatePaymentPartitions(true,"otherFees")   ;
     }
  
     /**
@@ -39,17 +40,15 @@ trait HasPayments {
      * @param string $fee_type
      * @return $number
      */
-    public function calculatePaymentPartitions($only_need_to_pay=false):float {
+    public function calculatePaymentPartitions($only_need_to_pay=false,$fee_type) {
 
-        $fee_types = ["tuitionFees","transportFees","otherFees"];
+        $fee_types = ["tuitionFees"];
 
         $total_sum=0;
-        $total= $value_after_discount=$value_after_tax=[];
-        foreach ($fee_types as $fee_type)
-        {   
-            foreach ($this->{$fee_type} as $ind=>$fee)
+        $grand_total = $total= $value_after_discount=$value_after_tax=$total_fees_to_pay=[];
+            foreach ($this->{$fee_type} as $k=>$fee)
             {   
-                    $value_after_tax = $value_after_discount =[];
+                    
                     if(count($fee->payment_partition))
                     {
                         $can_be_calculated =[];
@@ -62,7 +61,7 @@ trait HasPayments {
                                 {
                                     $can_be_calculated[$i] = true;
                                 }
-                                if($this->termination_date && ($this->termination_date < $partition['due_date'])) $partition['value'] =  0;
+                                if($this->termination_date && ($this->termination_date <= $partition['due_date'])) $partition['value'] =  0;
                             }
                             else //transport fee
                             {
@@ -134,7 +133,7 @@ trait HasPayments {
                                         }
                                         else
                                         {
-                                            $payment_due_date = $partition['due_date'];
+                                            $payment_due_date = $partition['due_date_end_at'];
                                             $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
                                         }
                                         $value_after_tax[$i] = (($vat?->percentage ? $vat->percentage : 0 )/ 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : floatval($partition['value']));
@@ -142,18 +141,30 @@ trait HasPayments {
                                 }
                                 
                                 
-                                $total[$i] = $value_after_tax[$i]  + $value_after_discount[$i] ;
+                                // $total[$i] = $value_after_tax[$i]  + $value_after_discount[$i] ;
+                                $total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
+                                $total_fees_to_pay[$i] = (now() > $partition['due_date'] ) ?  ((isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0)) : 0;
+                                $grand_total[$k] =$total[$i];
                                 
                                
                             }
                         }
+                        
                     }
-                    $total_sum+= array_sum($total);
-            }
+                    
+                    $total_sum= array_sum($total);
+            
 
 
         }
-       return $total_sum;
+        // dd($grand_total);
+       if(!$only_need_to_pay)
+       {
+           if($fee_type == "transportFees") return array_sum($grand_total);
+           return array_sum($grand_total) + array_sum($total_fees_to_pay);
+       }
+       if($fee_type == "otherFees")  return  array_sum($grand_total) + array_sum($total_fees_to_pay);  
+       return  array_sum($grand_total);  
 
 
     }
