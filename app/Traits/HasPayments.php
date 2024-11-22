@@ -31,7 +31,7 @@ trait HasPayments {
         // $tuition_fees_total = $this->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
         // $general_fees_total = $this->calculatePaymentPartitions('App\Models\GeneralFee',"otherFees");
         // $transport_fees_total = $this->calculatePaymentPartitions('App\Models\TransportFee',"transportFees");
-        if(!$after_due_date) return  $this->calculatePaymentPartitions(false,"transportFees") + $this->calculatePaymentPartitions(false,"tuitionFees") +$this->calculatePaymentPartitions(false,"otherFees");
+        if(!$after_due_date) return   $this->calculatePaymentPartitions(false,"tuitionFees") + $this->calculatePaymentPartitions(false,"transportFees") +$this->calculatePaymentPartitions(false,"otherFees");
         return  $this->calculatePaymentPartitions(true,"tuitionFees") + $this->calculatePaymentPartitions(true,"transportFees") +  $this->calculatePaymentPartitions(true,"otherFees")   ;
     }
  

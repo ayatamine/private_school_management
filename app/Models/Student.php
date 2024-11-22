@@ -182,7 +182,7 @@ class Student extends Model
     {
         return Attribute::make(
             get: function ($value) {
-                return $this->totalFees() + $this->opening_balance - $this->payments() ;
+                return $this->totalFees()  ;
             }
         );
     }
