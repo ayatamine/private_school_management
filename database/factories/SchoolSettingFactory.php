@@ -30,6 +30,7 @@ class SchoolSettingFactory extends Factory
             'logo' => $this->faker->word(),
             'stamp' => $this->faker->word(),
             'new_registration_number_start' => $this->faker->word(),
+            'address' => $this->faker->word(),
         ];
     }
 }

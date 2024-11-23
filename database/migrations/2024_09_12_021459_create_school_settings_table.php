@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('logo');
             $table->string('stamp');
             $table->string('new_registration_number_start');
+            $table->string('address')->nullable();
             $table->timestamps();
         });
 

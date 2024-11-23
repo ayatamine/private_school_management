@@ -171,11 +171,12 @@
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
-                        {{ trans('main.school_title') }} : <span style="">{{ $settings->title }}</span> <br>
-                        {{ trans('main.permit_number') }} : <span style="">{{ $settings->permit_number }}</span> <br>
-                        {{ trans('main.commercial_register_number') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-                        {{ trans('main.tax_number') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-
+                         <span style="">{{ $settings->title }}</span> <br>
+                        {{ trans('main.permit_number_2') }} : <span style="">{{ $settings->permit_number }}</span> 
+                        {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
+                        {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
+                         <span style="">{{ $settings->address }}</span> <br>
+                        {{ $settings->email }} {{ trans('main.phone_number') }} : <span style="">{{ $settings->phone_number }}</span> 
                     </td>
                     
                 </tr>
@@ -190,14 +191,17 @@
             <tbody>
                 <tr>
                     <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        {{ trans('main.name') }} : <span style="">{{ $invoice->name }}</span> <br><br>
-                        {{ trans('main.invoice_number') }} : <span style="">{{ $invoice->number }}</span> <br>
+                        <span style="margin-left:0.5rem">{{ trans('main.invoice_name_first') }} </span> <span style="">{{ $invoice->name }}</span> <br><br>
+                        {{ trans('main.name') }} : <span style="margin-left:4rem">{{ $invoice?->student->username }}</span> 
+                        {{ trans('main.nationality') }} : <span style="margin-left:4rem">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</span>
+                        {{ trans('main.registration_number') }} : <span style="margin-left:4rem">{{ $invoice?->student->registration_number }}</span>
+                        <br><br>
                        
                     </td>
                     
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($invoice->created_at)) }}</span> <br><br>
-                        {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br>
+                        {{ trans('main.invoice_number') }} : <span style="margin-left:2rem">{{ $invoice->number }}</span> {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($invoice->created_at)) }}</span><br><br>
+                         {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br> <br>
                     </td>
                 </tr>
                 

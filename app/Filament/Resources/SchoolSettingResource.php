@@ -51,6 +51,9 @@ class SchoolSettingResource extends Resource
                 Forms\Components\TextInput::make('email')->label(trans('main.email'))
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('address')->label(trans('main.address'))
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('website')->label(trans('main.website'))
                     ->url(),
                 Forms\Components\TextInput::make('permit_number')->label(trans('main.permit_number'))

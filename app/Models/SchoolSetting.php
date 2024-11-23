@@ -25,6 +25,7 @@ class SchoolSetting extends Model
         'logo',
         'stamp',
         'new_registration_number_start',
+        'address',
     ];
 
     /**
