@@ -191,25 +191,39 @@
             <tbody>
                 <tr>
                     <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        <span style="margin-left:0.5rem">{{ trans('main.invoice_name_first') }} </span> <span style="">{{ $invoice->name }}</span> <br><br>
-                        {{ trans('main.name') }} : <span style="margin-left:4rem">{{ $invoice?->student->username }}</span> 
+                        <span style="margin-left:0.5rem">{{ trans('main.invoice_name_first') }} </span> <span style="">{{ $invoice->name }}</span> 
+                        {{-- {{ trans('main.name') }} : <span style="margin-left:4rem">{{ $invoice?->student->username }}</span> 
                         {{ trans('main.nationality') }} : <span style="margin-left:4rem">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</span>
-                        {{ trans('main.registration_number') }} : <span style="margin-left:4rem">{{ $invoice?->student->registration_number }}</span>
+                        {{ trans('main.registration_number') }} : <span style="margin-left:4rem">{{ $invoice?->student->registration_number }}</span> --}}
                         <br><br>
                        
                     </td>
                     
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
                         {{ trans('main.invoice_number') }} : <span style="margin-left:2rem">{{ $invoice->number }}</span> {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($invoice->created_at)) }}</span><br><br>
-                         {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br> <br>
+                         {{-- {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br> <br> --}}
                     </td>
+                </tr>
+                <tr>
+                    <td class="border-0 pl-0" colspan="4" style="border: none" >
+                        {{ trans('main.name') }} : <span style="margin-left:4rem">{{ $invoice?->student->username }}</span> 
+                        {{ trans('main.nationality') }} : <span style="margin-left:4rem">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</span>
+                        {{ trans('main.registration_number') }} : <span style="margin-left:4rem">{{ $invoice?->student->registration_number }}</span>
+                        {{ trans_choice('main.academic_course',1) }} : <span style="margin-left:4rem">{{ $invoice->student?->semester?->course?->name }}</span> <br> <br>
+                        <br><br>
+                       
+                    </td>
+                    
+                    {{-- <td class="border-0 pl-0" style="border: none"  colspan="2">
+                         {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br> <br>
+                    </td> --}}
                 </tr>
                 
             </tbody>
         </table>
         <hr>
         {{-- invoice info --}}
-        <h5 class="text-uppercase cool-gray">
+        {{-- <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.student_info')}}</strong>
         </h5>
         <table class=" mt-5"  style="width: 100%">
@@ -229,7 +243,7 @@
                 
             </tbody>
         </table>
-        <hr>
+        <hr> --}}
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.tuition_fee',2)}}</strong>
         </h5>
@@ -722,23 +736,32 @@
                 'total'=>$total
             ]);
         @endphp
-        <table>
+        <table style="width: 100%;border-collapse: collapse;">
             <tbody>
                 <tr style="border:none">
                     
-                    <th style="display:block;text-algin: right;border:none;float:right:margin:left:2rem" colspan="3">
-                        <img style="margin:auto;text-align:center" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="90">
+                    <th style="border:none;text-align:left" colspan="3">
+                        <img style="margin:auto;text-align:center;margin-left:2rem;display:block" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="90">
+                    </th>
+                    <th style="border:none;text-align:right;margin-right:4rem;display:block" colspan="3">
+                        <div style="border:none;float:left:margin-right:3rem" colspan="3">
+                            @php
+                                $qr_code =\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content);
+                                $code = (string)$qr_code;
+                                 echo substr($code,38);
+                            @endphp     
+                            {{-- {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}} --}}
+                        </div>
                     </th>
                 </tr>
             </tbody>
         </table>
-        <div style="text-align: left;border:none;float:left:margin-right:3rem" colspan="3">
+        {{-- <div style="text-align: left;border:none;float:left:margin-right:3rem" colspan="3">
             @php
                 $qr_code =\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content);
                 $code = (string)$qr_code;
                  echo substr($code,38);
             @endphp     
-            {{-- {{\SimpleSoftwareIO\QrCode\Facades\QrCode::generate($qr_content)}} --}}
-        </div>
+        </div> --}}
     </body>
 </html>

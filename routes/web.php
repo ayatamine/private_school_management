@@ -42,7 +42,7 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id){
                 $data = ['invoice' => $record,'settings'=>SchoolSetting::first()];
                 $view = "invoice";
                 $file_name = "invoice_$record->id.pdf";
-                return view("pdf.$view", $data);
+            
             break;
         case 'all_payments':
                 $record = Student::findOrFail($id);
