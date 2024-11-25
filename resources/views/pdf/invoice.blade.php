@@ -248,17 +248,18 @@
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.tuition_fee',2)}}</strong>
         </h5>
         @php
+            $applied_vat =null;
           $total_tuition_without_taxes =$total_of_tuition_taxes = $tuition_total = $tuituion_value_after_discount =[]; $vat = null;
         @endphp
         <table   style="width: 100%;border-collapse: collapse;">
             <thead >
                
                 <tr>
-                    <th scope="col" colspan="1">
+                    {{-- <th scope="col" colspan="1">
                        {{trans('main.fee_name')}}
-                    </th>
+                    </th> --}}
                     <th scope="col"  colspan="1">
-                        {{trans('main.partition_name')}}
+                        {{trans('main.partition_name2')}}
                     </th>
                     <th scope="col"  colspan="1">
                         {{trans('main.value')}}
@@ -287,14 +288,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($invoice->student->tuitionFees as $fee)
+                @foreach ($invoice->student->tuitionFees as $k=> $fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
                   
                     <tr>
-                        <td scope="row" >
+                        {{-- <td scope="row" >
                            {{trans_choice('main.tuition_fee',1)}} {{$fee->academicYear?->name}}
-                        </td>
+                        </td> --}}
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
                         </td>
@@ -312,8 +313,9 @@
                                         ->where('student_id', $invoice->student->id)
                                         ->value('discounts');
                                         $decodedDiscounts = json_decode($discounts, true);
+                                        
                         @endphp
-                        
+                         
                         @if(isset($decodedDiscounts[$i]) && array_key_exists('discount_value',$decodedDiscounts[$i]))
                         <td  >
                             {{$decodedDiscounts[$i]['discount_value']}} @if($decodedDiscounts[$i]['discount_type'] == 'percentage')% @endif
@@ -333,7 +335,7 @@
                             {
                                 $tuituion_value_after_discount[$i] =$partition['value'];
                             }      
-                                $total_tuition_without_taxes[$i]=$tuituion_value_after_discount[$i];
+                                $total_transport_without_taxes[$i]=$tuituion_value_after_discount[$i];
                             @endphp
                             
                             {{$tuituion_value_after_discount[$i]}}
@@ -347,19 +349,15 @@
                             0
                          </td>
                          @endif
-                         
                         @if($invoice->student->nationality != "saudian")
                         @php
-                            $vat = null;
-                            if(\App\Models\ValueAddedTax::count() == 1)
+                            $payment_due_date = $partition['due_date_end_at'];
+                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                            if($vat == null)
                             {
                                 $vat = \App\Models\ValueAddedTax::first();
                             }
-                            else
-                            {
-                                $payment_due_date = $partition['due_date_end_at'];
-                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
-                            }
+                            $applied_vat = $vat;
                         @endphp
                         
                         <td >
@@ -380,12 +378,17 @@
                         </td>
                         <td >
                             @php
-                                $tuition_total[$i] = (isset($tuituion_value_after_discount[$i]) ? $tuituion_value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0)
+                                $tuition_total[$i] = (isset($tuituion_value_after_discount[$i]) ? $tuituion_value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
+                                
                             @endphp
                             {{$tuition_total[$i]}}
                         </td>
                     </tr> 
                   @endforeach
+                  @php
+                            $total_of_tuition_taxes_ii[$k]=array_sum($total_of_tuition_taxes);
+                            $total_of_tuition_taxes =[];
+                    @endphp
                  @endif
                 @endforeach
                
@@ -401,11 +404,11 @@
             <thead >
                
                 <tr>
-                    <th scope="col" >
+                    {{-- <th scope="col" >
                        {{trans('main.fee_name')}}
-                    </th>
+                    </th> --}}
                     <th scope="col" >
-                        {{trans('main.partition_name')}}
+                        {{trans('main.partition_name2')}}
                     </th>
                     <th scope="col" >
                         {{trans('main.value')}}
@@ -432,14 +435,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($invoice->student->transportFees as $fee)
+                @foreach ($invoice->student->transportFees as $k=>$fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
                   
                     <tr>
-                        <td  >
+                        {{-- <td  >
                            {{trans_choice('main.transport_fee',1)}} {{$fee->academicYear?->name}}
-                        </td>
+                        </td> --}}
                         <td >
                             {{$partition['partition_name']}}
                         </td>
@@ -496,16 +499,13 @@
                          
                         
                         @php
-                            $vat = null;
-                            if(\App\Models\ValueAddedTax::count() == 1)
+                            $payment_due_date = $partition['due_date_end_at'];
+                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                            if($vat == null)
                             {
                                 $vat = \App\Models\ValueAddedTax::first();
                             }
-                            else
-                            {
-                                $payment_due_date = $partition['due_date_end_at'];
-                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
-                            }
+                            $applied_vat = $vat;
                         @endphp
                         <td >
                             {{isset($vat?->percentage) ? $vat?->percentage : 0}} %
@@ -531,12 +531,17 @@
                         </td>
                     </tr> 
                   @endforeach
+                   @php
+                            $total_of_transport_taxes_ii[$k]=array_sum($total_of_transport_taxes);
+                            $total_of_transport_taxes =[];
+                    @endphp
                  @endif
                 @endforeach
                  
             </tbody>
         </table>
-        <hr>
+        
+        
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.general_fee',2)}}</strong>
         </h5>
@@ -547,11 +552,11 @@
             <thead >
                
                 <tr>
-                    <th scope="col" colspan="1">
+                    {{-- <th scope="col" colspan="1">
                        {{trans('main.fee_name')}}
-                    </th>
+                    </th> --}}
                     <th scope="col"  colspan="1">
-                        {{trans('main.partition_name')}}
+                        {{trans('main.partition_name2')}}
                     </th>
                     <th scope="col"  colspan="1">
                         {{trans('main.value')}}
@@ -580,14 +585,14 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($invoice->student->otherFees as $fee)
+                @foreach ($invoice->student->otherFees as $k=> $fee)
                  @if(count($fee->payment_partition))
                   @foreach ($fee->payment_partition as $i=> $partition)
                   
                     <tr>
-                        <td scope="row" >
+                        {{-- <td scope="row" >
                            {{trans_choice('main.tuition_fee',1)}} {{$fee->academicYear?->name}}
-                        </td>
+                        </td> --}}
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
                         </td>
@@ -597,6 +602,7 @@
                         @endphp
                         <td >
                             {{$partition['value']}}
+                            @php   $total_other_without_taxes[$i] = intval($partition['value']);  @endphp
                         </td>
                         @php
                             $discounts = DB::table('student_fee')
@@ -633,7 +639,7 @@
                             {{$value_after_discount[$i]}}
                         </td>
                          @else 
-    
+                           
                          <td  >
                             0
                          </td>
@@ -643,18 +649,16 @@
                          @endif
                        
                         @php
-                            $vat = null;
-                            if(\App\Models\ValueAddedTax::count() == 1)
+                            
+                            $payment_due_date = $partition['due_date_end_at'];
+                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                            if($vat == null)
                             {
                                 $vat = \App\Models\ValueAddedTax::first();
                             }
-                            else
-                            {
-                                $payment_due_date = $partition['due_date_end_at'];
-                                $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
-                            }
+                            $applied_vat = $vat;
                         @endphp
-                        
+                         
                         <td >
                             {{$vat?->percentage}} %
                         </td>
@@ -666,6 +670,7 @@
                                 $total_of_other_taxes[$i]=$value_after_tax[$i];
                             @endphp
                             {{$value_after_tax[$i]}}
+                           
                         </td>
                       
                         <td >
@@ -679,18 +684,24 @@
                         </td>
                     </tr> 
                   @endforeach
+                   @php
+                            $total_of_other_taxes_ii[$k]=array_sum($total_of_other_taxes);
+                            $total_of_other_taxes =[];
+                    @endphp
                  @endif
                 @endforeach
                 
             </tbody>
         </table>
         <br>
+
         <table style="width: 100%;border-collapse: collapse;">
             <tbody>
                 @php
-                    $total_without_tax = array_sum($total_tuition_without_taxes) + array_sum($total_transport_without_taxes) + array_sum($total_other_without_taxes);
-                    $total_with_tax =array_sum($total_of_tuition_taxes) + array_sum($total_of_transport_taxes) + array_sum($total_of_other_taxes);
-                    $total =$total_without_tax + $total_with_tax;
+                    $total_without_tax =  ($invoice->student->nationality == "saudian") ?  array_sum($tuition_total) : 0 ;
+                    $total_of_tax =array_sum($total_of_tuition_taxes_ii) + array_sum($total_of_transport_taxes_ii) + array_sum($total_of_other_taxes_ii);
+                    $total_with_tax =   array_sum($transport_total) + array_sum($other_total);
+                    $total =$total_without_tax + $total_of_tax + $total_with_tax;
                 @endphp
                                 {{-- total without taxes --}}
                                 <tr>
@@ -699,25 +710,32 @@
                                         {{$total_without_tax}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>{{trans('main.total_with_tax')}}</td>
+                                    <td>
+                                        {{$total_with_tax}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                                    </td>
+                                </tr>
                                 {{-- total without taxes --}}
                                 <tr>
                                     <td>{{trans('main.total_of_taxes')}}
-                                        @php
+                                        {{-- @php
                                             $vat = null;
                                             if(\App\Models\ValueAddedTax::count() == 1)
                                             {
                                                 $vat = \App\Models\ValueAddedTax::first();
                                             }
-                                        @endphp
-                                        ({{$vat?->percentage }}%)
+                                        @endphp --}}
+                                       
+                                        ({{$applied_vat?->percentage }}%)
                                     </td>
                                     <td>
-                                        {{$total_with_tax}}  {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                                        {{$total_of_tax}}  {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
                                 {{-- total sum --}}
                                 <tr>
-                                    <td>{{trans('main.total')}}</td>
+                                    <td>{{trans('main.total_of_total_with_tax')}} ({{$applied_vat?->percentage }}%)</td>
                                     <td>
                                         {{$total}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
@@ -741,7 +759,7 @@
                 <tr style="border:none">
                     
                     <th style="border:none;text-align:left" colspan="3">
-                        <img style="margin:auto;text-align:center;margin-left:2rem;display:block" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="90">
+                        <img style="margin:auto;text-align:center;margin-left:2rem;display:block" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="75">
                     </th>
                     <th style="border:none;text-align:right;margin-right:4rem;display:block" colspan="3">
                         <div style="border:none;float:left:margin-right:3rem" colspan="3">

@@ -126,16 +126,13 @@ trait HasPayments {
                                     $value_after_tax[$i] = 0;
                                    
                                 }else{
-                                        $vat = null;
-                                        if(\App\Models\ValueAddedTax::count() == 1)
-                                        {
-                                            $vat = \App\Models\ValueAddedTax::first();
-                                        }
-                                        else
-                                        {
-                                            $payment_due_date = $partition['due_date_end_at'];
-                                            $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
-                                        }
+                                    $payment_due_date = $partition['due_date_end_at'];
+                                    $vat = \App\Models\ValueAddedTax::whereDate('applies_at',"<=",date('Y-m-d',strtotime($payment_due_date)))->first();   
+                                    if($vat == null)
+                                    {
+                                        $vat = \App\Models\ValueAddedTax::first();
+                                    }
+                                    
                                         $value_after_tax[$i] = (($vat?->percentage ? $vat->percentage : 0 )/ 100) * (isset($value_after_discount[$i]) ? $value_after_discount[$i] : floatval($partition['value']));
                                     
                                 }
