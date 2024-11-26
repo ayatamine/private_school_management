@@ -22,10 +22,26 @@ use App\Filament\Student\Resources\StudentResource\RelationManagers;
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static bool $isScopedToTenant = true;
     public static bool $shouldRegisterNavigation=false;
+    public static function getModelLabel():string
+    {
+        return trans_choice('main.my_profile',1);
+    }
+    public static function canCreate():bool
+    {
+        return true;
+    }
+    public static function getNavigationLabel():string
+    {
+        return trans_choice('main.my_profile',2);
+    }
+
+    public static function getPluralModelLabel():string
+    {
+        return trans_choice('main.my_profile',2);
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -57,10 +73,6 @@ class StudentResource extends Resource
         return $infolist
             ->schema([
                 \Filament\Infolists\Components\Section::make(trans('main.radical_infos'))
-                        ->headerActions([
-                            Action::make(trans('main.edit'))
-                                ->url(fn (Student $record): string => route('filament.admin.resources.students.edit', $record))
-                        ])
                         ->columns(2)
                         ->id('main-section')
                         ->schema([
@@ -86,7 +98,10 @@ class StudentResource extends Resource
                                 TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
-                                TextEntry::make('created_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
+                                TextEntry::make('approved_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
+                                TextEntry::make('transport_registration_date')->label(trans('main.transport_registeration_date'))
+                                ->formatStateUsing(fn($state)=> $state!='' ? $state : trans('main.not_registered_yet') )
+                                ->date()->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.parent_data'))
                         ->columns(2)
@@ -189,7 +204,7 @@ class StudentResource extends Resource
                                 ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
-                                    return trans('main.total_fees_to_rest_method');
+                                    return trans('main.total_fees_rest_method');
                                 })
                        
                         ]),
@@ -210,7 +225,7 @@ class StudentResource extends Resource
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
-            'view' => Pages\ViewMyDetails::route('/{record}'),
+            'view' => Pages\ViewMyProfile::route('/{record}'),
         ];
     }
 }

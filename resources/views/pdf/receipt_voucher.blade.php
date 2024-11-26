@@ -208,14 +208,14 @@
             <tbody>
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.name') }} : <span style="">{{ $receipt?->student->username }}</span> <br><br>
-                        {{ trans('main.nationality') }} : <span style="">{{ $receipt?->student->nationality }}</span> <br>
+                        {{ trans('main.name') }} : <span style="">{{ $receipt?->student?->username ??  $receipt?->studentAttached?->username }}</span> <br><br>
+                        {{ trans('main.nationality') }} : <span style="">{{ $receipt?->student?->nationality ??  $receipt?->studentAttached?->nationality }}</span> <br>
                        
                     </td>
                     
-                    <td class="border-0 pl-0"  style="border: none"  colspan="2">
-                        {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student->registration_number }}</span> <br><br>
-                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $receipt?->student?->semester?->course?->name }}</span> <br>
+                    <td class="border-0 pl-0"  style="border: none"  colspan="2"> 
+                        {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student?->registration_number ??  $receipt?->studentAttached?->registration_number}}</span> <br><br>
+                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $receipt?->student?->semester?->course?->name ??  "/" }}</span> <br>
                     </td>
                 </tr>
                 

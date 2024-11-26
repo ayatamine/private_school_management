@@ -7,6 +7,7 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\Login;
+use App\Filament\Student\Resources\ReceiptVoucherResource;
 use App\Filament\Student\Resources\StudentResource;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
@@ -28,7 +29,7 @@ class StudentPanelProvider extends PanelProvider
     {
         return $panel
             ->id('student')
-            ->path('student')
+            ->path('students')
             ->login(Login::class)
             ->colors([
                 'primary' => Color::Blue,
@@ -45,7 +46,11 @@ class StudentPanelProvider extends PanelProvider
                 NavigationItem::make('my_profile')
                     ->label(trans('main.my_profile'))
                     ->icon('icon-student_profile')
-                    ->url(fn (): string => StudentResource::getUrl('view',[1])),
+                    ->url(fn (): string => StudentResource::getUrl('view',[auth()->user()->student->id])),
+                NavigationItem::make('my_payments')
+                    ->label(trans('main.my_payments'))
+                    ->icon('icon-receipt_voucher')
+                    ->url(fn (): string => ReceiptVoucherResource::getUrl('index')),
             ])
             ->discoverWidgets(in: app_path('Filament/Student/Widgets'), for: 'App\\Filament\\Student\\Widgets')
             ->widgets([

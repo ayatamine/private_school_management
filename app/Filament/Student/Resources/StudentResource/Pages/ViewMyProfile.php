@@ -27,83 +27,14 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use App\Filament\Resources\ReceiptVoucherResource;
 use App\Filament\Student\Resources\StudentResource;
 use Filament\Actions\Concerns\InteractsWithActions;
-class ViewMyDetails extends ViewRecord
+class ViewMyProfile extends ViewRecord
 {
     protected static string $resource = StudentResource::class;
-    protected static string $view = 'filament.resources.students.pages.view-my-details';
+    protected static string $view = 'filament.resources.students.pages.view-my-profile';
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('upgrade_student')
-            ->color('success')
-            ->label(trans('main.upgrade_student'))
-            ->visible($this->record->termination_date == null)
-            ->action(function(array $arguments,array $data) {
-                    Notification::make()
-                                        ->title(trans('main.not_yet_implemented'))
-                                        ->icon('heroicon-o-document-text')
-                                        ->iconColor('info')
-                                        ->send();
-                
-            
-
-            }),
-            //if balance is ok
-            Action::make('termination1')
-            ->color('primary')
-            ->label(trans_choice('main.termination',1))
-            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0))
-            ->modalContent(new HtmlString("<p class='font-semibold text-red-500'>".trans('main.student_termination_balance_error')."</p>"))
-            ->modalSubmitAction(false),
-            Action::make('termination')
-                    ->color('primary')
-                    ->label(trans_choice('main.termination',1))
-                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0))
-                    ->form([
-                        Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
-                        Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
-                            ->columnSpanFull()
-                            ->maxLength(26663)->required(),
-                        Forms\Components\FileUpload::make(name: 'termination_document')->label(trans('main.document'))
-                            ->columnSpanFull()
-                            ->directory('termination_documents'),
-                    ])
-                    ->action(function(array $arguments,array $data) {
-                        try{
-                            DB::beginTransaction();
-                            if($this->record->total_fees_rest != 0 && auth()->user()->can('terminate_student_private'))
-                            {
-                                Notification::make()
-                                    ->title(trans('main.student_termination_balance_error'))
-                                    ->icon('heroicon-o-document-text')
-                                    ->iconColor('danger')
-                                    ->send();
-                                return;
-                            }
-                            $data['terminated_by'] = Auth::id();
-                            $data['semester_id'] = null;
-                            $data['is_approved'] = false;
-                            $this->record->update($data);
-                            DB::commit();
-                            Notification::make()
-                                                ->title(trans('main.student_termination_success'))
-                                                ->icon('heroicon-o-document-text')
-                                                ->iconColor('success')
-                                                ->send();
-                        }
-                        catch(\Exception $ex)
-                        {
-                            DB::rollBack();
-                            Notification::make()
-                            ->title($ex)
-                            ->icon('heroicon-o-document-text')
-                            ->iconColor('danger')
-                            ->send();
-                        }
-                        
-                    
-
-                    }),
+           
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))

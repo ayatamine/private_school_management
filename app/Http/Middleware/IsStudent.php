@@ -19,8 +19,8 @@ class IsStudent
         {
             if(auth()->user()->parent) return back();
             return redirect()->route('filament.admin.auth.login');
-
         }
+
         return $next($request);
     }
 }
