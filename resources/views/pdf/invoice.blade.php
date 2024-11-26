@@ -388,6 +388,8 @@
                   @php
                             $total_of_tuition_taxes_ii[$k]=array_sum($total_of_tuition_taxes);
                             $total_of_tuition_taxes =[];
+                            $tuition_total_ii[$k]=array_sum($tuition_total);
+                            $tuition_total =[];
                     @endphp
                  @endif
                 @endforeach
@@ -534,6 +536,8 @@
                    @php
                             $total_of_transport_taxes_ii[$k]=array_sum($total_of_transport_taxes);
                             $total_of_transport_taxes =[];
+                            $transport_total_ii[$k]=array_sum($transport_total);
+                            $transport_total =[];
                     @endphp
                  @endif
                 @endforeach
@@ -687,6 +691,8 @@
                    @php
                             $total_of_other_taxes_ii[$k]=array_sum($total_of_other_taxes);
                             $total_of_other_taxes =[];
+                            $other_total_ii[$k]=array_sum($other_total);
+                            $other_total=[];
                     @endphp
                  @endif
                 @endforeach
@@ -698,9 +704,15 @@
         <table style="width: 100%;border-collapse: collapse;">
             <tbody>
                 @php
-                    $total_without_tax =  ($invoice->student->nationality == "saudian") ?  array_sum($tuition_total) : 0 ;
-                    $total_of_tax =array_sum($total_of_tuition_taxes_ii) + array_sum($total_of_transport_taxes_ii) + array_sum($total_of_other_taxes_ii);
-                    $total_with_tax =   array_sum($transport_total) + array_sum($other_total);
+                    $total_without_tax =  ($invoice->student->nationality == "saudian") ?  array_sum($tuition_total_ii) : 0 ;
+                    $total_of_tax = array_sum($total_of_tuition_taxes_ii) + array_sum($total_of_transport_taxes_ii) + array_sum($total_of_other_taxes_ii) ;
+                    $total_with_tax = 0;
+                    if($invoice->student->nationality != "saudian")
+                    {
+                        $total_with_tax+=  array_sum($tuition_total_ii) ;
+                    }
+                    $total_with_tax+=   array_sum($transport_total_ii) + array_sum($other_total_ii);
+                    $total_with_tax=  $total_with_tax / (1 + ($vat->percentage / 100));
                     $total =$total_without_tax + $total_of_tax + $total_with_tax;
                 @endphp
                                 {{-- total without taxes --}}
