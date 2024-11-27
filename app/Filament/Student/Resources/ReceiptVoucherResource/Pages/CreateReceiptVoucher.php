@@ -11,8 +11,9 @@ class CreateReceiptVoucher extends CreateRecord
     protected static string $resource = ReceiptVoucherResource::class;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['client_id'] = auth()->user()?->student?->id;
-        dd($data);
+        $data['student_id'] = auth()->user()?->student?->id;
+        $data['registered_by'] = auth()->user()?->id;
+        $data['added_by'] = "student";
         return $data;
     }
 }

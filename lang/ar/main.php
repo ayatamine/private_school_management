@@ -309,4 +309,5 @@ return [
      'total_of_total_with_tax' => 'المجموع مع الضريبة',
      'my_profile' => 'حسابي الشخصي',
      'my_payments' => 'مدفوعاتي',
+     'account_cannot_login' => 'هدا الحساب غير مخول له الدخول',
 ];

@@ -46,10 +46,12 @@ class StudentPanelProvider extends PanelProvider
                 NavigationItem::make('my_profile')
                     ->label(trans('main.my_profile'))
                     ->icon('icon-student_profile')
-                    ->url(fn (): string => StudentResource::getUrl('view',[auth()->user()->student->id])),
+                    ->isActiveWhen(fn()=>request()->segment(2) == "students")
+                    ->url(fn (): string => StudentResource::getUrl('view',[auth()->user()?->student?->id])),
                 NavigationItem::make('my_payments')
                     ->label(trans('main.my_payments'))
                     ->icon('icon-receipt_voucher')
+                    ->isActiveWhen(fn()=>request()->segment(2) == "receipt-vouchers")
                     ->url(fn (): string => ReceiptVoucherResource::getUrl('index')),
             ])
             ->discoverWidgets(in: app_path('Filament/Student/Widgets'), for: 'App\\Filament\\Student\\Widgets')
