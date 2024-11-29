@@ -15,7 +15,7 @@ class ReceiptVoucherPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_receipt::voucher');
+        return $user->can('view_any_receipt::voucher') || ( $user->student != null && $user->student?->termination_date == null);
     }
 
     /**
@@ -23,7 +23,7 @@ class ReceiptVoucherPolicy
      */
     public function view(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return $user->can('view_receipt::voucher');
+        return $user->can('view_receipt::voucher') || ( $user->student != null && $user->student?->termination_date == null && $receiptVoucher->student_id == $user->student?->id);
     }
 
     /**
@@ -31,6 +31,7 @@ class ReceiptVoucherPolicy
      */
     public function create(User $user): bool
     {
+        return true;
         return $user->can('create_receipt::voucher');
     }
 

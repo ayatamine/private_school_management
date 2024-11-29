@@ -79,8 +79,11 @@
                         <td class="px-2">
                             {{ ($this->printReceipt)(['payment_id' => $payment->id]) }}
                             {{ ($this->viewReceipt)(['payment_id' => $payment->id]) }}
+
+                            @if(auth()->user()->student == null)
                             {{ ($this->editReceipt)(['payment_id' => $payment->id]) }}
                             {{ ($this->deleteReceipt)(['payment_id' => $payment->id]) }}
+                            @endif
                             {{-- <a href="{{route("filament.admin.resources.receipt-vouchers.edit",['record'=>$payment->id])}}">edit</a> --}}
                         </td>
                     </tr> 

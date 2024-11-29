@@ -42,9 +42,11 @@
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.total')}}
                     </th>
+                    @if(auth()->user()->student == null)
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.action')}}
                     </th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -156,7 +158,9 @@
                             @endphp
                             {{$total[$i]}}
                         </td>
+                        @if(auth()->user()->student == null)
                         <td  class="px-6 py-4 border">{{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\TuitionFee"]) }}</td>
+                        @endif
                     </tr> 
                     {{-- @endif --}}
                   @endforeach
@@ -164,19 +168,19 @@
                 @endforeach
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 border"colspan="9" >{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null) colspan="9" @else colspan="8" @endif >{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
                         {{array_sum($total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 <tr>
-                    <td class="px-6 py-4 border"colspan="9" >{{trans('main.total_paid_fees')}}</td>
+                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null) colspan="9" @else colspan="8" @endif >{{trans('main.total_paid_fees')}}</td>
                     <td class="px-6 py-4 border">
                         {{$getRecord()->payments()}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 <tr>
-                    <td class="px-6 py-4 border"colspan="9" >{{trans('main.balance')}}</td>
+                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null) colspan="9" @else colspan="8" @endif >{{trans('main.balance')}}</td>
                     <td class="px-6 py-4 border">
                         {{$getRecord()->balance}} 
                     </td>

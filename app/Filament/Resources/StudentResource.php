@@ -463,7 +463,7 @@ class StudentResource extends Resource
                         ->headerActions([
                             Action::make('edit')
                                 ->label(trans('main.new_receipt_payment'))
-                                ->url(fn(STudent $student) =>route('filament.admin.resources.receipt-vouchers.create',['student'=>$student->id]))
+                                ->url(fn(Student $student) =>route('filament.admin.resources.receipt-vouchers.create',['student'=>$student->id]))
                                 ->openUrlInNewTab(),
                             Action::make('printAllPayments')
                     ->icon('icon-print')
