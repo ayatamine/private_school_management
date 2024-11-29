@@ -28,7 +28,7 @@ class ReceiptVoucherResource extends Resource
     protected static ?string $model = ReceiptVoucher::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static bool $isScopedToTenant = true;
+    protected static bool $isScopedToTenant = false;
     public static bool $shouldRegisterNavigation=false;
 
     public static function getModelLabel():string
