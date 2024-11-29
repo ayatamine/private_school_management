@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Parents\Resources;
 
 use Closure;
 use Filament\Forms;
@@ -11,41 +11,32 @@ use Filament\Tables\Table;
 use App\Models\ParentModel;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ParentModelResource\Pages;
-use App\Filament\Resources\ParentModelResource\RelationManagers;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Parents\Resources\ParentModelResource\Pages;
+use App\Filament\Parents\Resources\ParentModelResource\RelationManagers;
 
 class ParentModelResource extends Resource
 {
     protected static ?string $model = ParentModel::class;
 
     protected static ?string $navigationIcon = 'icon-parents';
-    // public static function getNavigationGroup():string
-    // {
-    //     return trans('main.employee_settings');
-    // }
+    protected static bool $isScopedToTenant = true;
+    public static bool $shouldRegisterNavigation=false;
     public static function getModelLabel():string
     {
-        return trans_choice('main.parent',1);
+        return trans_choice('main.my_profile',1);
     }
     public static function getNavigationLabel():string
     {
-        return trans_choice('main.parent',2);
+        return trans_choice('main.my_profile',1);
     }
-
-    public static function getPluralModelLabel():string
-    {
-        return trans_choice('main.parent',2);
-    }
-   
+    
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make(trans('main.parent_data'))
+                Section::make()
                   ->columns(2)
                   ->schema([   
                 Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
@@ -97,19 +88,6 @@ class ParentModelResource extends Resource
                     )
                     ->disabled(),  
                 ]),
-                Section::make(trans('main.student_infos'))
-                  ->columns(1)
-                  ->schema([   
-                    Repeater::make('students')
-                     ->schema([
-                        Forms\Components\TextInput::make('username')->label(trans('main.student_name')),        
-                        Forms\Components\TextInput::make('national_id')->label(trans('main.national_id')),   
-                        Forms\Components\TextInput::make('course')->label(trans_choice('main.academic_course',1)),   
-                      
-                          
-                     ])->columns(3)
-                  ])
-                  ->visibleOn('view')
             ]);
     }
 
@@ -117,43 +95,15 @@ class ParentModelResource extends Resource
     {
         return $table
             ->columns([
-               
-                Tables\Columns\TextColumn::make('full_name')->label(trans('main.full_name'))
-                    ->sortable()
-                    ->searchable(),
-                // Tables\Columns\TextColumn::make('relation')->label(trans('main.relation'))
-                //     ->formatStateUsing(fn (string $state) => trans("main.$state"))
-                //     ->searchable(),
-                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
-                    ->searchable(),
-                // Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
-                //     ->formatStateUsing(fn (string $state) => trans("main.$state"))
-                //     ->searchable(),
-                Tables\Columns\TextColumn::make('user.email')->label(trans('main.email'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
-                    ->sortable(),
+                //
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.parent',2)
-                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
@@ -173,7 +123,7 @@ class ParentModelResource extends Resource
             'index' => Pages\ListParentModels::route('/'),
             'create' => Pages\CreateParentModel::route('/create'),
             'edit' => Pages\EditParentModel::route('/{record}/edit'),
-            'view' => Pages\ViewParent::route('/{record}'),
+            'view' => Pages\ViewParentProfile::route('/{record}'),
         ];
     }
 }

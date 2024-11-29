@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Filament\Facades\Filament;
 use Symfony\Component\HttpFoundation\Response;
 
-class IsStudent
+class IsParent
 {
     /**
      * Handle an incoming request.
@@ -16,18 +16,16 @@ class IsStudent
      */
     public function handle(Request $request, Closure $next): Response
     {
-        
-        if(auth()->check()  && !auth()->user()->student)
+        if(auth()->check()  && !auth()->user()->parent)
         {
            
-            if(auth()->user()->parent) {
+            if(auth()->user()->student) {
                 Filament::auth()->logout();
-                return redirect()->route('filament.parents.auth.login');
+                return redirect()->route('filament.student.auth.login');
             }
             Filament::auth()->logout();
             return redirect()->route('filament.admin.auth.login');
         }
-
         return $next($request);
     }
 }

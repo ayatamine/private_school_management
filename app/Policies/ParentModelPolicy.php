@@ -15,7 +15,7 @@ class ParentModelPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_parent::model');
+        return $user->can('view_any_parent::model') || ($user->parent != null);
     }
 
     /**
@@ -23,7 +23,7 @@ class ParentModelPolicy
      */
     public function view(User $user, ParentModel $parentModel): bool
     {
-        return $user->can('view_parent::model');
+        return $user->can('view_parent::model') || ($user->parent != null && ($user->parent->id ==$parentModel->id));
     }
 
     /**

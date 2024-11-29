@@ -185,6 +185,7 @@ return [
     'invoice_info'=>'معلومات الفاتورة',
     'invoice_number'=>'رقم الفاتورة',
     'release_date'=>'تاريخ الإصدار',
+    'student_infos'=>'معلومات الطلاب',
     'student_info'=>'معلومات الطالب',
     'total_without_taxes'=>' اجمالي المبلغ الغير خاضع للضريبة',
     'total_of_taxes'=>'ضريبة القيمة المضافة',
@@ -310,4 +311,5 @@ return [
      'my_profile' => 'حسابي الشخصي',
      'my_payments' => 'مدفوعاتي',
      'account_cannot_login' => 'هدا الحساب غير مخول له الدخول',
+     'children' => 'أبنائي',
 ];

@@ -15,7 +15,7 @@ class StudentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tuition::fee::reports') ||( $user->student != null && $user->student?->termination_date == null);
+        return $user->can('view_any_tuition::fee::reports') ||( $user->student != null && $user->student?->termination_date == null) || ( $user->parent != null && $user->parent->students !=null);
     }
 
     /**
@@ -23,7 +23,9 @@ class StudentPolicy
      */
     public function view(User $user, Student $student): bool
     {
-        return $user->can('view_tuition::fee::reports') || ($user->student != null && ($student->id ==$user->student->id  && $student?->termination_date == null));
+        return $user->can('view_tuition::fee::reports') 
+        || ($user->student != null && ($student->id ==$user->student->id  && $student?->termination_date == null))
+        || ( $user->parent != null && $user->parent->id == $student->parent->id) ;
     }
 
     /**

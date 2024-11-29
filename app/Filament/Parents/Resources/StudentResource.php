@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Student\Resources;
+namespace App\Filament\Parents\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
@@ -10,24 +10,26 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Student\Resources\StudentResource\Pages;
+use App\Filament\Parents\Resources\StudentResource\Pages;
 use Filament\Infolists\Components\TextEntry\TextEntrySize;
-use App\Filament\Student\Resources\StudentResource\RelationManagers;
+use App\Filament\Parents\Resources\StudentResource\RelationManagers;
 
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static bool $isScopedToTenant = true;
     public static bool $shouldRegisterNavigation=false;
     public static function getModelLabel():string
     {
-        return trans_choice('main.my_profile',1);
+        return trans('main.children');
     }
     public static function canCreate():bool
     {
@@ -35,12 +37,12 @@ class StudentResource extends Resource
     }
     public static function getNavigationLabel():string
     {
-        return trans_choice('main.my_profile',2);
+        return trans('main.children');
     }
 
     public static function getPluralModelLabel():string
     {
-        return trans_choice('main.my_profile',2);
+        return trans('main.children');
     }
     public static function form(Form $form): Form
     {
@@ -53,14 +55,52 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(
+                Student::query()
+                ->whereNull('termination_reason')
+                ->whereNull('termination_reason')
+                ->where('status','approved')
+                ->whereParentId(auth()?->user()?->parent?->id)
+                )
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('third_name')->label(trans('main.third_name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('last_name')->label(trans('main.last_name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
+                    ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
+                    ->formatStateUsing(fn (string $state) => trans("main.$state"))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')->label(trans('main.registration_date'))
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('approved_at')->label(trans('main.approved_at'))
+                    ->date()
+                    ->sortable(),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -103,16 +143,6 @@ class StudentResource extends Resource
                                 ->formatStateUsing(fn($state)=> $state!='' ? $state : trans('main.not_registered_yet') )
                                 ->date()->weight(FontWeight::Bold),
                         ]),
-                \Filament\Infolists\Components\Section::make(trans('main.parent_data'))
-                        ->columns(2)
-                        ->id('parent-section')
-                        ->schema([
-                                TextEntry::make('parent.full_name')->label(trans('main.full_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
-                        ]),
                 \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
                         ->id('tuition_fee-section')
                         ->schema([
@@ -147,7 +177,7 @@ class StudentResource extends Resource
                         ->headerActions([
                             Action::make('edit')
                                 ->label(trans('main.new_receipt_payment'))
-                                ->url(route('filament.student.resources.receipt-vouchers.create'))
+                                ->url(fn(Student $student) =>route('filament.parents.resources.receipt-vouchers.create',['student'=>$student->id]))
                                 ->openUrlInNewTab(),
                             Action::make('printAllPayments')
                     ->icon('icon-print')
@@ -225,7 +255,7 @@ class StudentResource extends Resource
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
-            'view' => Pages\ViewMyProfile::route('/{record}'),
+            'view' => Pages\ViewMyChildren::route('/{record}'),
         ];
     }
 }

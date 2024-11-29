@@ -17,12 +17,22 @@ class ViewParent extends ViewRecord
         // $data['gender'] = $user->gender;
         $data['phone_number'] = $user->phone_number;
         $data['email'] = $user->email;
-        if($student =$this->record->student)
+        if($students =$this->record->students)
         {
-            $data['username'] = $student->username;
-            $data['national_id'] = $student->user->national_id;
-            $data['course'] = $student->semester->course->name;
+            // $data['username'] = $student->username;
+            // $data['national_id'] = $student->user->national_id;
+            // $data['course'] = $student->semester->course->name;
+            $stds=[];
+            foreach($students as $i=>$student)
+            {
+                 $stds[$i]['username'] = $student->username;
+                 $stds[$i]['national_id'] = $student->user?->national_id;
+                 $stds[$i]['course'] = $student->semester?->course?->name;
+            }
+          
         }
+        $data['students'] = $stds;
+
         return $data;
     }
 }

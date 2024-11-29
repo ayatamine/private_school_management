@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\ReceiptVoucher;
+use App\Models\Student;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ReceiptVoucherPolicy
@@ -15,7 +16,9 @@ class ReceiptVoucherPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_receipt::voucher') || ( $user->student != null && $user->student?->termination_date == null);
+        return $user->can('view_any_receipt::voucher') 
+        || ( $user->student != null && $user->student?->termination_date == null)
+        || ( $user->parent != null) ;
     }
 
     /**
@@ -23,7 +26,9 @@ class ReceiptVoucherPolicy
      */
     public function view(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return $user->can('view_receipt::voucher') || ( $user->student != null && $user->student?->termination_date == null && $receiptVoucher->student_id == $user->student?->id);
+        return $user->can('view_receipt::voucher') 
+        || ( $user->student != null && $user->student?->termination_date == null && $receiptVoucher->student_id == $user->student?->id)
+        || ( $user->parent != null && Student::findOrFail($receiptVoucher->student_id)->parent_id == $user->parent_id?->id) ;
     }
 
     /**
@@ -31,8 +36,9 @@ class ReceiptVoucherPolicy
      */
     public function create(User $user): bool
     {
-        return true;
-        return $user->can('create_receipt::voucher');
+        return $user->can('create_receipt::voucher')
+        || ( $user->student != null && $user->student?->termination_date == null)
+        || ( $user->parent != null) ;
     }
 
     /**
@@ -40,6 +46,7 @@ class ReceiptVoucherPolicy
      */
     public function update(User $user, ReceiptVoucher $receiptVoucher): bool
     {
+        return true;
         return $user->can('update_receipt::voucher');
     }
 

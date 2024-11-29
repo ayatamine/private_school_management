@@ -40,7 +40,7 @@
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.total')}}
                     </th>
-                    @if(auth()->user()->student == null)
+                    @if(auth()->user()->student == null && auth()->user()->parent == null)
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.action')}}
                     </th>
@@ -158,7 +158,7 @@
                             @endphp
                             {{$total[$i]}}
                         </td>
-                        @if(auth()->user()->student == null)
+                        @if(auth()->user()->student == null && auth()->user()->parent == null)
                         <td  class="px-6 py-4 border">
                             {{ ($this->editPartitions)(['fee_id' => $fee->id,'partition' => $i,'feeable_type'=>"App\Models\GeneralFee"]) }}
                             {{-- {{ ($this->printReceipt)(['fee_id' => $fee->id]) }} --}}
@@ -174,13 +174,13 @@
                 @endforeach
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null) colspan="9" @else colspan="8" @endif>{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total')}}</td>
                     <td class="px-6 py-4 border">
                         {{array_sum($grand_total) + array_sum($total_fees_to_pay)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 <tr>
-                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null) colspan="9" @else colspan="8" @endif>{{trans('main.total_fees_to_pay')}}</td>
+                    <td class="px-6 py-4 border"  @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total_fees_to_pay')}}</td>
                     <td class="px-6 py-4 border">
                         {{array_sum($grand_total)}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>

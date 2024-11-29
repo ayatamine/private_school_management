@@ -169,6 +169,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\Filament\StudentPanelProvider::class,
+        App\Providers\Filament\ParentsPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\VoltServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
