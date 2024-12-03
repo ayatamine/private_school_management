@@ -7,6 +7,7 @@ use MPDF;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Invoice;
 use App\Models\Student;
 use App\Models\TuitionFee;
 use App\Models\ParentModel;
@@ -27,6 +28,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use App\Filament\Resources\ReceiptVoucherResource;
 use App\Filament\Student\Resources\StudentResource;
 use Filament\Actions\Concerns\InteractsWithActions;
+
 class ViewMyProfile extends ViewRecord
 {
     protected static string $resource = StudentResource::class;
@@ -34,11 +36,52 @@ class ViewMyProfile extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-           
+
+            Action::make('change_password')
+                    ->color('warning')
+                    ->label(trans('main.change_password'))
+                    ->form([
+                        
+                        Forms\Components\TextInput::make(name: 'password')->label(trans('main.password'))
+                            ->password()
+                            ->revealable()
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function(array $arguments,array $data) {
+                        try{
+                            DB::beginTransaction();
+                            $Student = Student::findOrFail($this->record->id);
+                            if($data['password'] != "")
+                            {
+                              $Student->user->update([
+                                    'password' =>  bcrypt($data['password'])
+                             ]);  
+                            }
+                            
+                            DB::commit();
+                            Notification::make()
+                                                ->title(trans('main.password_updated_successfully'))
+                                                ->icon('heroicon-o-document-text')
+                                                ->iconColor('success')
+                                                ->send();
+                        }
+                        catch(\Exception $ex)
+                        {
+                            DB::rollBack();
+                            Notification::make()
+                            ->title($ex)
+                            ->icon('heroicon-o-document-text')
+                            ->iconColor('danger')
+                            ->send();
+                        }
+                        
+                    
+
+                    }),
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))
-                    ->url(route('print_pdf',['type'=>"all_fees",'id'=>$this->record->id]))
+                    ->url( route('print_pdf',['type'=>"invoice",'id'=>Invoice::whereStudentId($this->record->id)?->latest()?->first()?->id]))
                     
         ];
     }

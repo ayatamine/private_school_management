@@ -312,4 +312,5 @@ return [
      'my_payments' => 'مدفوعاتي',
      'account_cannot_login' => 'هدا الحساب غير مخول له الدخول',
      'children' => 'أبنائي',
+     'change_password' => 'تغيير كلمة السر',
 ];

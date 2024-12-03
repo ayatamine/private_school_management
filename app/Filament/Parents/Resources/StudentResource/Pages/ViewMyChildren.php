@@ -5,6 +5,7 @@ namespace App\Filament\Parents\Resources\StudentResource\Pages;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Invoice;
 use App\Models\ParentModel;
 use Filament\Actions\Action;
 use App\Models\ConcessionFee;
@@ -24,7 +25,7 @@ class ViewMyChildren extends ViewRecord
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))
-                    ->url(route('print_pdf',['type'=>"all_fees",'id'=>$this->record->id]))
+                    ->url( route('print_pdf',['type'=>"invoice",'id'=>Invoice::whereStudentId($this->record->id)?->latest()?->first()?->id]))
                     
         ];
     }

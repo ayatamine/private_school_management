@@ -6,6 +6,7 @@ use MPDF;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Invoice;
 use App\Models\Student;
 use App\Models\TuitionFee;
 use App\Models\ParentModel;
@@ -108,7 +109,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))
-                    ->url(route('print_pdf',['type'=>"all_fees",'id'=>$this->record->id]))
+                    ->url( route('print_pdf',['type'=>"invoice",'id'=>Invoice::whereStudentId($this->record->id)?->latest()?->first()?->id]))
                     
         ];
     }
