@@ -156,6 +156,7 @@ class ReceiptVoucherResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Action::make('print_receipt_voucher')
                     ->icon('icon-print')
+                    ->visible(fn(ReceiptVoucher $receiptVoucher) => $receiptVoucher->status == "paid")
                     ->color('info')
                     ->label(trans('main.print_receipt_voucher'))
                     ->url(fn(ReceiptVoucher $record) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$record->id]))
