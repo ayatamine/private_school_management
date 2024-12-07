@@ -13,6 +13,7 @@ use Exception;
 class CreateReceiptVoucher extends CreateRecord
 {
     protected static string $resource = ReceiptVoucherResource::class;
+    protected static bool $canCreateAnother = false;
     public function mutateFormDataBeforeCreate(array $data): array
     {
         $data['registered_by'] =Auth::id();

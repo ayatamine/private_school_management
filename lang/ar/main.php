@@ -313,4 +313,9 @@ return [
      'account_cannot_login' => 'هدا الحساب غير مخول له الدخول',
      'children' => 'أبنائي',
      'change_password' => 'تغيير كلمة السر',
+     'reject_note' => 'سبب الرفض',
+     'old_password' => 'كلمة السر الحالية',
+     'new_password' => 'كلمة السر الجديدة',
+     'current_password_wrong' => 'كلمة السر الحالية خطأ يرجى اعادة المحاولة',
+     'password_updated_successfully' => 'تم تغيير كلمة السر بنجاح',
 ];

@@ -9,6 +9,7 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateReceiptVoucher extends CreateRecord
 {
     protected static string $resource = ReceiptVoucherResource::class;
+    protected static bool $canCreateAnother = false;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['registered_by'] = auth()->user()?->id;

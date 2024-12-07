@@ -19,11 +19,13 @@ use Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\Contracts\HasActions;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Validation\ValidationException;
 use Filament\Forms\Concerns\InteractsWithForms;
 use App\Filament\Resources\ReceiptVoucherResource;
 use App\Filament\Student\Resources\StudentResource;
@@ -39,10 +41,15 @@ class ViewMyProfile extends ViewRecord
 
             Action::make('change_password')
                     ->color('warning')
+                    ->closeModalByClickingAway(false)
                     ->label(trans('main.change_password'))
                     ->form([
                         
-                        Forms\Components\TextInput::make(name: 'password')->label(trans('main.password'))
+                        Forms\Components\TextInput::make(name: 'old_password')->label(trans('main.old_password'))
+                            ->password()
+                            ->revealable()
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make(name: 'password')->label(trans('main.new_password'))
                             ->password()
                             ->revealable()
                             ->columnSpanFull(),
@@ -53,6 +60,16 @@ class ViewMyProfile extends ViewRecord
                             $Student = Student::findOrFail($this->record->id);
                             if($data['password'] != "")
                             {
+                                //check old password 
+                                if (!Hash::check($data['old_password'],$Student?->user?->password)) {
+                                    Notification::make()
+                                    ->title(trans('main.current_password_wrong'))
+                                    ->icon('heroicon-o-document-text')
+                                    ->iconColor('danger')
+                                    ->send();
+                                    return ;
+                                }
+                                
                               $Student->user->update([
                                     'password' =>  bcrypt($data['password'])
                              ]);  

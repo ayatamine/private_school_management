@@ -139,6 +139,8 @@ class ReceiptVoucherResource extends Resource
                 Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('reject_note')->label(trans('main.reject_note'))
+                    ->visible(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note)),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
                     ->sortable(),
             ])
