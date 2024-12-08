@@ -109,6 +109,7 @@ class ReceiptVoucherResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->query(ReceiptVoucher::whereNull('added_by'))
             ->columns([
                 Tables\Columns\TextColumn::make('student.registration_number')->label(trans_choice('main.registration_number',1))
                     ->sortable(),

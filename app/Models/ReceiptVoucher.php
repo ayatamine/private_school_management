@@ -27,6 +27,7 @@ class ReceiptVoucher extends Model
         'payment_method_id',
         'payment_date',
         'registered_by',
+        'added_by',
         'simple_note',
         'reject_note',
         'status',

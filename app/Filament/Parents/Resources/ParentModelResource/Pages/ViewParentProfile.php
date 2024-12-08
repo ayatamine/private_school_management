@@ -2,11 +2,14 @@
 
 namespace App\Filament\Parents\Resources\ParentModelResource\Pages;
 
+use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\ParentModel;
 use Filament\Actions\Action;
+use Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
-use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Hash;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use App\Filament\Parents\Resources\ParentModelResource;
@@ -23,7 +26,11 @@ class ViewParentProfile extends ViewRecord
                     ->label(trans('main.change_password'))
                     ->form([
                         
-                        TextInput::make(name: 'password')->label(trans('main.password'))
+                        Forms\Components\TextInput::make(name: 'old_password')->label(trans('main.old_password'))
+                            ->password()
+                            ->revealable()
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make(name: 'password')->label(trans('main.new_password'))
                             ->password()
                             ->revealable()
                             ->columnSpanFull(),
@@ -31,9 +38,19 @@ class ViewParentProfile extends ViewRecord
                     ->action(function(array $arguments,array $data) {
                         try{
                             DB::beginTransaction();
-                            $parent = $this->record;
+                            $parent = ParentModel::findOrFail($this->record->id);
                             if($data['password'] != "")
                             {
+                                //check old password 
+                                if (!Hash::check($data['old_password'],$parent?->user?->password)) {
+                                    Notification::make()
+                                    ->title(trans('main.current_password_wrong'))
+                                    ->icon('heroicon-o-document-text')
+                                    ->iconColor('danger')
+                                    ->send();
+                                    return ;
+                                }
+                                
                               $parent->user->update([
                                     'password' =>  bcrypt($data['password'])
                              ]);  

@@ -16,7 +16,13 @@ class ViewFeePaymentRequest extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            // Actions\EditAction::make(),
+            Action::make('show_attachment')
+            ->color('primary')
+            ->label(trans('main.show_attachment'))
+            ->visible($this->record?->document != null)
+            ->openUrlInNewTab(true)
+            ->url(asset('storage/'.$this->record?->document)),
             Action::make('reject_payment_request')
             ->color('danger')
             ->visible(fn(ReceiptVoucher $receiptVoucher) =>$receiptVoucher->status == "pending")

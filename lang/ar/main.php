@@ -317,5 +317,7 @@ return [
      'old_password' => 'كلمة السر الحالية',
      'new_password' => 'كلمة السر الجديدة',
      'current_password_wrong' => 'كلمة السر الحالية خطأ يرجى اعادة المحاولة',
-     'password_updated_successfully' => 'تم تغيير كلمة السر بنجاح',
-];
+     'password_updated_successfully'=>'تم تحديث كلمة السر بنجاح',
+     'is_active_for_students_and_parents'=>'تمكين طريقة الدفع للطالب وولي الأمر',
+     'show_attachment'=>'عرض الملف المرفق',
+     ];

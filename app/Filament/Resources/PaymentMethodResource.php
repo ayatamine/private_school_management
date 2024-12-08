@@ -63,6 +63,8 @@ class PaymentMethodResource extends Resource
                     Forms\Components\Toggle::make('is_code_required')->label(trans('main.is_reference_number_required'))
                         ->columnSpanFull()
                         ->visible(fn (Get $get) => $get('add_refrence_number') == true),
+                    Forms\Components\Toggle::make('is_active_for_students_and_parents')->label(trans('main.is_active_for_students_and_parents'))
+                        ->columnSpanFull()      ,
                 ])
             ]);
     }
@@ -76,6 +78,7 @@ class PaymentMethodResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')->label(trans('main.payment_method_name'))
                     ->searchable(),
+                Tables\Columns\IconColumn::make('is_active_for_students_and_parents')->label(trans('main.is_active_for_students_and_parents')),
                 // Tables\Columns\TextColumn::make('code')->label(trans('main.reference_number'))
                 //     ->searchable(),
                 // Tables\Columns\ToggleColumn::make('is_code_required')->label(trans('main.is_reference_number_required')),

@@ -61,6 +61,7 @@ class FeePaymentRequestResource extends Resource
                                                             ->orWhereHas('user',function($query) use ($search){
                                                                  $query->where('national_id', 'like', "%{$search}%");
                                                             })->pluck('username', 'id')->toArray())
+                    ->getOptionLabelUsing(fn ($value): ?string => Student::find($value)?->username)
                     ->required(),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
@@ -104,7 +105,7 @@ class FeePaymentRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(ReceiptVoucher::whereStatus('pending'))
+            ->query(ReceiptVoucher::whereNotNull('added_by'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label(trans('main.id'))
                     ->sortable(),
@@ -115,11 +116,18 @@ class FeePaymentRequestResource extends Resource
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                    ->formatStateUsing(fn($state)=> $state == $state." ".env('DEFAULT_CURRENCY'))
+                    ->formatStateUsing(fn($state)=>  $state." ".env('DEFAULT_CURRENCY'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')->label(trans('main.approvel_status')),
+                Tables\Columns\TextColumn::make('status')->label(trans('main.approvel_status'))
+                ->badge()
+                    ->formatStateUsing(fn($state)=> trans("main.$state"))
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'info',
+                        'paid' => 'success',
+                        'rejected' => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
                     ->date()
                     ->sortable(),
@@ -129,8 +137,8 @@ class FeePaymentRequestResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(fn(ReceiptVoucher $rv)=> $rv->status == 'pending'),
+                // Tables\Actions\EditAction::make()
+                //     ->visible(fn(ReceiptVoucher $rv)=> $rv->status == 'pending'),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([

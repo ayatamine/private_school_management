@@ -62,14 +62,20 @@ class EditNewestStudent extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
 
+     
+            
+       
             User::findOrFail($this->record->user_id)->update([
                 'national_id' =>$data['national_id'],
                 'gender' =>$data['gender'],
                 'phone_number' =>$data['phone_number'],
                 'email' =>$data['email'],
-                'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
             ]);
-           
+            if($password =$data['password']) 
+            {
+                $data['password'] = bcrypt($password);
+                User::findOrFail($this->record->user_id)->update(['password'=>$data['password']]);
+            }
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
         return $data;

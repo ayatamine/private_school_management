@@ -20,6 +20,7 @@ class PaymentMethod extends Model
         'finance_account_id',
         'code',
         'is_code_required',
+        'is_active_for_students_and_parents'
     ];
 
     /**
@@ -30,7 +31,8 @@ class PaymentMethod extends Model
     protected $casts = [
         'id' => 'integer',
         'finance_account_id' => 'integer',
-        'is_code_required' => 'boolean',
+        'is_code_required' => 'bool',
+        'is_active_for_students_and_parents' => 'bool',
     ];
 
     public function financeAccount(): BelongsTo

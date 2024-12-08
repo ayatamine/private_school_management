@@ -72,7 +72,7 @@ class ReceiptVoucherResource extends Resource
                     ->label(trans_choice('main.payment_method',1))
                     ->relationship(
                         name: 'paymentMethod',
-                        modifyQueryUsing: fn (Builder $query) => $query->latest(),
+                        modifyQueryUsing: fn (Builder $query) => $query->where('is_active_for_students_and_parents',true)->latest(),
                     )
                     ->live()
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")

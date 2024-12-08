@@ -17,6 +17,11 @@ class EditParentModel extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if($password =$data['password']) $data['password'] = bcrypt($password);
+        return $data;
+    }
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $user = User::findOrFail($data['user_id']);
