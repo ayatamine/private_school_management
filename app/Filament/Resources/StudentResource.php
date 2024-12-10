@@ -212,8 +212,7 @@ class StudentResource extends Resource
                             ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')])
                             ->required(),        
                         Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
-                            ->maxLength(255)
-                            ->hidden(fn (Get $get) => $get('new_student') == false),        
+                            ->maxLength(255),        
                     ])
                 ]),
                 // ->visible(fn (Get $get) => $get('new_student') == null || $get('new_student') == true),

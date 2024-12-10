@@ -19,7 +19,17 @@ class EditParentModel extends EditRecord
     }
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        if($password =$data['password']) $data['password'] = bcrypt($password);
+               
+        $this->record->user?->update([
+            'national_id' =>$data['national_id'],
+            // 'gender' =>$data['gender'],
+            'phone_number' =>$data['phone_number'],
+            'email' =>$data['email'],
+         ]);
+         if($password =$data['password']) {
+             $data['password'] = bcrypt($password);
+             $this->record->user?->update([ 'password' => $data['password']]);
+         }
         return $data;
     }
     protected function mutateFormDataBeforeFill(array $data): array

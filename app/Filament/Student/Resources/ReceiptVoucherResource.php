@@ -15,7 +15,9 @@ use App\Models\PaymentMethod;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -62,7 +64,8 @@ class ReceiptVoucherResource extends Resource
                         $numberToWord = new NumberToWord();
                         $set('value_in_alphabetic',$numberToWord->convert($state));
                     })
-                    ->live(onBlur: true),
+                    ->live(onBlur: true)
+                    ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.value" />'))),
                 // Forms\Components\TextInput::make('payment_method')
                 //     ->label(trans_choice('main.payment_method',1))
                 //     ->default(trans('main.transfer'))
@@ -76,11 +79,12 @@ class ReceiptVoucherResource extends Resource
                     )
                     ->live()
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
-                    // ->hidden(fn(Get $get) =>$get('payment_method_id') == null)
+                    ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.payment_method_id" />')))
                     ,
                 
                 Forms\Components\TextInput::make('refrence_number')->label(trans('main.refrence_number'))
                     ->hidden(function(Get $get){
+                        if(!$get('payment_method_id')) return true;
                         $payment_method = PaymentMethod::find($get('payment_method_id'));
                         return !$payment_method?->is_code_required ?? true ;
                     })

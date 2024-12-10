@@ -20,7 +20,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Parents\Resources\ReceiptVoucherResource\Pages;
 use App\Filament\Parents\Resources\ReceiptVoucherResource\RelationManagers;
-
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Blade;
 class ReceiptVoucherResource extends Resource
 {
     protected static ?string $model = ReceiptVoucher::class;
@@ -53,14 +54,7 @@ class ReceiptVoucherResource extends Resource
                 Section::make('')
                 ->schema([
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                    ->relationship('student', 'username')
-                    ->preload()
-                    ->searchable()
-                    ->getSearchResultsUsing(fn (string $search): array => Student::whereParentId(auth()->user()?->id)->where('username', 'like', "%{$search}%")
-                                                            ->orWhereHas('user',function($query) use ($search){
-                                                                 $query->where('national_id', 'like', "%{$search}%");
-                                                            })
-                                                            ->pluck('username', 'id')->toArray())
+                    ->options(Student::where('parent_id', auth()->user()?->parent?->id)->pluck('username','id'))
                     ->required()
                     ->default(request()['student']),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
@@ -71,7 +65,8 @@ class ReceiptVoucherResource extends Resource
                         $numberToWord = new NumberToWord();
                         $set('value_in_alphabetic',$numberToWord->convert($state));
                     })
-                    ->live(onBlur: true),
+                    ->live(onBlur: true)
+                    ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.value" />'))),
                 // Forms\Components\TextInput::make('payment_method')
                 //     ->label(trans_choice('main.payment_method',1))
                 //     ->default(trans('main.transfer'))
@@ -84,12 +79,14 @@ class ReceiptVoucherResource extends Resource
                         modifyQueryUsing: fn (Builder $query) => $query->where('is_active_for_students_and_parents',true)->latest(),
                     )
                     ->live()
+                    ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.payment_method_id" />')))
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                     // ->hidden(fn(Get $get) =>$get('payment_method_id') == null)
                     ,
                 
                 Forms\Components\TextInput::make('refrence_number')->label(trans('main.refrence_number'))
                     ->hidden(function(Get $get){
+                        if(!$get('payment_method_id')) return true;
                         $payment_method = PaymentMethod::find($get('payment_method_id'));
                         return !$payment_method?->is_code_required ?? true ;
                     })
