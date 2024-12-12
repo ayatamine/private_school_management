@@ -54,6 +54,10 @@ class ReceiptVoucherResource extends Resource
             ->schema([
                 Section::make('')
                 ->schema([
+                Forms\Components\TextInput::make('id')->label(trans('main.id'))
+                    ->disabledOn('view')
+                    ->visibleOn('view')
+                    ->maxLength(255),
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                     ->relationship('student', 'username')
                     ->preload()
@@ -106,6 +110,9 @@ class ReceiptVoucherResource extends Resource
                 Forms\Components\FileUpload::make('document')->label(trans('main.document')),
                 Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))
                         ->maxLength(255),
+                Forms\Components\Textarea::make('reject_note')->label(trans('main.reject_note'))
+                        ->disabled()
+                        ->visible(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note)),
              
                 ])
             ]);
@@ -116,6 +123,9 @@ class ReceiptVoucherResource extends Resource
         return $table
         ->query(ReceiptVoucher::whereNull('added_by'))
             ->columns([
+                Tables\Columns\TextColumn::make('id')->label(trans_choice('main.id',1))
+                    ->formatStateUsing(fn($state)=>$state."#")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('student.registration_number')->label(trans_choice('main.registration_number',1))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
@@ -142,6 +152,9 @@ class ReceiptVoucherResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
                     ->sortable(),
+                Tables\Columns\TextColumn::make('reject_note')->label(trans('main.reject_note'))
+                    ->state(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note) ? $receiptVoucher->reject_note : "/" ),
+                
             ])
             ->filters([
                 SelectFilter::make('status')

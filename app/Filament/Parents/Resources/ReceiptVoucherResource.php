@@ -53,13 +53,19 @@ class ReceiptVoucherResource extends Resource
             ->schema([
                 Section::make('')
                 ->schema([
+                Forms\Components\TextInput::make('id')->label(trans('main.id'))
+                    ->disabledOn('view')
+                    ->visibleOn('view')
+                    ->maxLength(255),
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                     ->options(Student::where('parent_id', auth()->user()?->parent?->id)->pluck('username','id'))
                     ->required()
+                    ->disabledOn('view')
                     ->default(request()['student']),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric()
+                    ->disabledOn('view')
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $numberToWord = new NumberToWord();
@@ -79,6 +85,7 @@ class ReceiptVoucherResource extends Resource
                         modifyQueryUsing: fn (Builder $query) => $query->where('is_active_for_students_and_parents',true)->latest(),
                     )
                     ->live()
+                    ->disabledOn('view')
                     ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.payment_method_id" />')))
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                     // ->hidden(fn(Get $get) =>$get('payment_method_id') == null)
@@ -90,14 +97,20 @@ class ReceiptVoucherResource extends Resource
                         $payment_method = PaymentMethod::find($get('payment_method_id'));
                         return !$payment_method?->is_code_required ?? true ;
                     })
+                    ->disabledOn('view')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
+                    ->disabledOn('view')
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('payment_date')->label(trans('main.payment_date'))
+                    ->disabledOn('view')
                     ->required(),
-                Forms\Components\FileUpload::make('document')->label(trans('main.document')),
-                Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))
+                Forms\Components\FileUpload::make('document')->label(trans('main.document'))->disabledOn('view'),
+                Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))->disabledOn('view')
                         ->maxLength(255),
+                Forms\Components\Textarea::make('reject_note')->label(trans('main.reject_note'))
+                        ->disabled()
+                        ->visible(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note)),
              
                 ])
             ]);
@@ -112,6 +125,9 @@ class ReceiptVoucherResource extends Resource
                     $query->whereParentId(auth()->user()?->parent?->id);
             }))
             ->columns([
+                Tables\Columns\TextColumn::make('id')->label(trans_choice('main.id',1))
+                    ->formatStateUsing(fn($state)=>$state."#")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('student.registration_number')->label(trans_choice('main.registration_number',1))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
@@ -137,7 +153,7 @@ class ReceiptVoucherResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('reject_note')->label(trans('main.reject_note'))
-                    ->visible(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note)),
+                    ->state(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note) ? $receiptVoucher->reject_note : "/" ),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
                     ->sortable(),
             ])
@@ -153,6 +169,7 @@ class ReceiptVoucherResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make()->visible(fn(ReceiptVoucher  $receiptVoucher   )=>  $receiptVoucher->status =="pending"),
                 Action::make('print_receipt_voucher')
                     ->icon('icon-print')
                     ->visible(fn(ReceiptVoucher $receiptVoucher) => $receiptVoucher->status == "paid")
@@ -162,7 +179,7 @@ class ReceiptVoucherResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->visible(fn(ReceiptVoucher $receiptVoucher  )=>  $receiptVoucher->status =="pending"),
                 ]),
             ]);
     }

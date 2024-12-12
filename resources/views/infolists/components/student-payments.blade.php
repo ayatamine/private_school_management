@@ -80,7 +80,7 @@
                             {{ ($this->printReceipt)(['payment_id' => $payment->id]) }}
                             {{ ($this->viewReceipt)(['payment_id' => $payment->id]) }}
 
-                            @if(auth()->user()->student == null)
+                            @if(auth()->user()->student == null && auth()->user()->parent == null)
                             {{ ($this->editReceipt)(['payment_id' => $payment->id]) }}
                             {{ ($this->deleteReceipt)(['payment_id' => $payment->id]) }}
                             @endif

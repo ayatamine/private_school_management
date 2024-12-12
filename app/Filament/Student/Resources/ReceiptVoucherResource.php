@@ -56,6 +56,10 @@ class ReceiptVoucherResource extends Resource
             ->schema([
                 Section::make('')
                 ->schema([
+                Forms\Components\TextInput::make('id')->label(trans('main.id'))
+                    ->disabledOn('view')
+                    ->visibleOn('view')
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric()
@@ -96,6 +100,9 @@ class ReceiptVoucherResource extends Resource
                 Forms\Components\FileUpload::make('document')->label(trans('main.document')),
                 Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))
                         ->maxLength(255),
+                Forms\Components\Textarea::make('reject_note')->label(trans('main.reject_note'))
+                        ->disabled()
+                        ->visible(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note)),
              
                 ])
             ]);
@@ -106,7 +113,9 @@ class ReceiptVoucherResource extends Resource
         return $table
             ->query(ReceiptVoucher::whereStudentId(auth()->user()?->student?->id))
             ->columns([
-              
+                Tables\Columns\TextColumn::make('id')->label(trans_choice('main.id',1))
+                    ->formatStateUsing(fn($state)=>$state."#")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
                     ->formatStateUsing(fn($state)=> $state == 'transfer' ? trans('main.transfer') : $state)
                     ->sortable(),
@@ -128,7 +137,7 @@ class ReceiptVoucherResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('reject_note')->label(trans('main.reject_note'))
-                    ->visible(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note)),
+                    ->state(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note) ? $receiptVoucher->reject_note : "/" ),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
                     ->sortable(),
             ])
@@ -145,6 +154,7 @@ class ReceiptVoucherResource extends Resource
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make()->visible(fn(ReceiptVoucher  $receiptVoucher   )=>  $receiptVoucher->status =="pending"),
                 // Action::make('status')
                 //     ->color('primary')
                 //     ->icon('heroicon-m-check')

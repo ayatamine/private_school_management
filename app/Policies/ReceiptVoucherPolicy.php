@@ -28,7 +28,7 @@ class ReceiptVoucherPolicy
     {
         return $user->can('view_receipt::voucher') 
         || ( $user->student != null && $user->student?->termination_date == null && $receiptVoucher->student_id == $user->student?->id)
-        || ( $user->parent != null && Student::findOrFail($receiptVoucher->student_id)->parent_id == $user->parent_id?->id) ;
+        || ( $user->parent != null && Student::findOrFail($receiptVoucher->student_id)->parent_id == $user->parent?->id) ;
     }
 
     /**
