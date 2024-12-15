@@ -2,11 +2,25 @@
 
 namespace App\Filament\Student\Resources\ReceiptVoucherResource\Pages;
 
-use App\Filament\Student\Resources\ReceiptVoucherResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Student\Resources\ReceiptVoucherResource;
 
 class ViewReceiptVoucher extends ViewRecord
 {
     protected static string $resource = ReceiptVoucherResource::class;
+    protected function getHeaderActions(): array
+    {
+        return [
+            // Actions\EditAction::make(),
+            Action::make('show_attachment')
+            ->color('primary')
+            ->label(trans('main.show_attachment'))
+            ->visible($this->record?->document != null)
+            ->url(asset('storage/'.$this->record?->document))
+            ->openUrlInNewTab()
+            ,
+        ];
+    }
 }

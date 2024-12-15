@@ -16,7 +16,12 @@ class ViewFeePaymentRequest extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\EditAction::make(),
+            Actions\EditAction::make()->color('info'),
+            Action::make('print_receipt_voucher')
+            ->icon('icon-print')
+            ->color('info')
+            ->label(trans('main.print_receipt_voucher'))
+            ->url(fn(ReceiptVoucher $record) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$record->id])),
             Action::make('show_attachment')
             ->color('primary')
             ->label(trans('main.show_attachment'))

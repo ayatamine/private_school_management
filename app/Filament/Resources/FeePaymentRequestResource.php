@@ -73,6 +73,10 @@ class FeePaymentRequestResource extends Resource implements HasShieldPermissions
             ->schema([
                 Section::make('')
                 ->schema([
+                    Forms\Components\TextInput::make('id')->label(trans('main.id'))
+                    ->formatStateUsing(fn($state) =>$state."#")
+                    ->disabled()
+                    ->visibleOn('view'),
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                     ->relationship('student', 'username')
                     ->searchable()
@@ -127,6 +131,7 @@ class FeePaymentRequestResource extends Resource implements HasShieldPermissions
             ->query(ReceiptVoucher::whereNotNull('added_by'))
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label(trans('main.id'))
+                    ->formatStateUsing(fn($state) =>$state."#")
                     ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
                     ->sortable(),

@@ -18,8 +18,9 @@ class ViewReceiptVoucher extends ViewRecord
             ->color('primary')
             ->label(trans('main.show_attachment'))
             ->visible($this->record?->document != null)
-            ->openUrlInNewTab(true)
-            ->url(asset('storage/'.$this->record?->document)),
+            ->url(asset('storage/'.$this->record?->document))
+            ->openUrlInNewTab()
+            ,
         ];
     }
 }

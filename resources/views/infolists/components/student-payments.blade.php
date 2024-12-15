@@ -82,8 +82,12 @@
                             @endif
                             {{ ($this->viewReceipt)(['payment_id' => $payment->id]) }}
 
+<<<<<<< HEAD
                             @if(auth()->user()->student == null)
                             @if(auth()->user()->hasPermissionTo('update_payment_student')  ||  auth()->user()->parent != null )
+=======
+                            @if(auth()->user()->student == null && auth()->user()->parent == null)
+>>>>>>> 3c410e490d5a851b2b957075c908f727da1fb23b
                             {{ ($this->editReceipt)(['payment_id' => $payment->id]) }}
                             @endif 
                             @if(auth()->user()->hasPermissionTo('delete_payment_student') || auth()->user()->parent != null )
