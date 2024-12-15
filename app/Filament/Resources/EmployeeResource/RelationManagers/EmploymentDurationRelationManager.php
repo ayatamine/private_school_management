@@ -52,20 +52,23 @@ class EmploymentDurationRelationManager extends RelationManager
                     ->image()
                     ->columnSpanFull(),
                 Forms\Components\DatePicker::make('contract_end_date')->label(trans('main.contract_end_date'))
-                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
-                    ->required(),
+                    // ->visible(fn(EmploymentDuration $record)=>$record?->contract_end_date != null)
+                    // ->required()
+                    ,
                 Forms\Components\TextInput::make('contract_end_reason')->label(trans('main.contract_end_reason'))
-                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
-                    ->required(),
+                    // ->visible(fn(EmploymentDuration $record)=>$record?->contract_end_date != null)
+                    // ->required()
+                    ,
                 Forms\Components\TextInput::make('note')->label(trans('main.note'))
-                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null),
+                    // ->visible(fn(EmploymentDuration $record)=>$record?->contract_end_date != null)
+                    ,
                 Forms\Components\FileUpload::make('attachment')
-                    ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date != null)
+                    // ->visible(fn(EmploymentDuration $record)=>$record?->contract_end_date != null)
                     ->label(trans('main.attachment'))
                     ->columnSpanFull(),
                 ]),
                 Section::make()
-                ->hidden(fn(EmploymentDuration $employmentDuration) =>$employmentDuration->contract_end_date == null)
+                ->hidden(fn(EmploymentDuration $employmentDuration) =>$employmentDuration?->contract_end_date == null)
                 ->schema([
                     Forms\Components\DatePicker::make('contract_end_date')->label(trans('main.contract_end_date'))->visibleOn('view'),
                     Forms\Components\TextInput::make('contract_end_reason')->label(trans('main.contract_end_reason'))->visibleOn('view'),
