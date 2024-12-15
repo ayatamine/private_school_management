@@ -46,10 +46,12 @@ class AdminPanelProvider extends PanelProvider
                 NavigationItem::make('school_settings')
                     ->label(trans('main.school_settings'))
                     ->icon('icon-school')
+                    ->visible(fn()=>auth()->user()->hasPermissionTo('view_in_menu_school::setting'))
                     ->url(fn (): string => SchoolSettingResource::getUrl('edit',[1])),
                 NavigationItem::make('finance_account')
                     ->label(trans_choice('main.add_finance_account',2))
                     ->icon('icon-finance_accounts')
+                    ->visible(fn()=>auth()->user()->hasPermissionTo('view_in_menu_finance::account'))
                     ->group(trans('main.finance_settings'))
                     ->url(fn (): string => FinanceAccountResource::getUrl('create')),
                 NavigationItem::make('add_student')
@@ -57,11 +59,13 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-plus')
                     ->group(trans('main.student_settings'))
                     ->parentItem(trans('main.student_registration'))
+                    ->visible(fn()=>auth()->user()->hasPermissionTo('create_newest::student'))
                     ->url(fn (): string => NewestStudentResource::getUrl('create')),
                 NavigationItem::make('transfer_operation')
                     ->label(trans_choice('main.transfer_operation',1))
                     ->group(trans('main.finance'))
                     ->parentItem(trans('main.finance_account'))
+                    ->visible(fn()=>auth()->user()->hasPermissionTo('view_in_menu_transfer'))
                     ->url(fn (): string => TransferResource::getUrl('list')),
             ])
             ->pages([

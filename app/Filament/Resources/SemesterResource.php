@@ -20,8 +20,9 @@ use App\Filament\Resources\SemesterResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SemesterResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class SemesterResource extends Resource
+class SemesterResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Semester::class;
 
@@ -42,6 +43,22 @@ class SemesterResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.semester',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_semester');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            
+        ];
     }
     public static function form(Form $form): Form
     {

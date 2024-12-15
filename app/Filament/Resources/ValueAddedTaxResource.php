@@ -18,8 +18,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ValueAddedTaxResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ValueAddedTaxResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class ValueAddedTaxResource extends Resource
+class ValueAddedTaxResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = ValueAddedTax::class;
 
@@ -45,7 +46,22 @@ class ValueAddedTaxResource extends Resource
     {
         return trans_choice('main.value_added_tax',2);
     }
-
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_value::added::tax');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            
+        ];
+    }
     public static function form(Form $form): Form
     {
         return $form

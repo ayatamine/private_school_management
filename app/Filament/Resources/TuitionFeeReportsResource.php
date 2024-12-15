@@ -19,10 +19,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TuitionFeeReportsResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\TuitionFeeReportsResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 
-class TuitionFeeReportsResource extends Resource
+class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Student::class;
 
@@ -63,7 +64,19 @@ class TuitionFeeReportsResource extends Resource
                 //
             ]);
     }
-
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_tuition::fee::reports');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'print',
+        ];
+    }
     public static function table(Table $table): Table
     {
         return $table
@@ -132,6 +145,7 @@ class TuitionFeeReportsResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(auth()->user()->hasPermissionTo('print_tuition::fee::request'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.tuition_fee_reports',2)
                 ])->disableXlsx(),

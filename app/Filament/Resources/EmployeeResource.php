@@ -32,15 +32,20 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view',
+            'view_in_menu',
             'view_any',
             'create',
             'update',
             'delete',
             'delete_any',
             'approve_employee_registeration',
-            'finish_employee_duration'
+            'finish_employee_duration',
+            'print'
         ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_employee');
     }
     protected static ?string $navigationIcon = 'icon-employees';
     public static function getNavigationGroup():string
@@ -249,6 +254,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_employee'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.designation',2)
                 ])->disableXlsx(),

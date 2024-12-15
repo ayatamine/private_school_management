@@ -18,8 +18,9 @@ use App\Filament\Resources\TransportResource;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportTerminationResource\Pages;
 use App\Filament\Resources\TransportTerminationResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class TransportTerminationResource extends Resource
+class TransportTerminationResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Transport::class;
 
@@ -46,6 +47,16 @@ class TransportTerminationResource extends Resource
     public static function getBreadcrumb(): string
     {
         return '';
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('terminate_transport_registeration_transport');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            
+        ];
     }
     public static function form(Form $form): Form
     {

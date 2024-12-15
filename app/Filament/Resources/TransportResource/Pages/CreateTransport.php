@@ -6,6 +6,7 @@ use Filament\Actions;
 use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\TransportResource;
+use App\Models\TransportFee;
 
 class CreateTransport extends CreateRecord
 {
@@ -13,7 +14,8 @@ class CreateTransport extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
             $data['registered_by'] = Auth::id();
-
+            // $transport_fee = TransportFee::findOrFail($data['transport_fee_id']);
+      
             return $data;
     }
 }

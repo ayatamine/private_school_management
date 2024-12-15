@@ -18,8 +18,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\GeneralFeeResource\Pages;
 use App\Filament\Resources\GeneralFeeResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class GeneralFeeResource extends Resource
+class GeneralFeeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = GeneralFee::class;
 
@@ -40,6 +41,23 @@ class GeneralFeeResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.general_fee',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_general::fee');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'replicate',
+            
+        ];
     }
     public static function form(Form $form): Form
     {

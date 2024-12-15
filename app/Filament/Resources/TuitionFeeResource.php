@@ -19,8 +19,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TuitionFeeResource\Pages;
 use App\Filament\Resources\TuitionFeeResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class TuitionFeeResource extends Resource
+class TuitionFeeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = TuitionFee::class;
 
@@ -41,6 +42,23 @@ class TuitionFeeResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.tuition_fee',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_tuition::fee');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'replicate',
+            
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -117,6 +135,7 @@ class TuitionFeeResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ReplicateAction::make()
+                ->visible(auth()->user()->hasPermissionTo('replicate_tuition::fee'))
                 ->successRedirectUrl(fn (TuitionFee $replica): string => route('filament.admin.resources.tuition-fees.edit', [
                     'record' => $replica,
                 ])),

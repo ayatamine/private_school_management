@@ -22,8 +22,9 @@ use App\Filament\Resources\ExpenseResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ExpenseResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class ExpenseResource extends Resource
+class ExpenseResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Expense::class;
 
@@ -44,6 +45,23 @@ class ExpenseResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.expense',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_expense');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'print',
+            
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -181,6 +199,7 @@ class ExpenseResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_expense'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.expense',2)
                 ])->disableXlsx(),

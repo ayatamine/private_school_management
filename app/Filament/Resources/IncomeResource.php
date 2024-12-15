@@ -18,8 +18,9 @@ use App\Filament\Resources\IncomeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\IncomeResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class IncomeResource extends Resource
+class IncomeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Income::class;
 
@@ -41,6 +42,22 @@ class IncomeResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.income',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_income');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'print',
+            
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -114,6 +131,7 @@ class IncomeResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_income'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.income',2)
                 ])->disableXlsx(),

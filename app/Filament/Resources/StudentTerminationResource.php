@@ -46,12 +46,19 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     public static function getPermissionPrefixes(): array
     {
         return [
+            'view_in_menu',
             'view',
             'view_any',
             'create',
             'update',
-            'terminate_student_private::student'
+            'restore',
+            'terminate_student_private::student',
+            'print'
         ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_student::termination');
     }
     public static function form(Form $form): Form
     {
@@ -119,6 +126,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                 ->requiresConfirmation()
                 ->modalHeading(trans('main.restore_student'))
                 ->modalDescription(trans('main.restore_student_description'))
+                ->visible(auth()->user()->hasPermissionTo('restore_student'))
                 ->action(function (Student $record) {
                   
                    $record->update([

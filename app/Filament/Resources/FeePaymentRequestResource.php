@@ -21,8 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FeePaymentRequestResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class FeePaymentRequestResource extends Resource
+class FeePaymentRequestResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = ReceiptVoucher::class;
 
@@ -47,6 +48,24 @@ class FeePaymentRequestResource extends Resource
     public static function canCreate():bool
     {
         return false;
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_fee::payment::request');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'print',
+            'approve_fee_payment_request',
+            'reject_fee_payment_request',
+            
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -143,6 +162,7 @@ class FeePaymentRequestResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_fee::payment::request'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.fee_payment_requests',2)
                 ])->disableXlsx(),

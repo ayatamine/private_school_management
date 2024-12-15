@@ -14,7 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class JobResource extends Resource  
+class JobResource extends Resource  implements HasShieldPermissions
 {
     protected static ?string $model = Job::class;
 
@@ -40,6 +40,21 @@ class JobResource extends Resource
     public static  function canCreate():bool
     {
         return false;
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_job');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+        ];
     }
     public static function form(Form $form): Form
     {

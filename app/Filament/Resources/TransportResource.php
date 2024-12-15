@@ -18,8 +18,9 @@ use App\Filament\Resources\TransportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class TransportResource extends Resource
+class TransportResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Transport::class;
 
@@ -41,6 +42,28 @@ class TransportResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.student_transportation',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_transport');
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create_transport_registeration_transport');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create_transport_registeration',
+            'update',
+            // 'delete',
+            'print',
+            'terminate_transport_registeration',
+            
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -114,30 +137,31 @@ class TransportResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()->hidden(fn (Transport $record) => $record->termination_reason != null),
                 Tables\Actions\EditAction::make()->hidden(fn (Transport $record) => $record->termination_reason != null),
-                Action::make(trans('main.restore'))
-                ->color('success')
-                ->requiresConfirmation()
-                ->modalHeading(trans('main.restore_student_transportation'))
-                ->modalDescription(trans('main.restore_student_transportation_description'))
-                ->action(function (Transport $record) {
+                // Action::make(trans('main.restore'))
+                // ->color('success')
+                // ->requiresConfirmation()
+                // ->modalHeading(trans('main.restore_student_transportation'))
+                // ->modalDescription(trans('main.restore_student_transportation_description'))
+                // ->action(function (Transport $record) {
                   
-                   $record->update([
-                        'terminated_by'=>null,
-                        'termination_date'=>null,
-                        'termination_reason'=>null,
-                        'termination_document'=>null,
-                   ]);
-                   Notification::make()
-                                       ->title(trans('main.student_restored_success'))
-                                       ->icon('heroicon-o-document-text')
-                                       ->iconColor('success')
-                                       ->send();
-                })->hidden(fn (Transport $record) => $record->termination_reason == null),
-                Tables\Actions\DeleteAction::make(),
+                //    $record->update([
+                //         'terminated_by'=>null,
+                //         'termination_date'=>null,
+                //         'termination_reason'=>null,
+                //         'termination_document'=>null,
+                //    ]);
+                //    Notification::make()
+                //                        ->title(trans('main.student_restored_success'))
+                //                        ->icon('heroicon-o-document-text')
+                //                        ->iconColor('success')
+                //                        ->send();
+                // })->hidden(fn (Transport $record) => $record->termination_reason == null),
+                // Tables\Actions\DeleteAction::make(),
                 
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(auth()->user()->hasPermissionTo('print_transport'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.student_transportation',2)
                 ])->disableXlsx(),

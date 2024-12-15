@@ -15,8 +15,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportFeeResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\TransportFeeResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class TransportFeeResource extends Resource
+class TransportFeeResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = TransportFee::class;
 
@@ -37,6 +38,23 @@ class TransportFeeResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.transport_fee',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_transport::fee');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'replicate',
+            
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -97,6 +115,7 @@ class TransportFeeResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ReplicateAction::make()
+                ->visible(auth()->user()->hasPermissionTo('replicate_transport::fee'))
                 ->successRedirectUrl(fn (TransportFee $replica): string => route('filament.admin.resources.transport-fees.edit', [
                     'record' => $replica,
                 ])),

@@ -15,8 +15,9 @@ use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class UserResource extends Resource
+class UserResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = User::class;
 
@@ -37,6 +38,22 @@ class UserResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.user',2);
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_user');
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'ban',
+        ];
     }
     public static function form(Form $form): Form
     {
@@ -66,7 +83,14 @@ class UserResource extends Resource
                                     ->required(), 
                             Forms\Components\CheckboxList::make('roles')
                                 ->relationship('roles', 'name')
-                                ->searchable()
+                                ->searchable(),
+                            // Forms\Components\Select::make('permissions')
+                            //     ->relationship('permissions', 'name')
+                            //     ->multiple()
+                            //     ->preload()
+                            //     // ->formatStateUsing(fn($permission)=> trans(''))
+                            //     ->columnSpanFull()
+                            //     ->searchable()
                         ]
                     )
             ]);
@@ -99,7 +123,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('ban_user')
-                ->visible(fn(User $record)=>$record->is_banned == null)
+                ->visible(fn(User $record)=>$record->is_banned == null && auth()->user()->hasPermissionTo('ban_user'))
                 ->label(trans('main.ban_user'))
                 ->icon('icon-close')
                 ->color('danger')
@@ -117,7 +141,7 @@ class UserResource extends Resource
                         ->send();
                 }),
                 Tables\Actions\Action::make('unban_user')
-                ->visible(fn(User $record)=>$record->is_banned != null)
+                ->visible(fn(User $record)=>$record->is_banned != null && auth()->user()->hasPermissionTo('ban_user'))
                 ->label(trans('main.unban_user'))
                 ->icon('heroicon-o-check')
                 ->color('success')

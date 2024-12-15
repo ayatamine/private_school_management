@@ -37,8 +37,9 @@ use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Components\TextEntry\TextEntrySize;
 use App\Filament\Resources\StudentResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class StudentResource extends Resource
+class StudentResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Student::class;
 
@@ -60,6 +61,33 @@ class StudentResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.student',2);
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'print',
+            'terminate_student_registeration',
+            'add_expense',
+            'upgrade_student',
+            'print_fees_invoice',
+            'show_payments',
+            'print_payments',
+            'add_receipt_voucher',
+            'add_payment',
+            'update_payment',
+            'delete_payment',
+            
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_student');
     }
     public static function form(Form $form): Form
     {
@@ -459,15 +487,18 @@ class StudentResource extends Resource
 
                 \Filament\Infolists\Components\Section::make(trans('main.payments'))
                         ->id('payments-section')
+                        ->visible(auth()->user()->hasPermissionTo('show_payments_student'))
                         ->headerActions([
                             Action::make('edit')
                                 ->label(trans('main.new_receipt_payment'))
+                                ->visible(auth()->user()->hasPermissionTo('add_receipt_voucher_student'))
                                 ->url(fn(Student $student) =>route('filament.admin.resources.receipt-vouchers.create',['student'=>$student->id]))
                                 ->openUrlInNewTab(),
                             Action::make('printAllPayments')
-                    ->icon('icon-print')
+                                ->icon('icon-print')
                                 ->color('info')
                                 ->label(trans('main.print_all_payments'))
+                                ->visible(auth()->user()->hasPermissionTo('print_payments_student'))
                                 ->url(fn(Student $student)=> route('print_pdf',['type'=>"all_payments",'id'=>$student->id]))
                                 ->visible(fn(Student $student)=>count($student->receiptVoucher) != 0)
                         ])

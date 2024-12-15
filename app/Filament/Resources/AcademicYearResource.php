@@ -13,8 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class AcademicYearResource extends Resource
+class AcademicYearResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = AcademicYear::class;
 
@@ -36,7 +37,23 @@ class AcademicYearResource extends Resource
     {
         return trans_choice('main.academic_year',2);
     }
-
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'print',
+            
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_academic::year');
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -87,6 +104,7 @@ class AcademicYearResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_academic::year'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.academic_year',2)
                 ])->disableXlsx(),

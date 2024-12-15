@@ -39,7 +39,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('upgrade_student')
             ->color('success')
             ->label(trans('main.upgrade_student'))
-            ->visible($this->record->termination_date == null)
+            ->visible($this->record->termination_date == null && auth()->user()->hasPermissionTo('upgrade_student_student'))
             ->action(function(array $arguments,array $data) {
                     Notification::make()
                                         ->title(trans('main.not_yet_implemented'))
@@ -54,13 +54,13 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('termination1')
             ->color('primary')
             ->label(trans_choice('main.termination',1))
-            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0))
+            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && auth()->user()->hasPermissionTo('terminate_student_registeration_student'))
             ->modalContent(new HtmlString("<p class='font-semibold text-red-500'>".trans('main.student_termination_balance_error')."</p>"))
             ->modalSubmitAction(false),
             Action::make('termination')
                     ->color('primary')
                     ->label(trans_choice('main.termination',1))
-                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0))
+                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0)   && auth()->user()->hasPermissionTo('terminate_student_registeration_student'))
                     ->form([
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
                         Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
@@ -109,6 +109,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))
+                    ->visible(auth()->user()->can('print_fees_invoice_student'))
                     ->url( route('print_pdf',['type'=>"invoice",'id'=>Invoice::whereStudentId($this->record->id)?->latest()?->first()?->id]))
                     
         ];

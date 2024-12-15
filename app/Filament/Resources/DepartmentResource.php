@@ -13,8 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DepartmentResource\Pages;
 use App\Filament\Resources\DepartmentResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class DepartmentResource extends Resource
+class DepartmentResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Department::class;
 
@@ -44,7 +45,21 @@ class DepartmentResource extends Resource
                     ->required(),
             ]);
     }
-
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_department');
+    }
     public static function table(Table $table): Table
     {
         return $table

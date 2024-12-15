@@ -15,8 +15,9 @@ use App\Filament\Resources\TransferResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransferResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class TransferResource extends Resource
+class TransferResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Transfer::class;
 
@@ -26,7 +27,18 @@ class TransferResource extends Resource
         return trans('main.finance');
     }
    
-   
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'print',
+        ];
+    }
     // public static function shouldRegisterNavigation(): bool
     // {
     //     return false;
@@ -52,6 +64,7 @@ class TransferResource extends Resource
     {
         return false;
     }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -99,6 +112,7 @@ class TransferResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(auth()->user()->can('print_transfer'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.transfer_operation',2)
                 ])->disableXlsx(),

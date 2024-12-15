@@ -21,8 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FinanceAccountResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\FinanceAccountResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class FinanceAccountResource extends Resource
+class FinanceAccountResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = FinanceAccount::class;
 
@@ -45,6 +46,23 @@ class FinanceAccountResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.finance_account',2);
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            // 'delete_any',
+            'print',
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_finance::account');
     }
     public static function form(Form $form): Form
     {
@@ -182,6 +200,7 @@ class FinanceAccountResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_finance::account'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.finance_account',2)
                 ])->disableXlsx(),

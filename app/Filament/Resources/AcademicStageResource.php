@@ -13,8 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AcademicStageResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\AcademicStageResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class AcademicStageResource extends Resource
+class AcademicStageResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = AcademicStage::class;
 
@@ -35,6 +36,23 @@ class AcademicStageResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.academic_stage',2);
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'print',
+            
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_academic::stage');
     }
     public static function form(Form $form): Form
     {
@@ -65,6 +83,7 @@ class AcademicStageResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_academic::stage'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.academic_stage',2)
                 ])->disableXlsx(),

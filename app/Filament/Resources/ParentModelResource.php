@@ -17,8 +17,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ParentModelResource\Pages;
 use App\Filament\Resources\ParentModelResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class ParentModelResource extends Resource
+class ParentModelResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = ParentModel::class;
 
@@ -40,7 +41,23 @@ class ParentModelResource extends Resource
     {
         return trans_choice('main.parent',2);
     }
-   
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            'print',
+            
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_parent::model');
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -151,6 +168,7 @@ class ParentModelResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(auth()->user()->hasPermissionTo('print_parent::model'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.parent',2)
                 ])->disableXlsx(),

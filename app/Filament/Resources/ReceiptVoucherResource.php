@@ -23,10 +23,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReceiptVoucherResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 
-class ReceiptVoucherResource extends Resource
+class ReceiptVoucherResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = ReceiptVoucher::class;
 
@@ -48,6 +49,23 @@ class ReceiptVoucherResource extends Resource
     {
         return trans_choice('main.receipt_voucher',2);
     }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            // 'delete_any',
+            'print',
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_receipt::voucher');
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -68,7 +86,6 @@ class ReceiptVoucherResource extends Resource
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric()
-                    ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
                         $numberToWord = new NumberToWord();
                         $set('value_in_alphabetic',$numberToWord->convert($state));
@@ -176,6 +193,7 @@ class ReceiptVoucherResource extends Resource
                     ->icon('icon-print')
                     ->color('info')
                     ->label(trans('main.print_receipt_voucher'))
+                    ->visible(auth()->user()->hasPermissionTo('print_receipt::voucher'))
                     ->url(fn(ReceiptVoucher $record) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$record->id]))
                     // ->action(function(ReceiptVoucher $record) {
                     //     $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
@@ -212,6 +230,7 @@ class ReceiptVoucherResource extends Resource
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(auth()->user()->hasPermissionTo('print_receipt::voucher'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.receipt_voucher',2)
                 ])->disableXlsx(),

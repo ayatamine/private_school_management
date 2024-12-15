@@ -13,8 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\SchoolSettingResource\Pages;
 use App\Filament\Resources\SchoolSettingResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class SchoolSettingResource extends Resource
+class SchoolSettingResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = SchoolSetting::class;
 
@@ -35,6 +36,15 @@ class SchoolSettingResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans('main.school_settings');
+    }
+    
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'update',            
+        ];
     }
     public static function form(Form $form): Form
     {

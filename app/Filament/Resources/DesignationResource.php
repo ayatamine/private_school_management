@@ -14,8 +14,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\DesignationResource\Pages;
 use App\Filament\Resources\DesignationResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class DesignationResource extends Resource
+class DesignationResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Designation::class;
 
@@ -38,6 +39,21 @@ class DesignationResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.designation',2);
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_designation');
     }
     public static function form(Form $form): Form
     {

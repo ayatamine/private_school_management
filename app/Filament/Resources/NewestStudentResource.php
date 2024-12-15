@@ -14,6 +14,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Semester;
 use Filament\Forms\Form;
+use App\Models\GeneralFee;
 use App\Models\TuitionFee;
 use Filament\Tables\Table;
 use App\Models\ParentModel;
@@ -37,8 +38,8 @@ use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\NewestStudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
-use App\Models\GeneralFee;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class NewestStudentResource extends Resource implements HasShieldPermissions 
 {
@@ -48,14 +49,19 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
+            'view_in_menu',
             'view',
             'view_any',
             'create',
             'update',
             'delete',
-            'delete_any',
-            'approve_registeration'
+            'approve_registeration',
+            'print'
         ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_newest::student');
     }
     public static function getNavigationGroup():string
     {
@@ -74,6 +80,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     {
         return trans_choice('main.student',2);
     }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -368,6 +375,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 Tables\Actions\Action::make('registeration_action')
                 // ->visible(fn(Student $record)=>$record->is_banned == null)
                 ->label(trans('main.registeration_action'))
+                ->visible(auth()->user()->hasPermissionTo('approve_registeration_newest::student'))
                 ->icon('heroicon-o-check')
                 ->color('primary')
                 ->form([
@@ -466,6 +474,11 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
+                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                ->visible(fn()=>auth()->user()->hasPermissionTo('print_newest::student'))
+                ->extraViewData([
+                    'table_header' => trans('main.menu').' '.trans_choice('main.income',2)
+                ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

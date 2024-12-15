@@ -13,8 +13,9 @@ use App\Filament\Resources\CourseResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CourseResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class CourseResource extends Resource
+class CourseResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Course::class;
 
@@ -35,6 +36,22 @@ class CourseResource extends Resource
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.academic_course',2);
+    }
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view_in_menu',
+            'create',
+            'view',
+            'view_any',
+            'update',
+            'delete',
+            
+        ];
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasPermissionTo('view_in_menu_course');
     }
     public static function form(Form $form): Form
     {
