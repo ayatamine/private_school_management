@@ -145,7 +145,7 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()->hasPermissionTo('print_tuition::fee::request'))
+                ->visible(auth()->user()->hasPermissionTo('print_tuition::fee::reports'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.tuition_fee_reports',2)
                 ])->disableXlsx(),

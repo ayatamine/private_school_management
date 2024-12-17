@@ -2,18 +2,41 @@
 
 namespace App\Models;
 
+use Filament\Panel;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\EmploymentDuration;
+use Filament\Models\Contracts\HasName;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
+use Filament\Models\Contracts\FilamentUser;
+use Spatie\Permission\Traits\HasPermissions;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Employee extends Model
+class Employee extends Model implements FilamentUser, HasName
 {
-    use HasFactory;
-
+    use HasFactory,HasRoles,HasPermissions;
+    protected $guard_name = 'web';
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if($this->is_banned )
+        {
+            Notification::make()
+                        ->title(trans('main.you_were_banned'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('info')
+                        ->send();
+        }
+        return $this->is_banned == false;
+    }
+    public function getFilamentName(): string
+    {
+        return $this->username;
+    }
     /**
      * The attributes that are mass assignable.
      *
@@ -72,7 +95,7 @@ class Employee extends Model
 
     public function employmentDuration(): HasMany
     {
-        return $this->hasMany(employmentDuration::class);
+        return $this->hasMany(EmploymentDuration::class);
     }
     // public function department(): BelongsTo
     // {

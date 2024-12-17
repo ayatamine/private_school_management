@@ -6,7 +6,9 @@ use App\Models\User;
 use Filament\Actions;
 use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Spatie\Permission\Models\Permission;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\EmployeeResource;
 
@@ -49,6 +51,7 @@ class CreateEmployee extends CreateRecord
                 foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
                     unset($data[$value]);
                 }
+                
                 $employee->update($data);
                
                 $data = $employee->toArray();
@@ -72,5 +75,56 @@ class CreateEmployee extends CreateRecord
             return [];
         }
 
+    }
+    protected function handleRecordCreation(array $data): Model
+    {
+        try{
+ 
+            DB::beginTransaction();
+            $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
+            
+            
+            //filter data to left only permissions
+                                                        
+            $required_fields = ['first_name', 'middle_name', 'third_name', 'last_name', 'gender','nationality'
+            , 'gender','email','phone_number','national_id','identity_type','identity_expire_date','birth_date',
+            'birth_date','age','social_status','study_degree','study_speciality','national_address','iban'
+            ];
+
+            $permissions = array_filter($data, function ($key) use ($required_fields) {
+                return !in_array($key, $required_fields);
+            }, ARRAY_FILTER_USE_KEY);
+
+            $data = array_filter($data, function ($key) use ($required_fields) {
+                return in_array($key, $required_fields);
+            }, ARRAY_FILTER_USE_KEY);
+            // Flatten the nested permissions array
+            $flattenedPermissions = collect($permissions)->flatten()->toArray();
+
+            //create new employee
+            $employee = Employee::create($data);
+            // Ensure all permissions exist in the database
+            foreach ($flattenedPermissions as $permission) {
+                $permission = Permission::findOrCreate($permission);
+
+                $employee->givePermissionTo($permission);
+            }
+            // Sync the permissions for the user
+            $employee->syncPermissions($flattenedPermissions);
+    
+            
+        
+            
+            DB::commit();
+            return $employee;
+        }
+        catch(\Exception $ex)
+        {
+            DB::rollBack();
+            Notification::make('')
+            ->message($ex->getMessage())
+            ->color('danger')
+            ->send();
+        }
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Spatie\Permission\Models\Permission;
 use App\Filament\Resources\EmployeeResource;
 
 class EditEmployee extends EditRecord
@@ -76,6 +77,33 @@ class EditEmployee extends EditRecord
             }
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
+                //filter data to left only permissions
+                                            
+                $required_fields = ['first_name', 'middle_name', 'third_name', 'last_name', 'gender','nationality'
+                , 'gender','email','phone_number','national_id','identity_type','identity_expire_date','birth_date',
+                 'birth_date','age','social_status','study_degree','study_speciality','national_address','iban'
+                ];
+
+                $permissions = array_filter($data, function ($key) use ($required_fields) {
+                    return !in_array($key, $required_fields);
+                }, ARRAY_FILTER_USE_KEY);
+               
+                $data = array_filter($data, function ($key) use ($required_fields) {
+                    return in_array($key, $required_fields);
+                }, ARRAY_FILTER_USE_KEY);
+                // Flatten the nested permissions array
+                $flattenedPermissions = collect($permissions)->flatten()->toArray();
+
+                // Ensure all permissions exist in the database
+                foreach ($flattenedPermissions as $permission) {
+                    $permission = Permission::findOrCreate($permission);
+
+                    $employee->givePermissionTo($permission);
+                }
+                // Sync the permissions for the user
+                $employee->syncPermissions($flattenedPermissions);
+                
+                
             $employee->update($data);
            
             // $data = $employee->toArray();
