@@ -58,7 +58,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_student::termination');
+        return auth()->user()->hasPermissionTo('view_in_menu_student::termination') || employeeHasPermission('view_in_menu_student::termination');
     }
     public static function form(Form $form): Form
     {

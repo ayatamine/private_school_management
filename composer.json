@@ -50,7 +50,8 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "app/Helpers/NumberToWord.php"
+            "app/Helpers/NumberToWord.php",
+            "app/Helpers/Globals.php"
         ]
     },
     "scripts": {

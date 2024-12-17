@@ -112,7 +112,7 @@ class TransferResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()->can('print_transfer'))
+                ->visible(auth()->user()->can('print_transfer') || employeeHasPermission('print_transfer'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.transfer_operation',2)
                 ])->disableXlsx(),

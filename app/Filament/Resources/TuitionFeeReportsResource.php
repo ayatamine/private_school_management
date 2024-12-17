@@ -66,7 +66,7 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_tuition::fee::reports');
+        return auth()->user()->hasRole('super-admin') || (employeeHasPermission('view_in_menu_tuition::fee::reports'));
     }
     public static function getPermissionPrefixes(): array
     {
@@ -145,7 +145,7 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()->hasPermissionTo('print_tuition::fee::reports'))
+                ->visible(auth()->user()->hasPermissionTo('print_tuition::fee::reports') ||employeeHasPermission('print_tuition::fee::reports'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.tuition_fee_reports',2)
                 ])->disableXlsx(),

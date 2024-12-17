@@ -40,7 +40,7 @@ class VehicleResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasRole('super-admin') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('view_in_menu_vehicle'));
+        return auth()->user()->hasRole('super-admin') || employeeHasPermission('view_in_menu_vehicle');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -128,7 +128,7 @@ class VehicleResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('print_vehicle'))
+                ->visible(employeeHasPermission('print_vehicle'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.vehicle',2)
                 ])->disableXlsx(),

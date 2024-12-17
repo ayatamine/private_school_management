@@ -48,7 +48,7 @@ class ValueAddedTaxResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasRole('super-admin') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('view_in_menu_value::added::tax'));
+        return auth()->user()->hasRole('super-admin') || employeeHasPermission('view_in_menu_value::added::tax');
     }
     public static function getPermissionPrefixes(): array
     {

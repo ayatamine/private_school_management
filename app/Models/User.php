@@ -12,13 +12,14 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Models\Contracts\FilamentUser;
+use Spatie\Permission\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 
 class User extends  Authenticatable implements FilamentUser, HasName
 {
@@ -62,6 +63,19 @@ class User extends  Authenticatable implements FilamentUser, HasName
         'is_admin' => 'boolean',
         'is_banned' => 'boolean',
     ];
+    /**
+     * Determine if the model has the given permission.
+     *
+     * @param  string|int|Permission|\BackedEnum  $permission
+     *
+     * @throws PermissionDoesNotExist
+     */
+    public function hasDirectPermission($permission): bool
+    {
+        $permission = $this->filterPermission($permission);
+
+        return $this->permissions->contains($permission->getKeyName(), $permission->getKey()) || ($this?->employee && $this?->employee->hasPermissionTo($permission));
+    }
     public function canAccessPanel(Panel $panel): bool
     {
         if($this->is_banned )

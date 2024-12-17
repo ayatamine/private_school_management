@@ -40,7 +40,7 @@ class UserResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_user');
+        return auth()->user()->hasRole('super-admin') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('view_in_menu_user'));
     }
     public static function getPermissionPrefixes(): array
     {
@@ -122,7 +122,7 @@ class UserResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\Action::make('ban_user')
-                ->visible(fn(User $record)=>$record->is_banned == null && auth()->user()->hasPermissionTo('ban_user'))
+                ->visible(fn(User $record)=>($record->is_banned == null && auth()->user()->hasPermissionTo('ban_user')) || (employeeHasPermission('ban_user')))
                 ->label(trans('main.ban_user'))
                 ->icon('icon-close')
                 ->color('danger')
@@ -140,7 +140,7 @@ class UserResource extends Resource implements HasShieldPermissions
                         ->send();
                 }),
                 Tables\Actions\Action::make('unban_user')
-                ->visible(fn(User $record)=>$record->is_banned != null && auth()->user()->hasPermissionTo('ban_user'))
+                ->visible(fn(User $record)=>($record->is_banned != null && auth()->user()->hasPermissionTo('ban_user')) || (employeeHasPermission('unban_user')))
                 ->label(trans('main.unban_user'))
                 ->icon('heroicon-o-check')
                 ->color('success')

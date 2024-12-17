@@ -50,7 +50,7 @@ class TransportTerminationResource extends Resource implements HasShieldPermissi
     }
     public static function canCreate(): bool
     {
-        return auth()->user()->can('terminate_transport_registeration_transport');
+        return auth()->user()->can('terminate_transport_registeration_transport') || employeeHasPermission('terminate_transport_registeration_transport');
     }
     public static function getPermissionPrefixes(): array
     {
