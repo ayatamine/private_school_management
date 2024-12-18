@@ -15,7 +15,7 @@ class ConcessionFeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_concession::fee');
+        return $user->can('view_any_concession::fee') || (employeeHasPermission('view_any_concession::fee'));
     }
 
     /**
@@ -23,7 +23,7 @@ class ConcessionFeePolicy
      */
     public function view(User $user, ConcessionFee $concessionFee): bool
     {
-        return $user->can('view_concession::fee');
+        return $user->can('view_concession::fee') || (employeeHasPermission('view_concession::fee'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ConcessionFeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_concession::fee');
+        return $user->can('create_concession::fee') || (employeeHasPermission('create_concession::fee'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ConcessionFeePolicy
      */
     public function update(User $user, ConcessionFee $concessionFee): bool
     {
-        return $user->can('update_concession::fee');
+        return $user->can('update_concession::fee') || (employeeHasPermission('update_concession::fee'));
     }
 
     /**
@@ -47,7 +47,7 @@ class ConcessionFeePolicy
      */
     public function delete(User $user, ConcessionFee $concessionFee): bool
     {
-        return $user->can('delete_concession::fee');
+        return $user->can('delete_concession::fee') || (employeeHasPermission('delete_concession::fee'));
     }
 
     /**
@@ -55,7 +55,7 @@ class ConcessionFeePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_concession::fee');
+        return $user->can('delete_any_concession::fee') || (employeeHasPermission('delete_any_concession::fee'));
     }
 
     /**
@@ -63,7 +63,7 @@ class ConcessionFeePolicy
      */
     public function forceDelete(User $user, ConcessionFee $concessionFee): bool
     {
-        return $user->can('force_delete_concession::fee');
+        return $user->can('force_delete_concession::fee') || (employeeHasPermission(''));
     }
 
     /**
@@ -79,7 +79,7 @@ class ConcessionFeePolicy
      */
     public function restore(User $user, ConcessionFee $concessionFee): bool
     {
-        return $user->can('restore_concession::fee');
+        return $user->can('restore_concession::fee') || (employeeHasPermission('restore_concession::fee'));
     }
 
     /**
@@ -95,7 +95,7 @@ class ConcessionFeePolicy
      */
     public function replicate(User $user, ConcessionFee $concessionFee): bool
     {
-        return $user->can('replicate_concession::fee');
+        return $user->can('replicate_concession::fee') || (employeeHasPermission('replicate_concession::fee'));
     }
 
     /**

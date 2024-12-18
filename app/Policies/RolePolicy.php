@@ -15,7 +15,7 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_shield::role');
+        return $user->can('view_any_shield::role') || (employeeHasPermission('view_any_shield::role'));
     }
 
     /**
@@ -23,7 +23,7 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        return $user->can('view_shield::role');
+        return $user->can('view_shield::role') || (employeeHasPermission('view_shield::role'));
     }
 
     /**
@@ -31,7 +31,7 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_shield::role');
+        return $user->can('create_shield::role') || (employeeHasPermission('create_shield::role'));
     }
 
     /**
@@ -39,7 +39,7 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        return $user->can('update_shield::role');
+        return $user->can('update_shield::role') || (employeeHasPermission('update_shield::role'));
     }
 
     /**
@@ -47,7 +47,7 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        return $user->can('delete_shield::role');
+        return $user->can('delete_shield::role') || (employeeHasPermission('delete_shield::role'));
     }
 
     /**
@@ -55,7 +55,7 @@ class RolePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_shield::role');
+        return $user->can('delete_any_shield::role') || (employeeHasPermission('delete_any_shield::role'));
     }
 
     /**
@@ -63,7 +63,7 @@ class RolePolicy
      */
     public function forceDelete(User $user, Role $role): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('{{ ForceDelete }}') || (employeeHasPermission('{{ ForceDelete }}')) ;
     }
 
     /**
@@ -71,7 +71,7 @@ class RolePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('{{ ForceDeleteAny }}') || (employeeHasPermission('{{ ForceDeleteAny }}'));
     }
 
     /**
@@ -79,7 +79,7 @@ class RolePolicy
      */
     public function restore(User $user, Role $role): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('{{ Restore }}')  || (employeeHasPermission('{{ Restore }}'));
     }
 
     /**
@@ -95,7 +95,7 @@ class RolePolicy
      */
     public function replicate(User $user, Role $role): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('{{ Replicate }}') || (employeeHasPermission('{{ Replicate }}'));
     }
 
     /**

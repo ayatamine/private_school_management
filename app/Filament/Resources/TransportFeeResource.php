@@ -41,7 +41,7 @@ class TransportFeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_transport::fee')  || employeeHasPermission('view_in_menu_transport::fee');
+        return  employeeHasPermission('view_in_menu_transport::fee');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -115,7 +115,7 @@ class TransportFeeResource extends Resource implements HasShieldPermissions
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ReplicateAction::make()
-                ->visible(auth()->user()->hasPermissionTo('replicate_transport::fee') || employeeHasPermission('replicate_transport::fee'))
+                ->visible( employeeHasPermission('replicate_transport::fee'))
                 ->successRedirectUrl(fn (TransportFee $replica): string => route('filament.admin.resources.transport-fees.edit', [
                     'record' => $replica,
                 ])),

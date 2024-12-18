@@ -45,7 +45,7 @@ class TransportResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_transport');
+        return employeeHasPermission('view_in_menu_transport');
     }
     public static function canCreate(): bool
     {
@@ -161,7 +161,7 @@ class TransportResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()->hasPermissionTo('print_transport') || employeeHasPermission('print_transport'))
+                ->visible( employeeHasPermission('print_transport'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.student_transportation',2)
                 ])->disableXlsx(),

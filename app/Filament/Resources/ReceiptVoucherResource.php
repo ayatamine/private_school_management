@@ -64,7 +64,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_receipt::voucher');
+        return employeeHasPermission('view_in_menu_receipt::voucher');
     }
     public static function form(Form $form): Form
     {
@@ -206,7 +206,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->icon('icon-print')
                     ->color('info')
                     ->label(trans('main.print_receipt_voucher'))
-                    ->visible(auth()->user()->hasPermissionTo('print_receipt::voucher'))
+                    ->visible(employeeHasPermission('print_receipt::voucher'))
                     ->url(fn(ReceiptVoucher $record) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$record->id]))
                     // ->action(function(ReceiptVoucher $record) {
                     //     $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
@@ -243,7 +243,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()->hasPermissionTo('print_receipt::voucher'))
+                ->visible(employeeHasPermission('print_receipt::voucher'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.receipt_voucher',2)
                 ])->disableXlsx(),

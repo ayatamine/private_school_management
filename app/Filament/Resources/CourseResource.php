@@ -51,7 +51,7 @@ class CourseResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_course');
+        return employeeHasPermission('view_in_menu_course');
     }
     public static function form(Form $form): Form
     {

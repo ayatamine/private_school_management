@@ -15,7 +15,7 @@ class EmployeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee');
+        return $user->can('view_any_employee') || (employeeHasPermission('view_any_employee'));
     }
 
     /**
@@ -23,7 +23,7 @@ class EmployeePolicy
      */
     public function view(User $user, Employee $employee): bool
     {
-        return $user->can('view_employee');
+        return $user->can('view_employee') || (employeeHasPermission('view_employee'));
     }
 
     /**
@@ -31,7 +31,7 @@ class EmployeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employee');
+        return $user->can('create_employee') || (employeeHasPermission('create_employee'));
     }
 
     /**
@@ -39,7 +39,7 @@ class EmployeePolicy
      */
     public function update(User $user, Employee $employee): bool
     {
-        return $user->can('update_employee');
+        return $user->can('update_employee') || (employeeHasPermission('update_employee'));
     }
 
     /**
@@ -47,7 +47,7 @@ class EmployeePolicy
      */
     public function delete(User $user, Employee $employee): bool
     {
-        return $user->can('delete_employee');
+        return $user->can('delete_employee') || (employeeHasPermission('delete_employee'));
     }
 
     /**
@@ -55,7 +55,7 @@ class EmployeePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employee');
+        return $user->can('delete_any_employee') || (employeeHasPermission('delete_any_employee'));
     }
 
     /**
@@ -79,7 +79,7 @@ class EmployeePolicy
      */
     public function restore(User $user, Employee $employee): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('{{ Restore }}') || (employeeHasPermission('{{ Restore }}'));
     }
 
     /**
@@ -87,7 +87,7 @@ class EmployeePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('{{ RestoreAny }}') || (employeeHasPermission('{{ RestoreAny }}'));
     }
 
     /**
@@ -95,7 +95,7 @@ class EmployeePolicy
      */
     public function replicate(User $user, Employee $employee): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('{{ Replicate }}') || (employeeHasPermission('{{ Replicate }}'));
     }
 
     /**
@@ -103,14 +103,14 @@ class EmployeePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('{{ Reorder }}') || (employeeHasPermission('{{ Reorder }}'));
     }
     public function approve_employee_registeration(User $user): bool
     {
-        return $user->can('approve_employee_registeration_employee');
+        return $user->can('approve_employee_registeration_employee') || (employeeHasPermission('approve_employee_registeration_employee'));
     }
     public function finish_employee_duration(User $user): bool
     {
-        return $user->can('finish_employee_duration_employee');
+        return $user->can('finish_employee_duration_employee') || (employeeHasPermission('finish_employee_duration_employee'));
     }
 }

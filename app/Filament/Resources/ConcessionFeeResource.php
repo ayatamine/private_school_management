@@ -54,7 +54,7 @@ class ConcessionFeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_concession::fee');
+        return employeeHasPermission('view_in_menu_concession::fee');
     }
     public static function form(Form $form): Form
     {

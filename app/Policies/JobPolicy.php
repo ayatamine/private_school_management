@@ -15,7 +15,7 @@ class JobPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_job');
+        return $user->can('view_any_job')  || (employeeHasPermission('view_any_job'));
     }
 
     /**
@@ -23,7 +23,7 @@ class JobPolicy
      */
     public function view(User $user, Job $job): bool
     {
-        return $user->can('view_job');
+        return $user->can('view_job')  || (employeeHasPermission('view_job'));
     }
 
     /**
@@ -31,7 +31,7 @@ class JobPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_job');
+        return $user->can('create_job')  || (employeeHasPermission('create_job'));
     }
 
     /**
@@ -39,7 +39,7 @@ class JobPolicy
      */
     public function update(User $user, Job $job): bool
     {
-        return $user->can('update_job');
+        return $user->can('update_job')  || (employeeHasPermission('update_job'));
     }
 
     /**
@@ -47,7 +47,7 @@ class JobPolicy
      */
     public function delete(User $user, Job $job): bool
     {
-        return $user->can('delete_job');
+        return $user->can('delete_job')  || (employeeHasPermission('delete_job'));
     }
 
     /**
@@ -55,7 +55,7 @@ class JobPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_job');
+        return $user->can('delete_any_job')  || (employeeHasPermission('delete_any_job'));
     }
 
     /**
@@ -63,7 +63,7 @@ class JobPolicy
      */
     public function forceDelete(User $user, Job $job): bool
     {
-        return $user->can('force_delete_job');
+        return $user->can('force_delete_job')  || (employeeHasPermission('force_delete_job'));
     }
 
     /**
@@ -71,7 +71,7 @@ class JobPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_job');
+        return $user->can('force_delete_any_job')  || (employeeHasPermission('force_delete_any_job'));
     }
 
     /**
@@ -79,7 +79,7 @@ class JobPolicy
      */
     public function restore(User $user, Job $job): bool
     {
-        return $user->can('restore_job');
+        return $user->can('restore_job')  || (employeeHasPermission('restore_job'));
     }
 
     /**
@@ -87,7 +87,7 @@ class JobPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_job');
+        return $user->can('restore_any_job')  || (employeeHasPermission('restore_any_job'));
     }
 
     /**
@@ -95,7 +95,7 @@ class JobPolicy
      */
     public function replicate(User $user, Job $job): bool
     {
-        return $user->can('replicate_job');
+        return $user->can('replicate_job')  || (employeeHasPermission('replicate_job'));
     }
 
     /**
@@ -103,6 +103,6 @@ class JobPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_job');
+        return $user->can('reorder_job')  || (employeeHasPermission('reorder_job'));
     }
 }

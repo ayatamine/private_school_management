@@ -15,7 +15,7 @@ class SchoolSettingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_school::setting');
+        return $user->can('view_any_school::setting') || (employeeHasPermission('view_any_school::setting'));
     }
 
     /**
@@ -23,7 +23,7 @@ class SchoolSettingPolicy
      */
     public function view(User $user, SchoolSetting $schoolSetting): bool
     {
-        return $user->can('view_school::setting');
+        return $user->can('view_school::setting') || (employeeHasPermission('view_school::setting'));
     }
 
     /**
@@ -31,7 +31,7 @@ class SchoolSettingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_school::setting');
+        return $user->can('create_school::setting') || (employeeHasPermission('create_school::setting'));
     }
 
     /**
@@ -39,7 +39,7 @@ class SchoolSettingPolicy
      */
     public function update(User $user, SchoolSetting $schoolSetting): bool
     {
-        return $user->can('update_school::setting');
+        return $user->can('update_school::setting') || (employeeHasPermission('update_school::setting'));
     }
 
     /**
@@ -47,7 +47,7 @@ class SchoolSettingPolicy
      */
     public function delete(User $user, SchoolSetting $schoolSetting): bool
     {
-        return $user->can('delete_school::setting');
+        return $user->can('delete_school::setting') || (employeeHasPermission('delete_school::setting'));
     }
 
     /**
@@ -55,7 +55,7 @@ class SchoolSettingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_school::setting');
+        return $user->can('delete_any_school::setting') || (employeeHasPermission('delete_any_school::setting'));
     }
 
     /**
@@ -63,7 +63,7 @@ class SchoolSettingPolicy
      */
     public function forceDelete(User $user, SchoolSetting $schoolSetting): bool
     {
-        return $user->can('force_delete_school::setting');
+        return $user->can('force_delete_school::setting') || (employeeHasPermission('force_delete_school::setting'));
     }
 
     /**
@@ -79,7 +79,7 @@ class SchoolSettingPolicy
      */
     public function restore(User $user, SchoolSetting $schoolSetting): bool
     {
-        return $user->can('restore_school::setting');
+        return $user->can('restore_school::setting') || (employeeHasPermission('restore_school::setting'));
     }
 
     /**
@@ -95,7 +95,7 @@ class SchoolSettingPolicy
      */
     public function replicate(User $user, SchoolSetting $schoolSetting): bool
     {
-        return $user->can('replicate_school::setting');
+        return $user->can('replicate_school::setting') || (employeeHasPermission('replicate_school::setting'));
     }
 
     /**

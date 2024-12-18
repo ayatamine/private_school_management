@@ -62,7 +62,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_finance::account');
+        return employeeHasPermission('view_in_menu_finance::account');
     }
     public static function form(Form $form): Form
     {
@@ -200,7 +200,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_finance::account'))
+                ->visible(fn()=>employeeHasPermission('print_finance::account'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.finance_account',2)
                 ])->disableXlsx(),

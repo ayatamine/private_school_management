@@ -135,7 +135,7 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ReplicateAction::make()
-                ->visible(auth()->user()->hasPermissionTo('replicate_tuition::fee'))
+                ->visible(employeeHasPermission('replicate_tuition::fee'))
                 ->successRedirectUrl(fn (TuitionFee $replica): string => route('filament.admin.resources.tuition-fees.edit', [
                     'record' => $replica,
                 ])),

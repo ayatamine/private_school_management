@@ -53,7 +53,7 @@ class DesignationResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_designation');
+        return employeeHasPermission('view_in_menu_designation');
     }
     public static function form(Form $form): Form
     {

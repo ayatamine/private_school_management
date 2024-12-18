@@ -15,7 +15,7 @@ class IncomePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_income');
+        return $user->can('view_any_income') || (employeeHasPermission('view_any_income'));
     }
 
     /**
@@ -23,7 +23,7 @@ class IncomePolicy
      */
     public function view(User $user, Income $income): bool
     {
-        return $user->can('view_income');
+        return $user->can('view_income') || (employeeHasPermission('view_income'));
     }
 
     /**
@@ -31,7 +31,7 @@ class IncomePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_income');
+        return $user->can('create_income') || (employeeHasPermission('create_income'));
     }
 
     /**
@@ -39,7 +39,7 @@ class IncomePolicy
      */
     public function update(User $user, Income $income): bool
     {
-        return $user->can('update_income');
+        return $user->can('update_income') || (employeeHasPermission('update_income'));
     }
 
     /**
@@ -47,7 +47,7 @@ class IncomePolicy
      */
     public function delete(User $user, Income $income): bool
     {
-        return $user->can('delete_income');
+        return $user->can('delete_income') || (employeeHasPermission('delete_income'));
     }
 
     /**
@@ -55,7 +55,7 @@ class IncomePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_income');
+        return $user->can('delete_any_income') || (employeeHasPermission('delete_any_income'));
     }
 
     /**
@@ -63,7 +63,7 @@ class IncomePolicy
      */
     public function forceDelete(User $user, Income $income): bool
     {
-        return $user->can('force_delete_income');
+        return $user->can('force_delete_income') || (employeeHasPermission('force_delete_income'));
     }
 
     /**
@@ -71,7 +71,7 @@ class IncomePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_income');
+        return $user->can('force_delete_any_income') || (employeeHasPermission('force_delete_any_income'));
     }
 
     /**
@@ -79,7 +79,7 @@ class IncomePolicy
      */
     public function restore(User $user, Income $income): bool
     {
-        return $user->can('restore_income');
+        return $user->can('restore_income') || (employeeHasPermission('restore_income'));
     }
 
     /**
@@ -87,7 +87,7 @@ class IncomePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_income');
+        return $user->can('restore_any_income') || (employeeHasPermission('restore_any_income'));
     }
 
     /**
@@ -95,7 +95,7 @@ class IncomePolicy
      */
     public function replicate(User $user, Income $income): bool
     {
-        return $user->can('replicate_income');
+        return $user->can('replicate_income') || (employeeHasPermission('replicate_income'));
     }
 
     /**
@@ -103,6 +103,6 @@ class IncomePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_income');
+        return $user->can('reorder_income') || (employeeHasPermission('reorder_income'));
     }
 }

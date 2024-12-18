@@ -15,7 +15,7 @@ class DesignationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_designation');
+        return $user->can('view_any_designation') || (employeeHasPermission('view_any_designation'));
     }
 
     /**
@@ -23,7 +23,7 @@ class DesignationPolicy
      */
     public function view(User $user, Designation $designation): bool
     {
-        return $user->can('view_designation');
+        return $user->can('view_designation') || (employeeHasPermission('view_designation'));
     }
 
     /**
@@ -31,7 +31,7 @@ class DesignationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_designation');
+        return $user->can('create_designation') || (employeeHasPermission('create_designation'));
     }
 
     /**
@@ -39,7 +39,7 @@ class DesignationPolicy
      */
     public function update(User $user, Designation $designation): bool
     {
-        return $user->can('update_designation');
+        return $user->can('update_designation') || (employeeHasPermission('update_designation'));
     }
 
     /**
@@ -47,7 +47,7 @@ class DesignationPolicy
      */
     public function delete(User $user, Designation $designation): bool
     {
-        return $user->can('delete_designation');
+        return $user->can('delete_designation') || (employeeHasPermission('delete_designation'));
     }
 
     /**
@@ -55,7 +55,7 @@ class DesignationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_designation');
+        return $user->can('delete_any_designation') || (employeeHasPermission('delete_any_designation'));
     }
 
     /**
@@ -63,7 +63,7 @@ class DesignationPolicy
      */
     public function forceDelete(User $user, Designation $designation): bool
     {
-        return $user->can('force_delete_designation');
+        return $user->can('force_delete_designation') || (employeeHasPermission('force_delete_designation'));
     }
 
     /**
@@ -79,7 +79,7 @@ class DesignationPolicy
      */
     public function restore(User $user, Designation $designation): bool
     {
-        return $user->can('restore_designation');
+        return $user->can('restore_designation') || (employeeHasPermission('restore_designation'));
     }
 
     /**
@@ -95,7 +95,7 @@ class DesignationPolicy
      */
     public function replicate(User $user, Designation $designation): bool
     {
-        return $user->can('replicate_designation');
+        return $user->can('replicate_designation') || (employeeHasPermission('replicate_designation'));
     }
 
     /**

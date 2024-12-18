@@ -15,7 +15,7 @@ class TransportFeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_transport::fee');
+        return $user->can('view_any_transport::fee') || (employeeHasPermission('view_any_transport::fee'));
     }
 
     /**
@@ -23,7 +23,7 @@ class TransportFeePolicy
      */
     public function view(User $user, TransportFee $transportFee): bool
     {
-        return $user->can('view_transport::fee');
+        return $user->can('view_transport::fee') || (employeeHasPermission('view_transport::fee'));
     }
 
     /**
@@ -31,7 +31,7 @@ class TransportFeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_transport::fee');
+        return $user->can('create_transport::fee') || (employeeHasPermission('create_transport::fee'));
     }
 
     /**
@@ -39,7 +39,7 @@ class TransportFeePolicy
      */
     public function update(User $user, TransportFee $transportFee): bool
     {
-        return $user->can('update_transport::fee');
+        return $user->can('update_transport::fee') || (employeeHasPermission('update_transport::fee'));
     }
 
     /**
@@ -47,7 +47,7 @@ class TransportFeePolicy
      */
     public function delete(User $user, TransportFee $transportFee): bool
     {
-        return $user->can('delete_transport::fee');
+        return $user->can('delete_transport::fee') || (employeeHasPermission('delete_transport::fee'));
     }
 
     /**
@@ -55,7 +55,7 @@ class TransportFeePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_transport::fee');
+        return $user->can('delete_any_transport::fee') || (employeeHasPermission('delete_any_transport::fee'));
     }
 
     /**
@@ -79,7 +79,7 @@ class TransportFeePolicy
      */
     public function restore(User $user, TransportFee $transportFee): bool
     {
-        return $user->can('restore_transport::fee');
+        return $user->can('restore_transport::fee') || (employeeHasPermission('restore_transport::fee'));
     }
 
     /**

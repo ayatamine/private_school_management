@@ -15,7 +15,7 @@ class StudentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tuition::fee::reports') ||( $user->student != null && $user->student?->termination_date == null) || ( $user->parent != null && $user->parent->students !=null);
+        return $user->can('view_any_tuition::fee::reports') ||( $user->student != null && $user->student?->termination_date == null) || ( $user->parent != null && $user->parent->students !=null) ||  (employeeHasPermission('view_any_tuition::fee::reports'));
     }
 
     /**
@@ -25,7 +25,8 @@ class StudentPolicy
     {
         return $user->can('view_tuition::fee::reports') 
         || ($user->student != null && ($student->id ==$user->student->id  && $student?->termination_date == null))
-        || ( $user->parent != null && $user->parent->id == $student->parent->id) ;
+        || ( $user->parent != null && $user->parent->id == $student->parent->id) 
+        || (employeeHasPermission('view_tuition::fee::reports'));
     }
 
     /**
@@ -33,7 +34,7 @@ class StudentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tuition::fee::reports');
+        return $user->can('create_tuition::fee::reports') || (employeeHasPermission('create_tuition::fee::reports'));
     }
 
     /**
@@ -41,7 +42,7 @@ class StudentPolicy
      */
     public function update(User $user, Student $student): bool
     {
-        return $user->can('update_tuition::fee::reports');
+        return $user->can('update_tuition::fee::reports') || (employeeHasPermission('update_tuition::fee::reports'));
     }
 
     /**
@@ -49,7 +50,7 @@ class StudentPolicy
      */
     public function delete(User $user, Student $student): bool
     {
-        return $user->can('delete_tuition::fee::reports');
+        return $user->can('delete_tuition::fee::reports') || (employeeHasPermission('delete_tuition::fee::reports'));
     }
 
     /**
@@ -57,7 +58,7 @@ class StudentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_tuition::fee::reports');
+        return $user->can('delete_any_tuition::fee::reports') || (employeeHasPermission('delete_any_tuition::fee::reports'));
     }
 
     /**
@@ -81,7 +82,7 @@ class StudentPolicy
      */
     public function restore(User $user, Student $student): bool
     {
-        return $user->can('restore_tuition::fee::reports');
+        return $user->can('restore_tuition::fee::reports') || (employeeHasPermission('restore_tuition::fee::reports'));
     }
 
     /**
@@ -105,11 +106,11 @@ class StudentPolicy
      */
     public function approve_registeration(User $user): bool
     {
-        return $user->can('approve_registeration_newest::student');
+        return $user->can('approve_registeration_newest::student')  || (employeeHasPermission('approve_registeration_newest::student'));
     }
     public function terminate_student_private(User $user): bool
     {
-        return $user->can('terminate_student_private::student');
+        return $user->can('terminate_student_private::student') || (employeeHasPermission('terminate_student_private::student'));
     }
 }
 

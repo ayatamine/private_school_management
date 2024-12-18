@@ -46,7 +46,7 @@ class SemesterResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_semester');
+        return employeeHasPermission('view_in_menu_semester');
     }
     public static function getPermissionPrefixes(): array
     {

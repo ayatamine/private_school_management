@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_user');
+        return $user->can('view_any_user') || (employeeHasPermission('view_any_user'));
     }
 
     /**
@@ -29,7 +29,7 @@ class UserPolicy
      */
     public function view(User $user): bool
     {
-        return $user->can('view_user');
+        return $user->can('view_user') || (employeeHasPermission('view_user'));
     }
 
     /**
@@ -40,7 +40,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_user');
+        return $user->can('create_user') || (employeeHasPermission('create_user'));
     }
 
     /**
@@ -51,7 +51,7 @@ class UserPolicy
      */
     public function update(User $user): bool
     {
-        return $user->can('update_user');
+        return $user->can('update_user') || (employeeHasPermission('update_user'));
     }
 
     /**
@@ -62,7 +62,7 @@ class UserPolicy
      */
     public function delete(User $user): bool
     {
-        return $user->can('delete_user');
+        return $user->can('delete_user') || (employeeHasPermission('delete_user'));
     }
 
     /**
@@ -73,7 +73,7 @@ class UserPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_user');
+        return $user->can('delete_any_user') || (employeeHasPermission('delete_any_user'));
     }
 
     /**
@@ -106,7 +106,7 @@ class UserPolicy
      */
     public function restore(User $user): bool
     {
-        return $user->can('restore_user');
+        return $user->can('restore_user') || (employeeHasPermission('restore_user'));
     }
 
     /**

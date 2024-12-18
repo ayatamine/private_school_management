@@ -15,7 +15,7 @@ class PaymentMethodPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_payment::method');
+        return $user->can('view_any_payment::method') || (employeeHasPermission('view_any_payment::method'));
     }
 
     /**
@@ -23,7 +23,7 @@ class PaymentMethodPolicy
      */
     public function view(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->can('view_payment::method');
+        return $user->can('view_payment::method') || (employeeHasPermission('view_payment::method'));
     }
 
     /**
@@ -31,7 +31,7 @@ class PaymentMethodPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_payment::method');
+        return $user->can('create_payment::method') || (employeeHasPermission('create_payment::method'));
     }
 
     /**
@@ -39,7 +39,7 @@ class PaymentMethodPolicy
      */
     public function update(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->can('update_payment::method');
+        return $user->can('update_payment::method') || (employeeHasPermission('update_payment::method'));
     }
 
     /**
@@ -47,7 +47,7 @@ class PaymentMethodPolicy
      */
     public function delete(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->can('delete_payment::method');
+        return $user->can('delete_payment::method') || (employeeHasPermission('delete_payment::method'));
     }
 
     /**
@@ -55,7 +55,7 @@ class PaymentMethodPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_payment::method');
+        return $user->can('delete_any_payment::method') || (employeeHasPermission('delete_any_payment::method'));
     }
 
     /**
@@ -63,7 +63,7 @@ class PaymentMethodPolicy
      */
     public function forceDelete(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->can('force_delete_payment::method');
+        return $user->can('force_delete_payment::method') || (employeeHasPermission('force_delete_payment::method'));
     }
 
     /**
@@ -79,7 +79,7 @@ class PaymentMethodPolicy
      */
     public function restore(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->can('restore_payment::method');
+        return $user->can('restore_payment::method') || (employeeHasPermission('restore_payment::method'));
     }
 
     /**
@@ -95,7 +95,7 @@ class PaymentMethodPolicy
      */
     public function replicate(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->can('replicate_payment::method');
+        return $user->can('replicate_payment::method') || (employeeHasPermission('replicate_payment::method'));
     }
 
     /**

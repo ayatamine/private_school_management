@@ -87,7 +87,7 @@ class StudentResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_student');
+        return employeeHasPermission('view_in_menu_student');
     }
     public static function form(Form $form): Form
     {
@@ -487,18 +487,18 @@ class StudentResource extends Resource implements HasShieldPermissions
 
                 \Filament\Infolists\Components\Section::make(trans('main.payments'))
                         ->id('payments-section')
-                        ->visible(auth()->user()->hasPermissionTo('show_payments_student'))
+                        ->visible(employeeHasPermission('show_payments_student'))
                         ->headerActions([
                             Action::make('edit')
                                 ->label(trans('main.new_receipt_payment'))
-                                ->visible(auth()->user()->hasPermissionTo('add_receipt_voucher_student'))
+                                ->visible(employeeHasPermission('add_receipt_voucher_student'))
                                 ->url(fn(Student $student) =>route('filament.admin.resources.receipt-vouchers.create',['student'=>$student->id]))
                                 ->openUrlInNewTab(),
                             Action::make('printAllPayments')
                                 ->icon('icon-print')
                                 ->color('info')
                                 ->label(trans('main.print_all_payments'))
-                                ->visible(auth()->user()->hasPermissionTo('print_payments_student'))
+                                ->visible(employeeHasPermission('print_payments_student'))
                                 ->url(fn(Student $student)=> route('print_pdf',['type'=>"all_payments",'id'=>$student->id]))
                                 ->visible(fn(Student $student)=>count($student->receiptVoucher) != 0)
                         ])

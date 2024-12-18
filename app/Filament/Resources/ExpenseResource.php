@@ -48,7 +48,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_expense');
+        return employeeHasPermission('view_in_menu_expense');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -199,7 +199,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_expense'))
+                ->visible(fn()=>employeeHasPermission('print_expense'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.expense',2)
                 ])->disableXlsx(),

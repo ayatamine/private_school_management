@@ -15,7 +15,7 @@ class CoursePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_course');
+        return $user->can('view_any_course') || (employeeHasPermission('view_any_course'));
     }
 
     /**
@@ -23,7 +23,7 @@ class CoursePolicy
      */
     public function view(User $user, Course $course): bool
     {
-        return $user->can('view_course');
+        return $user->can('view_course') || (employeeHasPermission('view_course'));
     }
 
     /**
@@ -31,7 +31,7 @@ class CoursePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_course');
+        return $user->can('create_course') || (employeeHasPermission('create_course'));
     }
 
     /**
@@ -39,7 +39,7 @@ class CoursePolicy
      */
     public function update(User $user, Course $course): bool
     {
-        return $user->can('update_course');
+        return $user->can('update_course') || (employeeHasPermission('update_course'));
     }
 
     /**
@@ -47,7 +47,7 @@ class CoursePolicy
      */
     public function delete(User $user, Course $course): bool
     {
-        return $user->can('delete_course');
+        return $user->can('delete_course') || (employeeHasPermission('delete_course'));
     }
 
     /**
@@ -55,7 +55,7 @@ class CoursePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_course');
+        return $user->can('delete_any_course') || (employeeHasPermission('delete_any_course'));
     }
 
     /**
@@ -63,7 +63,7 @@ class CoursePolicy
      */
     public function forceDelete(User $user, Course $course): bool
     {
-        return $user->can('force_delete_course');
+        return $user->can('force_delete_course') || (employeeHasPermission('force_delete_course'));
     }
 
     /**
@@ -79,7 +79,7 @@ class CoursePolicy
      */
     public function restore(User $user, Course $course): bool
     {
-        return $user->can('restore_course');
+        return $user->can('restore_course') || (employeeHasPermission('restore_course'));
     }
 
     /**
@@ -95,7 +95,7 @@ class CoursePolicy
      */
     public function replicate(User $user, Course $course): bool
     {
-        return $user->can('replicate_course');
+        return $user->can('replicate_course') || (employeeHasPermission('replicate_course'));
     }
 
     /**

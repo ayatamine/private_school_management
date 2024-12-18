@@ -15,7 +15,7 @@ class FinanceAccountPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_finance::account');
+        return $user->can('view_any_finance::account') || (employeeHasPermission('view_any_finance::account'));
     }
 
     /**
@@ -23,7 +23,7 @@ class FinanceAccountPolicy
      */
     public function view(User $user, FinanceAccount $financeAccount): bool
     {
-        return $user->can('view_finance::account');
+        return $user->can('view_finance::account') || (employeeHasPermission('view_finance::account'));
     }
 
     /**
@@ -31,7 +31,7 @@ class FinanceAccountPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_finance::account');
+        return $user->can('create_finance::account') || (employeeHasPermission('create_finance::account'));
     }
 
     /**
@@ -39,7 +39,7 @@ class FinanceAccountPolicy
      */
     public function update(User $user, FinanceAccount $financeAccount): bool
     {
-        return $user->can('update_finance::account');
+        return $user->can('update_finance::account') || (employeeHasPermission('update_finance::account'));
     }
 
     /**
@@ -47,7 +47,7 @@ class FinanceAccountPolicy
      */
     public function delete(User $user, FinanceAccount $financeAccount): bool
     {
-        return $user->can('delete_finance::account');
+        return $user->can('delete_finance::account') || (employeeHasPermission('delete_finance::account'));
     }
 
     /**
@@ -55,7 +55,7 @@ class FinanceAccountPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_finance::account');
+        return $user->can('delete_any_finance::account') || (employeeHasPermission('delete_any_finance::account'));
     }
 
     /**
@@ -79,7 +79,7 @@ class FinanceAccountPolicy
      */
     public function restore(User $user, FinanceAccount $financeAccount): bool
     {
-        return $user->can('restore_finance::account');
+        return $user->can('restore_finance::account') || (employeeHasPermission('restore_finance::account'));
     }
 
     /**
@@ -95,7 +95,7 @@ class FinanceAccountPolicy
      */
     public function replicate(User $user, FinanceAccount $financeAccount): bool
     {
-        return $user->can('replicate_finance::account');
+        return $user->can('replicate_finance::account') || (employeeHasPermission('replicate_finance::account'));
     }
 
     /**

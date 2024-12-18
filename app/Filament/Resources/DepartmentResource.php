@@ -58,7 +58,7 @@ class DepartmentResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_department');
+        return employeeHasPermission('view_in_menu_department');
     }
     public static function table(Table $table): Table
     {

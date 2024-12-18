@@ -15,7 +15,7 @@ class AcademicStagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_academic::stage');
+        return $user->can('view_any_academic::stage') || (employeeHasPermission('view_any_academic::stage'));
     }
 
     /**
@@ -23,7 +23,7 @@ class AcademicStagePolicy
      */
     public function view(User $user, AcademicStage $academicStage): bool
     {
-        return $user->can('view_academic::stage');
+        return $user->can('view_academic::stage') || (employeeHasPermission('view_academic::stage'));
     }
 
     /**
@@ -31,7 +31,7 @@ class AcademicStagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_academic::stage');
+        return $user->can('create_academic::stage') || (employeeHasPermission('create_academic::stage'));
     }
 
     /**
@@ -39,7 +39,7 @@ class AcademicStagePolicy
      */
     public function update(User $user, AcademicStage $academicStage): bool
     {
-        return $user->can('update_academic::stage');
+        return $user->can('update_academic::stage') || (employeeHasPermission('update_academic::stage'));
     }
 
     /**
@@ -47,7 +47,7 @@ class AcademicStagePolicy
      */
     public function delete(User $user, AcademicStage $academicStage): bool
     {
-        return $user->can('delete_academic::stage');
+        return $user->can('delete_academic::stage') || (employeeHasPermission('delete_academic::stage'));
     }
 
     /**
@@ -55,7 +55,7 @@ class AcademicStagePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_academic::stage');
+        return $user->can('delete_any_academic::stage') || (employeeHasPermission('delete_any_academic::stage'));
     }
 
     /**

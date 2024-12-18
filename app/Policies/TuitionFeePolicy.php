@@ -15,7 +15,7 @@ class TuitionFeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tuition::fee');
+        return $user->can('view_any_tuition::fee') || (employeeHasPermission('view_any_tuition::fee'));
     }
 
     /**
@@ -23,7 +23,7 @@ class TuitionFeePolicy
      */
     public function view(User $user, TuitionFee $tuitionFee): bool
     {
-        return $user->can('view_tuition::fee');
+        return $user->can('view_tuition::fee') || (employeeHasPermission('view_tuition::fee'));
     }
 
     /**
@@ -31,7 +31,7 @@ class TuitionFeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tuition::fee');
+        return $user->can('create_tuition::fee') || (employeeHasPermission('create_tuition::fee'));
     }
 
     /**
@@ -39,7 +39,7 @@ class TuitionFeePolicy
      */
     public function update(User $user, TuitionFee $tuitionFee): bool
     {
-        return $user->can('update_tuition::fee');
+        return $user->can('update_tuition::fee') || (employeeHasPermission('update_tuition::fee'));
     }
 
     /**
@@ -47,7 +47,7 @@ class TuitionFeePolicy
      */
     public function delete(User $user, TuitionFee $tuitionFee): bool
     {
-        return $user->can('delete_tuition::fee');
+        return $user->can('delete_tuition::fee') || (employeeHasPermission('delete_tuition::fee'));
     }
 
     /**
@@ -79,7 +79,7 @@ class TuitionFeePolicy
      */
     public function restore(User $user, TuitionFee $tuitionFee): bool
     {
-        return $user->can('restore_tuition::fee');
+        return $user->can('restore_tuition::fee') || (employeeHasPermission('restore_tuition::fee'));
     }
 
     /**

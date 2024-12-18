@@ -52,7 +52,7 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_academic::year');
+        return employeeHasPermission('view_in_menu_academic::year');
     }
     public static function form(Form $form): Form
     {
@@ -104,7 +104,7 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_academic::year'))
+                ->visible(fn()=>employeeHasPermission('print_academic::year'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.academic_year',2)
                 ])->disableXlsx(),

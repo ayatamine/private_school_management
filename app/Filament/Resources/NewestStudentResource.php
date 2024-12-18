@@ -61,7 +61,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_newest::student');
+        return employeeHasPermission('view_in_menu_newest::student');
     }
     public static function getNavigationGroup():string
     {
@@ -375,7 +375,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 Tables\Actions\Action::make('registeration_action')
                 // ->visible(fn(Student $record)=>$record->is_banned == null)
                 ->label(trans('main.registeration_action'))
-                ->visible(auth()->user()->hasPermissionTo('approve_registeration_newest::student'))
+                ->visible(employeeHasPermission('approve_registeration_newest::student'))
                 ->icon('heroicon-o-check')
                 ->color('primary')
                 ->form([
@@ -475,7 +475,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_newest::student'))
+                ->visible(fn()=>employeeHasPermission('print_newest::student'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.income',2)
                 ])->disableXlsx(),

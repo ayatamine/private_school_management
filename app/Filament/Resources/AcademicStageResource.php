@@ -52,7 +52,7 @@ class AcademicStageResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_academic::stage');
+        return employeeHasPermission('view_in_menu_academic::stage');
     }
     public static function form(Form $form): Form
     {
@@ -83,7 +83,7 @@ class AcademicStageResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_academic::stage'))
+                ->visible(fn()=>employeeHasPermission('print_academic::stage'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.academic_stage',2)
                 ])->disableXlsx(),

@@ -51,7 +51,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_employee');
+        return employeeHasPermission('view_in_menu_employee');
     }
     protected static ?string $navigationIcon = 'icon-employees';
     public static function getNavigationGroup():string
@@ -194,6 +194,9 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 Forms\Components\TextInput::make('study_speciality')->label(trans('main.study_speciality')),
                                 Forms\Components\TextInput::make('national_address')->label(trans('main.national_address')),
                                 Forms\Components\TextInput::make('iban')->label(trans('main.iban')),
+                                Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
+                                    ->maxLength(255)        
+                                    ->hiddenOn('view'),
                                 // Forms\Components\FileUpload::make('documents')
                                 //     ->label(trans('main.documents'))
                                 //     ->directory('employees')
@@ -226,7 +229,11 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->query(Employee::whereNot('user_id',User::whereHas('roles', function($query) {
+                    $query->where('name', 'super_admin');
+            })->first()?->id))
             ->columns([
+               
                 Tables\Columns\TextColumn::make('id')->label(trans('main.registration_number'))
                     ->searchable()
                     ->sortable(),
@@ -275,7 +282,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_employee'))
+                ->visible(fn()=>employeeHasPermission('print_employee'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.designation',2)
                 ])->disableXlsx(),

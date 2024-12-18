@@ -15,7 +15,7 @@ class GeneralFeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_general::fee');
+        return $user->can('view_any_general::fee') || (employeeHasPermission('view_any_general::fee'));
     }
 
     /**
@@ -23,7 +23,7 @@ class GeneralFeePolicy
      */
     public function view(User $user, GeneralFee $generalFee): bool
     {
-        return $user->can('view_general::fee');
+        return $user->can('view_general::fee') || (employeeHasPermission('view_general::fee'));
     }
 
     /**
@@ -31,7 +31,7 @@ class GeneralFeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_general::fee');
+        return $user->can('create_general::fee') || (employeeHasPermission('create_general::fee'));
     }
 
     /**
@@ -39,7 +39,7 @@ class GeneralFeePolicy
      */
     public function update(User $user, GeneralFee $generalFee): bool
     {
-        return $user->can('update_general::fee');
+        return $user->can('update_general::fee') || (employeeHasPermission('update_general::fee'));
     }
 
     /**
@@ -47,7 +47,7 @@ class GeneralFeePolicy
      */
     public function delete(User $user, GeneralFee $generalFee): bool
     {
-        return $user->can('delete_general::fee');
+        return $user->can('delete_general::fee') || (employeeHasPermission('delete_general::fee'));
     }
 
     /**
@@ -55,7 +55,7 @@ class GeneralFeePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_general::fee');
+        return $user->can('delete_any_general::fee') || (employeeHasPermission('delete_any_general::fee'));
     }
 
     /**
@@ -63,7 +63,7 @@ class GeneralFeePolicy
      */
     public function forceDelete(User $user, GeneralFee $generalFee): bool
     {
-        return $user->can('force_delete_general::fee');
+        return $user->can('force_delete_general::fee') || (employeeHasPermission('force_delete_general::fee'));
     }
 
     /**
@@ -71,7 +71,7 @@ class GeneralFeePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_general::fee');
+        return $user->can('force_delete_any_general::fee') || (employeeHasPermission('force_delete_any_general::fee'));
     }
 
     /**
@@ -79,7 +79,7 @@ class GeneralFeePolicy
      */
     public function restore(User $user, GeneralFee $generalFee): bool
     {
-        return $user->can('restore_general::fee');
+        return $user->can('restore_general::fee') || (employeeHasPermission('restore_general::fee'));
     }
 
     /**
@@ -87,7 +87,7 @@ class GeneralFeePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_general::fee');
+        return $user->can('restore_any_general::fee') || (employeeHasPermission('restore_any_general::fee'));
     }
 
     /**
@@ -95,7 +95,7 @@ class GeneralFeePolicy
      */
     public function replicate(User $user, GeneralFee $generalFee): bool
     {
-        return $user->can('replicate_general::fee');
+        return $user->can('replicate_general::fee') || (employeeHasPermission('replicate_general::fee'));
     }
 
     /**
@@ -103,6 +103,6 @@ class GeneralFeePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_general::fee');
+        return $user->can('reorder_general::fee') || (employeeHasPermission('reorder_general::fee'));
     }
 }

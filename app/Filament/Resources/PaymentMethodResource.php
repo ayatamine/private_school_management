@@ -41,7 +41,7 @@ class PaymentMethodResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_payment::method');
+        return employeeHasPermission('view_in_menu_payment::method');
     }
     public static function getPermissionPrefixes(): array
     {

@@ -15,7 +15,7 @@ class AcademicYearPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_academic::year');
+        return $user->can('view_any_academic::year') || (employeeHasPermission('view_any_academic::year'));
     }
 
     /**
@@ -23,7 +23,7 @@ class AcademicYearPolicy
      */
     public function view(User $user, AcademicYear $academicYear): bool
     {
-        return $user->can('view_academic::year');
+        return $user->can('view_academic::year') || (employeeHasPermission('view_academic::year'));
     }
 
     /**
@@ -31,7 +31,7 @@ class AcademicYearPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_academic::year');
+        return $user->can('create_academic::year') || (employeeHasPermission('create_academic::year'));
     }
 
     /**
@@ -39,7 +39,7 @@ class AcademicYearPolicy
      */
     public function update(User $user, AcademicYear $academicYear): bool
     {
-        return $user->can('update_academic::year');
+        return $user->can('update_academic::year') || (employeeHasPermission('update_academic::year'));
     }
 
     /**
@@ -47,7 +47,7 @@ class AcademicYearPolicy
      */
     public function delete(User $user, AcademicYear $academicYear): bool
     {
-        return $user->can('delete_academic::year');
+        return $user->can('delete_academic::year') || (employeeHasPermission('delete_academic::year'));
     }
 
     /**
@@ -55,7 +55,7 @@ class AcademicYearPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_academic::year');
+        return $user->can('delete_any_academic::year') || (employeeHasPermission('delete_any_academic::year'));
     }
 
     /**
@@ -63,7 +63,7 @@ class AcademicYearPolicy
      */
     public function forceDelete(User $user, AcademicYear $academicYear): bool
     {
-        return $user->can('force_delete_academic::year');
+        return $user->can('force_delete_academic::year') || (employeeHasPermission('force_delete_academic::year'));
     }
 
     /**
@@ -95,7 +95,7 @@ class AcademicYearPolicy
      */
     public function replicate(User $user, AcademicYear $academicYear): bool
     {
-        return $user->can('replicate_academic::year');
+        return $user->can('replicate_academic::year') || (employeeHasPermission('replicate_academic::year'));
     }
 
     /**

@@ -45,7 +45,7 @@ class IncomeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_income');
+        return employeeHasPermission('view_in_menu_income');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -131,7 +131,7 @@ class IncomeResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_income'))
+                ->visible(fn()=>employeeHasPermission('print_income'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.income',2)
                 ])->disableXlsx(),

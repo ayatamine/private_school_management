@@ -15,7 +15,7 @@ class DepartmentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_department');
+        return $user->can('view_any_department') || (employeeHasPermission('view_any_department'));
     }
 
     /**
@@ -23,7 +23,7 @@ class DepartmentPolicy
      */
     public function view(User $user, Department $department): bool
     {
-        return $user->can('view_department');
+        return $user->can('view_department') || (employeeHasPermission('view_department'));
     }
 
     /**
@@ -31,7 +31,7 @@ class DepartmentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_department');
+        return $user->can('create_department') || (employeeHasPermission('create_department'));
     }
 
     /**
@@ -39,7 +39,7 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department): bool
     {
-        return $user->can('update_department');
+        return $user->can('update_department') || (employeeHasPermission('update_department'));
     }
 
     /**
@@ -47,7 +47,7 @@ class DepartmentPolicy
      */
     public function delete(User $user, Department $department): bool
     {
-        return $user->can('delete_department');
+        return $user->can('delete_department') || (employeeHasPermission('delete_department'));
     }
 
     /**
@@ -55,7 +55,7 @@ class DepartmentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_department');
+        return $user->can('delete_any_department') || (employeeHasPermission('delete_any_department'));
     }
 
     /**
@@ -63,7 +63,7 @@ class DepartmentPolicy
      */
     public function forceDelete(User $user, Department $department): bool
     {
-        return $user->can('force_delete_department');
+        return $user->can('force_delete_department') || (employeeHasPermission('force_delete_department'));
     }
 
     /**
@@ -79,7 +79,7 @@ class DepartmentPolicy
      */
     public function restore(User $user, Department $department): bool
     {
-        return $user->can('restore_department');
+        return $user->can('restore_department') || (employeeHasPermission('restore_department'));
     }
 
     /**
@@ -95,7 +95,7 @@ class DepartmentPolicy
      */
     public function replicate(User $user, Department $department): bool
     {
-        return $user->can('replicate_department');
+        return $user->can('replicate_department') || (employeeHasPermission('replicate_department'));
     }
 
     /**

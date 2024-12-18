@@ -15,7 +15,7 @@ class ExpensePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_expense');
+        return $user->can('view_any_expense') || (employeeHasPermission('view_any_expense'));
     }
 
     /**
@@ -23,7 +23,7 @@ class ExpensePolicy
      */
     public function view(User $user, Expense $expense): bool
     {
-        return $user->can('view_expense');
+        return $user->can('view_expense') || (employeeHasPermission('view_expense'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ExpensePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_expense');
+        return $user->can('create_expense') || (employeeHasPermission('create_expense'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ExpensePolicy
      */
     public function update(User $user, Expense $expense): bool
     {
-        return $user->can('update_expense');
+        return $user->can('update_expense') || (employeeHasPermission('update_expense'));
     }
 
     /**
@@ -47,7 +47,7 @@ class ExpensePolicy
      */
     public function delete(User $user, Expense $expense): bool
     {
-        return $user->can('delete_expense');
+        return $user->can('delete_expense') || (employeeHasPermission('delete_expense'));
     }
 
     /**
@@ -55,7 +55,7 @@ class ExpensePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_expense');
+        return $user->can('delete_any_expense') || (employeeHasPermission('delete_any_expense'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ExpensePolicy
      */
     public function restore(User $user, Expense $expense): bool
     {
-        return $user->can('restore_expense');
+        return $user->can('restore_expense') || (employeeHasPermission('restore_expense'));
     }
 
     /**
@@ -95,7 +95,7 @@ class ExpensePolicy
      */
     public function replicate(User $user, Expense $expense): bool
     {
-        return $user->can('replicate_expense');
+        return $user->can('replicate_expense') || (employeeHasPermission('replicate_expense'));
     }
 
     /**

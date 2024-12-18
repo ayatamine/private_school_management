@@ -56,7 +56,7 @@ class ParentModelResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_parent::model');
+        return employeeHasPermission('view_in_menu_parent::model');
     }
     public static function form(Form $form): Form
     {
@@ -168,7 +168,7 @@ class ParentModelResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(auth()->user()->hasPermissionTo('print_parent::model'))
+                ->visible(employeeHasPermission('print_parent::model'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.parent',2)
                 ])->disableXlsx(),

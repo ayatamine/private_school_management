@@ -57,7 +57,7 @@ class InvoiceResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_invoice');
+        return employeeHasPermission('view_in_menu_invoice');
     }
     public static function form(Form $form): Form
     {
@@ -108,7 +108,7 @@ class InvoiceResource extends Resource implements HasShieldPermissions
                     ->icon('icon-print')
                     ->color('info')
                     ->label(trans('main.print_invoice'))
-                    ->visible(fn()=>auth()->user()->hasPermissionTo('print_invoice'))
+                    ->visible(fn()=>employeeHasPermission('print_invoice'))
                     ->url(fn(Invoice $record) => route('print_pdf',['type'=>"invoice",'id'=>$record->id]))
                    
             ])

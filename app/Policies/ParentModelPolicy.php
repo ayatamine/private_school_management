@@ -15,7 +15,7 @@ class ParentModelPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_parent::model') || ($user->parent != null);
+        return $user->can('view_any_parent::model') || ($user->parent != null)  || (employeeHasPermission('view_any_parent::model'));
     }
 
     /**
@@ -23,7 +23,7 @@ class ParentModelPolicy
      */
     public function view(User $user, ParentModel $parentModel): bool
     {
-        return $user->can('view_parent::model') || ($user->parent != null && ($user->parent->id ==$parentModel->id));
+        return $user->can('view_parent::model') || ($user->parent != null && ($user->parent->id ==$parentModel->id))  || (employeeHasPermission('view_parent::model'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ParentModelPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_parent::model');
+        return $user->can('create_parent::model') || (employeeHasPermission('create_parent::model'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ParentModelPolicy
      */
     public function update(User $user, ParentModel $parentModel): bool
     {
-        return $user->can('update_parent::model');
+        return $user->can('update_parent::model') || (employeeHasPermission('update_parent::model'));
     }
 
     /**
@@ -47,7 +47,7 @@ class ParentModelPolicy
      */
     public function delete(User $user, ParentModel $parentModel): bool
     {
-        return $user->can('delete_parent::model');
+        return $user->can('delete_parent::model') || (employeeHasPermission('delete_parent::model'));
     }
 
     /**
@@ -55,7 +55,7 @@ class ParentModelPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_parent::model');
+        return $user->can('delete_any_parent::model') || (employeeHasPermission('delete_any_parent::model'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ParentModelPolicy
      */
     public function restore(User $user, ParentModel $parentModel): bool
     {
-        return $user->can('restore_parent::model');
+        return $user->can('restore_parent::model') || (employeeHasPermission('restore_parent::model'));
     }
 
     /**

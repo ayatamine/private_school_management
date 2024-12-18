@@ -51,7 +51,7 @@ class FeePaymentRequestResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasPermissionTo('view_in_menu_fee::payment::request');
+        return employeeHasPermission('view_in_menu_fee::payment::request');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -167,7 +167,7 @@ class FeePaymentRequestResource extends Resource implements HasShieldPermissions
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>auth()->user()->hasPermissionTo('print_fee::payment::request'))
+                ->visible(fn()=>employeeHasPermission('print_fee::payment::request'))
                 ->extraViewData([
                     'table_header' => trans('main.menu').' '.trans_choice('main.fee_payment_requests',2)
                 ])->disableXlsx(),

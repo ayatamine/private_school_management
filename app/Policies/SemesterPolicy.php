@@ -15,7 +15,7 @@ class SemesterPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_semester');
+        return $user->can('view_any_semester') || (employeeHasPermission('view_any_semester'));
     }
 
     /**
@@ -23,7 +23,7 @@ class SemesterPolicy
      */
     public function view(User $user, Semester $semester): bool
     {
-        return $user->can('view_semester');
+        return $user->can('view_semester') || (employeeHasPermission('view_semester'));
     }
 
     /**
@@ -31,7 +31,7 @@ class SemesterPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_semester');
+        return $user->can('create_semester') || (employeeHasPermission('create_semester'));
     }
 
     /**
@@ -39,7 +39,7 @@ class SemesterPolicy
      */
     public function update(User $user, Semester $semester): bool
     {
-        return $user->can('update_semester');
+        return $user->can('update_semester') || (employeeHasPermission('update_semester'));
     }
 
     /**
@@ -47,7 +47,7 @@ class SemesterPolicy
      */
     public function delete(User $user, Semester $semester): bool
     {
-        return $user->can('delete_semester');
+        return $user->can('delete_semester') || (employeeHasPermission('delete_semester'));
     }
 
     /**
@@ -55,7 +55,7 @@ class SemesterPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_semester');
+        return $user->can('delete_any_semester') || (employeeHasPermission('delete_any_semester'));
     }
 
     /**
@@ -63,7 +63,7 @@ class SemesterPolicy
      */
     public function forceDelete(User $user, Semester $semester): bool
     {
-        return $user->can('force_delete_semester');
+        return $user->can('force_delete_semester') || (employeeHasPermission('force_delete_semester'));
     }
 
     /**
@@ -79,7 +79,7 @@ class SemesterPolicy
      */
     public function restore(User $user, Semester $semester): bool
     {
-        return $user->can('restore_semester');
+        return $user->can('restore_semester') || (employeeHasPermission('restore_semester'));
     }
 
     /**
@@ -95,7 +95,7 @@ class SemesterPolicy
      */
     public function replicate(User $user, Semester $semester): bool
     {
-        return $user->can('replicate_semester');
+        return $user->can('replicate_semester') || (employeeHasPermission('replicate_semester'));
     }
 
     /**

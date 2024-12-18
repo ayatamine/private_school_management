@@ -18,7 +18,8 @@ class ReceiptVoucherPolicy
     {
         return $user->can('view_any_receipt::voucher') 
         || ( $user->student != null && $user->student?->termination_date == null)
-        || ( $user->parent != null) ;
+        || ( $user->parent != null) 
+        || (employeeHasPermission('view_any_receipt::voucher'));
     }
 
     /**
@@ -28,7 +29,8 @@ class ReceiptVoucherPolicy
     {
         return $user->can('view_receipt::voucher') 
         || ( $user->student != null && $user->student?->termination_date == null && $receiptVoucher->student_id == $user->student?->id)
-        || ( $user->parent != null && Student::findOrFail($receiptVoucher->student_id)->parent_id == $user->parent?->id) ;
+        || ( $user->parent != null && Student::findOrFail($receiptVoucher->student_id)->parent_id == $user->parent?->id) 
+        || (employeeHasPermission('view_receipt::voucher'));
     }
 
     /**
@@ -38,7 +40,8 @@ class ReceiptVoucherPolicy
     {
         return $user->can('create_receipt::voucher')
         || ( $user->student != null && $user->student?->termination_date == null)
-        || ( $user->parent != null) ;
+        || ( $user->parent != null) 
+        || (employeeHasPermission('create_receipt::voucher'));
     }
 
     /**
@@ -46,8 +49,7 @@ class ReceiptVoucherPolicy
      */
     public function update(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return true;
-        return $user->can('update_receipt::voucher');
+        return $user->can('update_receipt::voucher')  || (employeeHasPermission('update_receipt::voucher'));
     }
 
     /**
@@ -55,7 +57,7 @@ class ReceiptVoucherPolicy
      */
     public function delete(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return $user->can('delete_receipt::voucher');
+        return $user->can('delete_receipt::voucher') || (employeeHasPermission('delete_receipt::voucher'));
     }
 
     /**
@@ -63,7 +65,7 @@ class ReceiptVoucherPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_receipt::voucher');
+        return $user->can('delete_any_receipt::voucher') || (employeeHasPermission('delete_any_receipt::voucher'));
     }
 
     /**
@@ -71,7 +73,7 @@ class ReceiptVoucherPolicy
      */
     public function forceDelete(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return $user->can('force_delete_receipt::voucher');
+        return $user->can('force_delete_receipt::voucher') || (employeeHasPermission('force_delete_receipt::voucher'));
     }
 
     /**
@@ -87,7 +89,7 @@ class ReceiptVoucherPolicy
      */
     public function restore(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return $user->can('restore_receipt::voucher');
+        return $user->can('restore_receipt::voucher') || (employeeHasPermission('restore_receipt::voucher'));
     }
 
     /**
@@ -103,7 +105,7 @@ class ReceiptVoucherPolicy
      */
     public function replicate(User $user, ReceiptVoucher $receiptVoucher): bool
     {
-        return $user->can('replicate_receipt::voucher');
+        return $user->can('replicate_receipt::voucher') || (employeeHasPermission('replicate_receipt::voucher'));
     }
 
     /**

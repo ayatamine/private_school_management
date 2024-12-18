@@ -15,7 +15,7 @@ class TransportPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_transport::termination');
+        return $user->can('view_any_transport::termination') || (employeeHasPermission('view_any_transport::termination'));
     }
 
     /**
@@ -23,7 +23,7 @@ class TransportPolicy
      */
     public function view(User $user, Transport $transport): bool
     {
-        return $user->can('view_transport::termination');
+        return $user->can('view_transport::termination') || (employeeHasPermission('view_transport::termination'));
     }
 
     /**
@@ -31,7 +31,7 @@ class TransportPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_transport::termination');
+        return $user->can('create_transport::termination') || (employeeHasPermission('create_transport::termination'));
     }
 
     /**
@@ -39,7 +39,7 @@ class TransportPolicy
      */
     public function update(User $user, Transport $transport): bool
     {
-        return $user->can('update_transport::termination');
+        return $user->can('update_transport::termination') || (employeeHasPermission('update_transport::termination'));
     }
 
     /**
@@ -47,7 +47,7 @@ class TransportPolicy
      */
     public function delete(User $user, Transport $transport): bool
     {
-        return $user->can('delete_transport::termination');
+        return $user->can('delete_transport::termination') || (employeeHasPermission('delete_transport::termination'));
     }
 
     /**
@@ -79,7 +79,7 @@ class TransportPolicy
      */
     public function restore(User $user, Transport $transport): bool
     {
-        return $user->can('restore_transport::termination');
+        return $user->can('restore_transport::termination')  || (employeeHasPermission('restore_transport::termination'));
     }
 
     /**

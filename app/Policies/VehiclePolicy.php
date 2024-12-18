@@ -15,7 +15,7 @@ class VehiclePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_vehicle') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('view_in_menu_vehicle'));
+        return $user->can('view_any_vehicle') || (employeeHasPermission('view_in_menu_vehicle'));
     }
 
     /**
@@ -23,7 +23,7 @@ class VehiclePolicy
      */
     public function view(User $user, Vehicle $vehicle): bool
     {
-        return $user->can('view_vehicle') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('view_vehicle'));
+        return $user->can('view_vehicle') || (employeeHasPermission('view_vehicle'));
     }
 
     /**
@@ -31,7 +31,7 @@ class VehiclePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_vehicle') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('create_vehicle'));
+        return $user->can('create_vehicle') || (employeeHasPermission('create_vehicle'));
     }
 
     /**
@@ -39,7 +39,7 @@ class VehiclePolicy
      */
     public function update(User $user, Vehicle $vehicle): bool
     {
-        return $user->can('update_vehicle') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('update_vehicle'));
+        return $user->can('update_vehicle') || (employeeHasPermission('update_vehicle'));
     }
 
     /**
@@ -47,7 +47,7 @@ class VehiclePolicy
      */
     public function delete(User $user, Vehicle $vehicle): bool
     {
-        return $user->can('delete_vehicle') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('delete_vehicle'));
+        return $user->can('delete_vehicle') || (employeeHasPermission('delete_vehicle'));
     }
 
     /**
@@ -55,7 +55,7 @@ class VehiclePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_vehicle') || (auth()->user()?->employee && auth()->user()?->employee->hasPermissionTo('delete_any_vehicle'));
+        return $user->can('delete_any_vehicle') || (employeeHasPermission('delete_any_vehicle'));
     }
 
     /**

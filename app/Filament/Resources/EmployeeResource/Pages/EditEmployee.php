@@ -70,7 +70,7 @@ class EditEmployee extends EditRecord
                 'gender' =>$data['gender'],
                 'phone_number' =>$data['phone_number'],
                 'email' =>$data['email'],
-                'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+                'password' => isset($data['password']) ? bcrypt($data['password']) : $employee->user?->password
             ]);
             foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
                 unset($data[$value]);

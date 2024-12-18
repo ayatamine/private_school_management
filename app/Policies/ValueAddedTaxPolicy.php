@@ -15,7 +15,7 @@ class ValueAddedTaxPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_value::added::tax');
+        return $user->can('view_any_value::added::tax')  || (employeeHasPermission('view_any_value::added::tax'));
     }
 
     /**
@@ -23,7 +23,7 @@ class ValueAddedTaxPolicy
      */
     public function view(User $user, ValueAddedTax $valueAddedTax): bool
     {
-        return $user->can('view_value::added::tax');
+        return $user->can('view_value::added::tax')  || (employeeHasPermission('view_value::added::tax'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ValueAddedTaxPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_value::added::tax');
+        return $user->can('create_value::added::tax')  || (employeeHasPermission('create_value::added::tax'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ValueAddedTaxPolicy
      */
     public function update(User $user, ValueAddedTax $valueAddedTax): bool
     {
-        return $user->can('update_value::added::tax');
+        return $user->can('update_value::added::tax')  || (employeeHasPermission('update_value::added::tax'));
     }
 
     /**
@@ -47,7 +47,7 @@ class ValueAddedTaxPolicy
      */
     public function delete(User $user, ValueAddedTax $valueAddedTax): bool
     {
-        return $user->can('delete_value::added::tax');
+        return $user->can('delete_value::added::tax')  || (employeeHasPermission('delete_value::added::tax'));
     }
 
     /**

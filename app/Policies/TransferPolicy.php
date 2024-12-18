@@ -15,7 +15,7 @@ class TransferPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_transfer');
+        return $user->can('view_any_transfer') || (employeeHasPermission('view_any_transfer'));
     }
 
     /**
@@ -23,7 +23,7 @@ class TransferPolicy
      */
     public function view(User $user, Transfer $transfer): bool
     {
-        return $user->can('view_transfer');
+        return $user->can('view_transfer') || (employeeHasPermission('view_transfer'));
     }
 
     /**
@@ -31,7 +31,7 @@ class TransferPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_transfer');
+        return $user->can('create_transfer') || (employeeHasPermission('create_transfer'));
     }
 
     /**
@@ -39,7 +39,7 @@ class TransferPolicy
      */
     public function update(User $user, Transfer $transfer): bool
     {
-        return $user->can('update_transfer');
+        return $user->can('update_transfer') || (employeeHasPermission('update_transfer'));
     }
 
     /**
@@ -47,7 +47,7 @@ class TransferPolicy
      */
     public function delete(User $user, Transfer $transfer): bool
     {
-        return $user->can('delete_transfer');
+        return $user->can('delete_transfer') || (employeeHasPermission('delete_transfer'));
     }
 
     /**
@@ -55,7 +55,7 @@ class TransferPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_transfer');
+        return $user->can('delete_any_transfer') || (employeeHasPermission('delete_any_transfer'));
     }
 
     /**
@@ -79,7 +79,7 @@ class TransferPolicy
      */
     public function restore(User $user, Transfer $transfer): bool
     {
-        return $user->can('restore_transfer');
+        return $user->can('restore_transfer') || (employeeHasPermission('restore_transfer'));
     }
 
     /**
@@ -95,7 +95,7 @@ class TransferPolicy
      */
     public function replicate(User $user, Transfer $transfer): bool
     {
-        return $user->can('replicate_transfer');
+        return $user->can('replicate_transfer') || (employeeHasPermission('replicate_transfer'));
     }
 
     /**
