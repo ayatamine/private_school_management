@@ -65,7 +65,6 @@ class StudentResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',
@@ -87,7 +86,7 @@ class StudentResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_student');
+        return employeeHasPermission('view_any_student');
     }
     public static function form(Form $form): Form
     {

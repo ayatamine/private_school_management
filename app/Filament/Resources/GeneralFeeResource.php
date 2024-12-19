@@ -44,12 +44,11 @@ class GeneralFeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_general::fee');
+        return employeeHasPermission('view_any_general::fee');
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',

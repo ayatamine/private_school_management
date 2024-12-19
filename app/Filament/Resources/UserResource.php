@@ -40,12 +40,11 @@ class UserResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return  (employeeHasPermission('view_in_menu_user'));
+        return  (employeeHasPermission('view_any_user'));
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',

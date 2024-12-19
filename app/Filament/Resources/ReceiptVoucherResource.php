@@ -52,7 +52,6 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',
@@ -64,7 +63,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_receipt::voucher');
+        return employeeHasPermission('view_any_receipt::voucher');
     }
     public static function form(Form $form): Form
     {

@@ -38,7 +38,6 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view_any',
             'create',
             'update',
@@ -51,7 +50,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_employee');
+        return employeeHasPermission('view_any_employee');
     }
     protected static ?string $navigationIcon = 'icon-employees';
     public static function getNavigationGroup():string
@@ -75,21 +74,21 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
-                    Forms\Components\Toggle::make('new_employee')->label(trans('main.new_employee'))
-                        ->live()
-                        ->default(true)
-                        ->hiddenOn('view')
-                        ->hiddenOn('edit')
-                        ->afterStateUpdated(function (Set $set, $state) {
-                            if($state == true) return redirect()->route('filament.admin.resources.employees.create');
-                        }),
+                    // Forms\Components\Toggle::make('new_employee')->label(trans('main.new_employee'))
+                    //     ->live()
+                    //     ->default(true)
+                    //     ->hiddenOn('view')
+                    //     ->hiddenOn('edit')
+                    //     ->afterStateUpdated(function (Set $set, $state) {
+                    //         if($state == true) return redirect()->route('filament.admin.resources.employees.create');
+                    //     }),
                             Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
                                         ->preload()
                                         ->options(Employee::whereDoesntHave('employmentDuration')->pluck('full_name', 'id'))
                                         ->searchable()
                                         ->columnSpanFull()
-                                        ->visible(fn (Get $get) => $get('new_employee') == false )
-                                        ->hiddenOn('edit')
+                                        // ->visible(fn (Get $get) => $get('new_employee') == false )
+                                        ->hiddenOn(['edit','view'])
                                         ->live()
                                         ->afterStateUpdated(function (Set $set, $state) {
                                             $employee = Employee::with('user')->find($state);
@@ -194,9 +193,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 Forms\Components\TextInput::make('study_speciality')->label(trans('main.study_speciality')),
                                 Forms\Components\TextInput::make('national_address')->label(trans('main.national_address')),
                                 Forms\Components\TextInput::make('iban')->label(trans('main.iban')),
-                                Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
-                                    ->maxLength(255)        
-                                    ->hiddenOn('view'),
+                               
                                 // Forms\Components\FileUpload::make('documents')
                                 //     ->label(trans('main.documents'))
                                 //     ->directory('employees')
@@ -208,6 +205,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 Section::make()
                                 ->schema([
                                     Forms\Components\CheckboxList::make('roles')
+                                        ->label(trans('main.roles'))
                                         ->relationship('roles', 'name')
                                 ]),
                                 Section::make()
@@ -276,8 +274,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+               
 
             ])
             ->bulkActions([

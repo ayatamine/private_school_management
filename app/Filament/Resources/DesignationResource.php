@@ -43,7 +43,6 @@ class DesignationResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',
@@ -53,7 +52,7 @@ class DesignationResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_designation');
+        return employeeHasPermission('view_any_designation');
     }
     public static function form(Form $form): Form
     {

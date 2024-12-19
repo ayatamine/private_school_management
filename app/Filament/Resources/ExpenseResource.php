@@ -48,12 +48,11 @@ class ExpenseResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_expense');
+        return employeeHasPermission('view_any_expense');
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',

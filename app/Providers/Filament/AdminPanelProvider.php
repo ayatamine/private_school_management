@@ -43,30 +43,30 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->navigationItems([
-                // NavigationItem::make('school_settings')
-                //     ->label(trans('main.school_settings'))
-                //     ->icon('icon-school')
-                //     ->visible(fn()=>employeeHasPermission('view_in_menu_school::setting'))
-                //     ->url(fn (): string => SchoolSettingResource::getUrl('edit',[1])),
-                // NavigationItem::make('finance_account')
-                //     ->label(trans_choice('main.add_finance_account',2))
-                //     ->icon('icon-finance_accounts')
-                //     ->visible(fn()=>employeeHasPermission('view_in_menu_finance::account'))
-                //     ->group(trans('main.finance_settings'))
-                //     ->url(fn (): string => FinanceAccountResource::getUrl('create')),
-                // NavigationItem::make('add_student')
-                //     ->label(trans('main.add_student'))
-                //     ->icon('heroicon-o-plus')
-                //     ->group(trans('main.student_settings'))
-                //     ->parentItem(trans('main.student_registration'))
-                //     ->visible(fn()=>employeeHasPermission('create_newest::student'))
-                //     ->url(fn (): string => NewestStudentResource::getUrl('create')),
-                // NavigationItem::make('transfer_operation')
-                //     ->label(trans_choice('main.transfer_operation',1))
-                //     ->group(trans('main.finance'))
-                //     ->parentItem(trans('main.finance_account'))
-                //     ->visible(fn()=>employeeHasPermission('view_in_menu_transfer'))
-                //     ->url(fn (): string => TransferResource::getUrl('list')),
+                NavigationItem::make('school_settings')
+                    ->label(trans('main.school_settings'))
+                    ->icon('icon-school')
+                    ->visible(fn()=>employeeHasPermission('view_any_school::setting'))
+                    ->url(fn (): string => SchoolSettingResource::getUrl('edit',[1])),
+                NavigationItem::make('finance_account')
+                    ->label(trans_choice('main.add_finance_account',2))
+                    ->icon('icon-finance_accounts')
+                    ->visible(fn()=>employeeHasPermission('view_any_finance::account'))
+                    ->group(trans('main.finance_settings'))
+                    ->url(fn (): string => FinanceAccountResource::getUrl('create')),
+                NavigationItem::make('add_student')
+                    ->label(trans('main.add_student'))
+                    ->icon('heroicon-o-plus')
+                    ->group(trans('main.student_settings'))
+                    ->parentItem(trans('main.student_registration'))
+                    ->visible(fn()=>employeeHasPermission('create_newest::student'))
+                    ->url(fn (): string => NewestStudentResource::getUrl('create')),
+                NavigationItem::make('transfer_operation')
+                    ->label(trans_choice('main.transfer_operation',1))
+                    ->group(trans('main.finance'))
+                    ->parentItem(trans('main.finance_account'))
+                    ->visible(fn()=>employeeHasPermission('view_any_transfer'))
+                    ->url(fn (): string => TransferResource::getUrl('list')),
             ])
             ->pages([
                 Pages\Dashboard::class,

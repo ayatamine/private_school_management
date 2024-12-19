@@ -30,7 +30,6 @@ class TransferResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',

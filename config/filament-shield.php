@@ -73,7 +73,7 @@ return [
             'AccountWidget', 'FilamentInfoWidget',
         ],
 
-        'resources' => [],
+        'resources' => ['TransportTerminationResource'],
     ],
 
     'discovery' => [

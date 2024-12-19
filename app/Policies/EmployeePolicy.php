@@ -79,7 +79,7 @@ class EmployeePolicy
      */
     public function restore(User $user, Employee $employee): bool
     {
-        return $user->can('{{ Restore }}') || (employeeHasPermission('{{ Restore }}'));
+        return $user->can('{{ Restore }}') ;
     }
 
     /**
@@ -87,7 +87,7 @@ class EmployeePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}') || (employeeHasPermission('{{ RestoreAny }}'));
+        return $user->can('{{ RestoreAny }}') ;
     }
 
     /**
@@ -95,7 +95,7 @@ class EmployeePolicy
      */
     public function replicate(User $user, Employee $employee): bool
     {
-        return $user->can('{{ Replicate }}') || (employeeHasPermission('{{ Replicate }}'));
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,7 +103,7 @@ class EmployeePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}') || (employeeHasPermission('{{ Reorder }}'));
+        return $user->can('{{ Reorder }}');
     }
     public function approve_employee_registeration(User $user): bool
     {

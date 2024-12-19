@@ -48,16 +48,15 @@ class InvoiceResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
-            // 'update',
+            'create',
             'print'
         ];
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_invoice');
+        return employeeHasPermission('view_any_invoice');
     }
     public static function form(Form $form): Form
     {

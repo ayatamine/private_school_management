@@ -122,7 +122,7 @@ class CreateEmployee extends CreateRecord
         {
             DB::rollBack();
             Notification::make('')
-            ->message($ex->getMessage())
+            ->title($ex->getMessage())
             ->color('danger')
             ->send();
         }

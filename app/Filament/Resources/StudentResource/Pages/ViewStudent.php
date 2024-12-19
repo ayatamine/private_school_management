@@ -39,7 +39,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('upgrade_student')
             ->color('success')
             ->label(trans('main.upgrade_student'))
-            ->visible($this->record->termination_date == null && auth()->user()->hasPermissionTo('upgrade_student_student'))
+            ->visible($this->record->termination_date == null && employeeHasPermission('upgrade_student_student'))
             ->action(function(array $arguments,array $data) {
                     Notification::make()
                                         ->title(trans('main.not_yet_implemented'))
@@ -54,13 +54,13 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('termination1')
             ->color('primary')
             ->label(trans_choice('main.termination',1))
-            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && auth()->user()->hasPermissionTo('terminate_student_registeration_student'))
+            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && employeeHasPermission('create_student_termination_student::termination'))
             ->modalContent(new HtmlString("<p class='font-semibold text-red-500'>".trans('main.student_termination_balance_error')."</p>"))
             ->modalSubmitAction(false),
             Action::make('termination')
                     ->color('primary')
                     ->label(trans_choice('main.termination',1))
-                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0)   && auth()->user()->hasPermissionTo('terminate_student_registeration_student'))
+                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0)   && employeeHasPermission('create_student_termination_student::termination'))
                     ->form([
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
                         Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
@@ -73,7 +73,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                     ->action(function(array $arguments,array $data) {
                         try{
                             DB::beginTransaction();
-                            if($this->record->total_fees_rest != 0 && auth()->user()->can('terminate_student_private'))
+                            if($this->record->total_fees_rest != 0 && employeeHasPermission('terminate_student_private_student::termination'))
                             {
                                 Notification::make()
                                     ->title(trans('main.student_termination_balance_error'))
@@ -109,7 +109,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('print_all_fees')
                     ->color('info')
                     ->label(trans('main.print_all_fees'))
-                    ->visible(auth()->user()->can('print_fees_invoice_student'))
+                    ->visible(employeeHasPermission('print_fees_invoice_student'))
                     ->url( route('print_pdf',['type'=>"invoice",'id'=>Invoice::whereStudentId($this->record->id)?->latest()?->first()?->id]))
                     
         ];

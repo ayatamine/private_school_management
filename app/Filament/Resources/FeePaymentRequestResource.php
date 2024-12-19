@@ -47,16 +47,15 @@ class FeePaymentRequestResource extends Resource implements HasShieldPermissions
     }
     public static function canCreate():bool
     {
-        return false;
+        return false; 
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_fee::payment::request');
+        return employeeHasPermission('view_any_fee::payment::request');
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'update',

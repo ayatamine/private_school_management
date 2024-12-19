@@ -40,7 +40,6 @@ class AcademicStageResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',
@@ -52,7 +51,7 @@ class AcademicStageResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_academic::stage');
+        return employeeHasPermission('view_any_academic::stage');
     }
     public static function form(Form $form): Form
     {

@@ -45,12 +45,11 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasRole('super-admin') || (employeeHasPermission('view_in_menu_tuition::fee'));
+        return auth()->user()->hasRole('super-admin') || (employeeHasPermission('view_any_tuition::fee'));
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',

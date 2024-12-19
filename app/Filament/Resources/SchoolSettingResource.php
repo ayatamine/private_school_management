@@ -41,7 +41,7 @@ class SchoolSettingResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
+            'view_any',
             'view',
             'update',            
         ];

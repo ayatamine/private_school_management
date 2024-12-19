@@ -45,7 +45,7 @@ class TransportResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_transport');
+        return employeeHasPermission('view_any_transport');
     }
     public static function canCreate(): bool
     {
@@ -54,7 +54,6 @@ class TransportResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create_transport_registeration',

@@ -50,7 +50,6 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',
@@ -62,7 +61,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_finance::account');
+        return employeeHasPermission('view_any_finance::account');
     }
     public static function form(Form $form): Form
     {

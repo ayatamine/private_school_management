@@ -110,7 +110,7 @@ class StudentPolicy
     }
     public function terminate_student_private(User $user): bool
     {
-        return $user->can('terminate_student_private::student') || (employeeHasPermission('terminate_student_private::student'));
+        return $user->can('terminate_student_private_student::termination') || (employeeHasPermission('terminate_student_private_student::termination'));
     }
 }
 

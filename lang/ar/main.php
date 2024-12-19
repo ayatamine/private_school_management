@@ -320,4 +320,5 @@ return [
      'password_updated_successfully'=>'تم تحديث كلمة السر بنجاح',
      'is_active_for_students_and_parents'=>'تمكين طريقة الدفع للطالب وولي الأمر',
      'show_attachment'=>'عرض الملف المرفق',
+     'roles'=>'الأدوار',
      ];

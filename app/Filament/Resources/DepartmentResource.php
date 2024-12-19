@@ -48,7 +48,6 @@ class DepartmentResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',
@@ -58,7 +57,7 @@ class DepartmentResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_department');
+        return employeeHasPermission('view_any_department');
     }
     public static function table(Table $table): Table
     {

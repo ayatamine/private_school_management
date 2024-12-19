@@ -44,7 +44,6 @@ class ParentModelResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',
@@ -56,7 +55,7 @@ class ParentModelResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_parent::model');
+        return employeeHasPermission('view_any_parent::model');
     }
     public static function form(Form $form): Form
     {

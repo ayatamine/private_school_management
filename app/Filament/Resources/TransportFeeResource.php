@@ -41,12 +41,11 @@ class TransportFeeResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return  employeeHasPermission('view_in_menu_transport::fee');
+        return  employeeHasPermission('view_any_transport::fee');
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',

@@ -40,12 +40,11 @@ class VehicleResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->hasRole('super-admin') || employeeHasPermission('view_in_menu_vehicle');
+        return auth()->user()->hasRole('super-admin') || employeeHasPermission('view_any_vehicle');
     }
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'create',
             'view',
             'view_any',

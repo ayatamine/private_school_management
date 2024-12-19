@@ -49,7 +49,6 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
             'view',
             'view_any',
             'create',
@@ -61,7 +60,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_newest::student');
+        return employeeHasPermission('view_any_newest::student');
     }
     public static function getNavigationGroup():string
     {

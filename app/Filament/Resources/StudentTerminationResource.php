@@ -46,19 +46,18 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     public static function getPermissionPrefixes(): array
     {
         return [
-            'view_in_menu',
-            'view',
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'terminate_student_private::student',
-            'print'
+            'view_student_termination',
+            'view_any_student_termination',
+            'create_student_termination',
+            'update_student_termination',
+            'restore_student_termination',
+            'terminate_student_private',
+            'print_student_termination'
         ];
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_in_menu_student::termination');
+        return employeeHasPermission('view_any_student_termination_student::termination');
     }
     public static function form(Form $form): Form
     {
