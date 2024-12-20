@@ -84,7 +84,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                     //     }),
                             Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
                                         ->preload()
-                                        ->options(Employee::whereDoesntHave('employmentDuration')->pluck('full_name', 'id'))
+                                        ->options(Employee::whereDoesntHave('employmentDuration')->pluck('first_name', 'id'))
                                         ->searchable()
                                         ->columnSpanFull()
                                         // ->visible(fn (Get $get) => $get('new_employee') == false )
@@ -123,22 +123,20 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                             ->schema([
                                 Forms\Components\TextInput::make('id')->label(trans('main.registration_number'))
                                 ->default(Employee::latest()->first()?->id + 1)
-                                ->dehydrated(false)
-                                ->disabled(),
+                                // ->dehydrated(false)
+                                ,
                                 Forms\Components\TextInput::make('code')->label(trans('main.prefix_code'))->default('EM')->hidden(true),
                                 Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))->required(),
-                                Forms\Components\TextInput::make('middle_name')->label(trans('main.middle_name'))->required(),
+                                Forms\Components\TextInput::make('middle_name')->label(trans('main.middle_name')),
                                 Forms\Components\TextInput::make('third_name')->label(trans('main.third_name')),
                                 Forms\Components\TextInput::make('last_name')->label(trans('main.last_name')),
                                 Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                                        ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
-                                        ->required(), 
+                                        ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')]), 
                                 Forms\Components\TextInput::make('email')->label(trans('main.email'))
                                 ->maxLength(255),        
                                 Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))->hiddenOn('edit')
                                     ->maxLength(255), 
                                 Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
-                                            ->required()
                                             // ->unique(table:'users',ignoreRecord: true)
                                             ->maxLength(13),  
                                 Forms\Components\Select::make('nationality')->label(trans('main.nationality'))
@@ -148,18 +146,17 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                         ]
                                     )
                                     ->default('saudian')
-                                    ->required()
                                     ->live(),
                                 Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
                                     ->maxLength(255)
                                     ->hidden(fn (Get $get) => $get('nationality') == 'saudian'),
                                 Forms\Components\Select::make(name: 'identity_type')->label(trans('main.identity_type'))
-                                    ->options(['national_identity'=>trans('main.national_identity'), 'resident_accommodation'=>trans('main.resident_accommodation'), 'visitor_accommodation'=>trans('main.visitor_accommodation')])
-                                    ->required(),  
+                                    ->options(['national_identity'=>trans('main.national_identity'), 'resident_accommodation'=>trans('main.resident_accommodation'), 'visitor_accommodation'=>trans('main.visitor_accommodation')]),  
                                     Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                     ->required()
                                     ->rules([
-                                        fn (Employee $employee): Closure => function (string $attribute, $value, Closure $fail) use ($employee) {
+                                        fn (Employee $employee,Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($employee,$get) {
+                                            if($get('registration_number') != null) return;
                                             if($employee?->id)
                                             {
                                                 if (User::whereNationalId($value)->whereNot('id',$employee->user_id)->first() ) {
@@ -174,7 +171,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                     ])
                                     // ->unique(table:'users',ignoreRecord: true)
                                     ->maxLength(10), 
-                                Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date'))->required(),
+                                Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date')),
 
                                 
                                 // Forms\Components\DatePicker::make('joining_date')->label(trans('main.joining_date')),

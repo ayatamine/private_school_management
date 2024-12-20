@@ -50,6 +50,7 @@ class IncomeResource extends Resource implements HasShieldPermissions
     public static function getPermissionPrefixes(): array
     {
         return [
+            'create',
             'view',
             'view_any',
             'update',

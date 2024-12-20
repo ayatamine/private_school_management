@@ -97,6 +97,10 @@ class Employee extends Model implements FilamentUser, HasName
     {
         return $this->hasMany(EmploymentDuration::class);
     }
+    public function getFullTitleAttribute()
+    {
+        return 'amine'
+;    }
     // public function department(): BelongsTo
     // {
     //     return $this->belongsTo(Department::class);

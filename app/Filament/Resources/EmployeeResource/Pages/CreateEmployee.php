@@ -17,22 +17,23 @@ class CreateEmployee extends CreateRecord
     protected static string $resource = EmployeeResource::class;
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-     
-        if($data['new_employee'] == true)
+ 
+        if($data['registration_number'] == null)
         {
-            unset($data['age']);
-            $user = User::create([
-                'national_id' =>$data['national_id'],
-                'gender' =>$data['gender'],
-                'phone_number' =>$data['phone_number'],
-                'email' =>$data['email'],
-                'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
-            ]);
-            $data['user_id'] = $user?->id;
-            $data['joining_date'] = now();
-            $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
+            
+                unset($data['age']);
+                $user = User::create([
+                    'national_id' =>$data['national_id'],
+                    'gender' =>$data['gender'] ?? 'male',
+                    'phone_number' =>$data['phone_number'] ?? '',
+                    'email' =>$data['email'],
+                    'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+                ]);
+                $data['user_id'] = $user?->id;
+                $data['joining_date'] = now();
+                $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
-        return $data;
+            return $data;
         }
         else
         {
@@ -43,8 +44,8 @@ class CreateEmployee extends CreateRecord
                 //update user related
                 $employee->user->update([
                     'national_id' =>$data['national_id'],
-                    'gender' =>$data['gender'],
-                    'phone_number' =>$data['phone_number'],
+                    'gender' =>$data['gender'] ?? 'male',
+                    'phone_number' =>$data['phone_number'] ?? '',
                     'email' =>$data['email'],
                     'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
                 ]);
@@ -60,10 +61,10 @@ class CreateEmployee extends CreateRecord
                             ->icon('heroicon-o-document-text')
                             ->iconColor('success')
                             ->send();
-                DB::commit();
             }
             catch(\Exception $ex)
             {
+                throw $ex;
                 DB::rollBack();
                         Notification::make()
                             ->title($ex->getMessage())
@@ -79,15 +80,15 @@ class CreateEmployee extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         try{
- 
-            DB::beginTransaction();
+
+            // DB::beginTransaction();
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
             
             
             //filter data to left only permissions
                                                         
-            $required_fields = ['first_name', 'middle_name', 'third_name', 'last_name', 'gender','nationality'
-            , 'gender','email','phone_number','national_id','identity_type','identity_expire_date','birth_date',
+            $required_fields = ['user_id','first_name', 'middle_name', 'third_name', 'last_name', 'nationality'
+            ,'email','phone_number','national_id','identity_type','identity_expire_date','birth_date',
             'birth_date','age','social_status','study_degree','study_speciality','national_address','iban'
             ];
 
@@ -104,10 +105,15 @@ class CreateEmployee extends CreateRecord
             //create new employee
             $employee = Employee::create($data);
             // Ensure all permissions exist in the database
+          
             foreach ($flattenedPermissions as $permission) {
-                $permission = Permission::findOrCreate($permission);
+                if($permission)
+                {
+                    $permission = Permission::findOrCreate($permission);
 
-                $employee->givePermissionTo($permission);
+                    $employee->givePermissionTo($permission);                    
+                }
+
             }
             // Sync the permissions for the user
             $employee->syncPermissions($flattenedPermissions);
@@ -120,6 +126,7 @@ class CreateEmployee extends CreateRecord
         }
         catch(\Exception $ex)
         {
+            throw $ex;
             DB::rollBack();
             Notification::make('')
             ->title($ex->getMessage())
