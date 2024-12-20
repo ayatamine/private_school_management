@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\EmployeeResource\Pages;
 
-use App\Filament\Resources\EmployeeResource;
+use Carbon\Carbon;
+use App\Models\User;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
+use App\Filament\Resources\EmployeeResource;
 
 class ViewEmployee extends ViewRecord
 {
@@ -16,5 +18,28 @@ class ViewEmployee extends ViewRecord
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),
         ];
+    }
+    
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $user = User::findOrFail($data['user_id']);
+        $data['national_id'] = $user->national_id;
+        $data['gender'] = $user->gender;
+        $data['phone_number'] = $user->phone_number;
+        $data['email'] = $user->email;
+
+        $data['age'] = (new Carbon($data['birth_date']))->diffInYears(Carbon::now())." ".trans_choice('main.year',2);
+
+        
+        if($data['nationality'] == 'saudian')
+        {
+            $data['nationality2'] = "";            
+        }else
+        {
+            $data['nationality2'] = $data['nationality']; 
+            $data['nationality'] = "other"; 
+        }
+
+        return $data;
     }
 }

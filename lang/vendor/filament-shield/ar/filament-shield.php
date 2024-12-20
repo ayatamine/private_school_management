@@ -91,6 +91,7 @@ return [
         'add_payment' => 'اضافة مدفوعات',
         'update_payment' => 'تعديل مدفوعات',
         'delete_payment' => 'حذف مدفوعات',
+        'print_payments' => 'طباعة مدفوعات',
         'create_transport_registeration' => 'اضافة الى المواصلات',
         // 'create_transport_registeration' => 'اضافة مواصلات',
         'terminate_transport_registeration' => 'انهاء قيد المواصلات',
@@ -104,5 +105,6 @@ return [
         'terminate_student_private' => 'انهاء قيد صلاحية خاصة',
         'update_student_termination' => 'تحديث انهاء قيد',
         'print_student_termination' => 'طباعة انهاء قيد',
+        'view_roles_and_permissions_employee' => 'عرض الأدوار والصلاحيات للموظف',
     ],
 ];

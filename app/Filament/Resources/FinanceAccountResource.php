@@ -143,6 +143,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
                 ->color('info')
                 ->closeModalByClickingAway(false)
                 ->label(trans('main.create_transfer'))
+                ->visible(employeeHasPermission('create_transfer'))
                 ->form([
                     Forms\Components\Select::make('from_account_id')->label(trans('main.from_account_id'))
                     ->options(FinanceAccount::whereIsActive(true)->pluck('name','id'))
@@ -191,6 +192,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
                     }
                 }),
                 Action::make('view_transfers')
+                ->visible(employeeHasPermission('view_any_transfer'))
                 ->label(trans('main.view_transfers'))
                 ->color(Color::Gray)
                 ->icon('icon-eye')

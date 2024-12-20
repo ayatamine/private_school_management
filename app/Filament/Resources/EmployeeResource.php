@@ -45,7 +45,8 @@ class EmployeeResource extends Resource implements HasShieldPermissions
             'delete_any',
             'approve_employee_registeration',
             'finish_employee_duration',
-            'print'
+            'print',
+            'view_roles_and_permissions'
         ];
     }
     public static function shouldRegisterNavigation(): bool
@@ -200,12 +201,14 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                     
                                 ]),
                                 Section::make()
+                                ->visible(fn()=>employeeHasPermission('view_roles_and_permissions_employee'))
                                 ->schema([
                                     Forms\Components\CheckboxList::make('roles')
                                         ->label(trans('main.roles'))
                                         ->relationship('roles', 'name')
                                 ]),
                                 Section::make()
+                                ->visible(fn()=>employeeHasPermission('view_roles_and_permissions_employee'))
                                 ->schema([
                                     Forms\Components\Tabs::make('Permissions')
                                     ->contained()

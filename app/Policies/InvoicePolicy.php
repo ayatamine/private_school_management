@@ -23,7 +23,7 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice): bool
     {
-        return $user->can('view_invoice' || (employeeHasPermission('view_invoice')));
+        return $user->can('view_invoice') || (employeeHasPermission('view_invoice'));
     }
 
     /**
@@ -47,7 +47,7 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        return $user->can('{{ Delete }}' || (employeeHasPermission('{{ Delete }}')));
+        return $user->can('{{ Delete }}') || (employeeHasPermission('delete_invoice'));
     }
 
     /**
@@ -55,7 +55,7 @@ class InvoicePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('{{ DeleteAny }}' || (employeeHasPermission('{{ DeleteAny }}')));
+        return $user->can('{{ DeleteAny }}') || (employeeHasPermission('delete_any_invoice'));
     }
 
     /**
@@ -63,7 +63,7 @@ class InvoicePolicy
      */
     public function forceDelete(User $user, Invoice $invoice): bool
     {
-        return $user->can('{{ ForceDelete }}' || (employeeHasPermission('{{ ForceDelete }}')));
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class InvoicePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}' || (employeeHasPermission('{{ ForceDeleteAny }}')));
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class InvoicePolicy
      */
     public function restore(User $user, Invoice $invoice): bool
     {
-        return $user->can('{{ Restore }}' || (employeeHasPermission('{{ Restore }}')));
+        return $user->can('{{ Restore }}') || (employeeHasPermission('restore'));
     }
 
     /**
@@ -87,7 +87,7 @@ class InvoicePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}' || (employeeHasPermission('{{ RestoreAny }}')));
+        return $user->can('{{ RestoreAny }}') || (employeeHasPermission('restore_any'));
     }
 
     /**
@@ -95,7 +95,7 @@ class InvoicePolicy
      */
     public function replicate(User $user, Invoice $invoice): bool
     {
-        return $user->can('{{ Replicate }}' || (employeeHasPermission('{{ Replicate }}')));
+        return $user->can('{{ Replicate }}') || (employeeHasPermission('replicate_invoice'));
     }
 
     /**
@@ -103,6 +103,6 @@ class InvoicePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}' || (employeeHasPermission('{{ Reorder }}')));
+        return $user->can('{{ Reorder }}') || (employeeHasPermission('reorder_invoice'));
     }
 }
