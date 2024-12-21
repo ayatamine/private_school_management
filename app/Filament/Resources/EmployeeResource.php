@@ -39,6 +39,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
     {
         return [
             'view_any',
+            'view',
             'create',
             'update',
             'delete',
@@ -48,6 +49,13 @@ class EmployeeResource extends Resource implements HasShieldPermissions
             'print',
             'view_roles_and_permissions'
         ];
+    }
+
+
+    public static function getBreadcrumb(): string
+    {
+        if(!auth()->user()?->hasRole('super_admin')) return '';
+        return trans_choice('main.employee',2);
     }
     public static function shouldRegisterNavigation(): bool
     {
@@ -273,7 +281,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                 ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()->visible(fn()=>employeeHasPermission('view_employee')),
                
 
             ])

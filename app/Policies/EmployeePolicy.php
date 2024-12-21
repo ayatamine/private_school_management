@@ -15,7 +15,9 @@ class EmployeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee') || (employeeHasPermission('view_any_employee'));
+        return $user->can('view_any_employee') || (employeeHasPermission('view_any_employee')) 
+        ||
+         (auth()->user()?->employee != null );
     }
 
     /**
@@ -23,7 +25,9 @@ class EmployeePolicy
      */
     public function view(User $user, Employee $employee): bool
     {
-        return $user->can('view_employee') || (employeeHasPermission('view_employee'));
+        return $user->can('view_employee') || (employeeHasPermission('view_employee')) 
+        ||
+         (auth()->user()?->employee != null && auth()->user()?->employee?->id == $employee->id);
     }
 
     /**

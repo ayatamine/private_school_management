@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\EmployeeResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -43,6 +44,11 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->navigationItems([
+                NavigationItem::make('my_profile')
+                    ->label(trans('main.my_profile'))
+                    ->icon('icon-employees')
+                    ->visible(fn()=>auth()->user()?->employee != null && !auth()->user()->hasRole('super_admin'))
+                    ->url(fn (): string => EmployeeResource::getUrl('view',[auth()->user()?->employee?->id])),
                 NavigationItem::make('school_settings')
                     ->label(trans('main.school_settings'))
                     ->icon('icon-school')
@@ -86,7 +92,8 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                'is_administrator'
+                'is_administrator',
+                'can_see_employees_page',
             ])
             ->authMiddleware([
                 Authenticate::class,
