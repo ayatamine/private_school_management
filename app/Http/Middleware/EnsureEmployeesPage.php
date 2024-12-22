@@ -19,7 +19,6 @@ class EnsureEmployeesPage
         if(auth()->check()  && (!auth()->user()?->hasRole('super_admin')) && 
         (count(request()->segments()) == 2 && request()->segments()[1] =='employees'))
         {
-            dd(employeeHasPermission('view_any_employee'));
             if(!employeeHasPermission('view_any_employee')) return redirect(EmployeeResource::getUrl('view',[auth()->user()?->employee?->id]));
         }
         return $next($request);
