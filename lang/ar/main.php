@@ -249,7 +249,7 @@ return [
     'is_tax_included' => 'شامل الضريبة المضافة؟',
     'add_attachment' => 'اضافة مرفق',
     'attachment' => ' مرفق',
-    'transfer_operation' => 'عمليات التحويل  | عملية تحويل ',
+    'transfer_operation' => 'التحويل بين الحسابات  | تحويل بين الحسابات ',
     'human_resource' => ' ادارة الموارد البشرية ',
     'employment_duration' => 'فترات العمل | فترة عمل ',
     'employee_info' => ' معلومات الموظف ',
@@ -321,4 +321,5 @@ return [
      'is_active_for_students_and_parents'=>'تمكين طريقة الدفع للطالب وولي الأمر',
      'show_attachment'=>'عرض الملف المرفق',
      'roles'=>'الأدوار',
+     'permissions'=>'الصلاحيات',
      ];

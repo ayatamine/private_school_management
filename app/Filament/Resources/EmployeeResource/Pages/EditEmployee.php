@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Spatie\Permission\Models\Permission;
 use App\Filament\Resources\EmployeeResource;
+use Illuminate\Database\Eloquent\Model;
 
 class EditEmployee extends EditRecord
 {
@@ -57,7 +58,7 @@ class EditEmployee extends EditRecord
 
         return $data;
     }
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
 
         try{
@@ -91,28 +92,30 @@ class EditEmployee extends EditRecord
                 $data = array_filter($data, function ($key) use ($required_fields) {
                     return in_array($key, $required_fields);
                 }, ARRAY_FILTER_USE_KEY);
+               
                 // Flatten the nested permissions array
                 $flattenedPermissions = collect($permissions)->flatten()->toArray();
-
+                $permissionModels = collect();
                 // Ensure all permissions exist in the database
                 foreach ($flattenedPermissions as $permission) {
                     $permission = Permission::findOrCreate($permission);
 
-                    $employee->givePermissionTo($permission);
+                    // $employee->givePermissionTo($permission);
+                    $permissionModels->push($permission);
                 }
                 // Sync the permissions for the user
-                $employee->syncPermissions($flattenedPermissions);
+                $employee->syncPermissions($permissionModels);
                 
                 
             $employee->update($data);
-           
+            DB::commit();
             // $data = $employee->toArray();
             Notification::make()
                         ->title(trans('main.employee_updated_successfully'))
                         ->icon('heroicon-o-document-text')
                         ->iconColor('success')
                         ->send();
-            DB::commit();
+            
         }
         catch(\Exception $ex)
         {
@@ -123,8 +126,8 @@ class EditEmployee extends EditRecord
                         ->iconColor('danger')
                         ->send();
         }
-        $this->halt();
-        return [];
+        // $this->halt();
+        return $employee;
 
 
     }

@@ -18,8 +18,8 @@ class CreateEmployee extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
  
-        if($data['registration_number'] == null)
-        {
+        // if($data['registration_number'] == null)
+        // {
             
                 unset($data['age']);
                 $user = User::create([
@@ -34,54 +34,54 @@ class CreateEmployee extends CreateRecord
                 $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
             return $data;
-        }
-        else
-        {
-            try{
-                unset($data['age']);
-                DB::beginTransaction();
-                $employee = Employee::findOrFail(intval($data['registration_number']));
-                //update user related
-                $employee->user->update([
-                    'national_id' =>$data['national_id'],
-                    'gender' =>$data['gender'] ?? 'male',
-                    'phone_number' =>$data['phone_number'] ?? '',
-                    'email' =>$data['email'],
-                    'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
-                ]);
-                foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
-                    unset($data[$value]);
-                }
+        // }
+        // else
+        // {
+        //     try{
+        //         unset($data['age']);
+        //         DB::beginTransaction();
+        //         $employee = Employee::findOrFail(intval($data['registration_number']));
+        //         //update user related
+        //         $employee->user->update([
+        //             'national_id' =>$data['national_id'],
+        //             'gender' =>$data['gender'] ?? 'male',
+        //             'phone_number' =>$data['phone_number'] ?? '',
+        //             'email' =>$data['email'],
+        //             'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+        //         ]);
+        //         foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
+        //             unset($data[$value]);
+        //         }
                 
-                $employee->update($data);
+        //         $employee->update($data);
                
-                $data = $employee->toArray();
-                Notification::make()
-                            ->title(trans('main.employee_registered_successfully'))
-                            ->icon('heroicon-o-document-text')
-                            ->iconColor('success')
-                            ->send();
-            }
-            catch(\Exception $ex)
-            {
-                throw $ex;
-                DB::rollBack();
-                        Notification::make()
-                            ->title($ex->getMessage())
-                            ->icon('heroicon-o-document-text')
-                            ->iconColor('danger')
-                            ->send();
-            }
-            $this->halt();
-            return [];
-        }
+        //         $data = $employee->toArray();
+        //         Notification::make()
+        //                     ->title(trans('main.employee_registered_successfully'))
+        //                     ->icon('heroicon-o-document-text')
+        //                     ->iconColor('success')
+        //                     ->send();
+        //     }
+        //     catch(\Exception $ex)
+        //     {
+        //         throw $ex;
+        //         DB::rollBack();
+        //                 Notification::make()
+        //                     ->title($ex->getMessage())
+        //                     ->icon('heroicon-o-document-text')
+        //                     ->iconColor('danger')
+        //                     ->send();
+        //     }
+        //     $this->halt();
+        //     return [];
+        // }
 
     }
     protected function handleRecordCreation(array $data): Model
     {
         try{
 
-            // DB::beginTransaction();
+            DB::beginTransaction();
             $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
             
             

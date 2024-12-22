@@ -77,20 +77,18 @@
                             $total+=$payment->value;
                         @endphp
                         <td class="px-2">
-                            @if(auth()->user()->hasPermissionTo('print_payments_student') || auth()->user()->student != null ||  auth()->user()->parent != null )
+                            @if(employeeHasPermission('print_payments_student') || auth()->user()->student != null ||  auth()->user()->parent != null )
                             {{ ($this->printReceipt)(['payment_id' => $payment->id]) }}
                             @endif
                             {{ ($this->viewReceipt)(['payment_id' => $payment->id]) }}
 
-<<<<<<< HEAD
                             @if(auth()->user()->student == null)
-                            @if(auth()->user()->hasPermissionTo('update_payment_student')  ||  auth()->user()->parent != null )
-=======
-                            @if(auth()->user()->student == null && auth()->user()->parent == null)
->>>>>>> 3c410e490d5a851b2b957075c908f727da1fb23b
-                            {{ ($this->editReceipt)(['payment_id' => $payment->id]) }}
+                            @if(employeeHasPermission('update_payment_student')  ||  auth()->user()->parent != null )
+                             @if(auth()->user()->student == null && auth()->user()->parent == null)
+                             {{ ($this->editReceipt)(['payment_id' => $payment->id]) }}
+                             @endif
                             @endif 
-                            @if(auth()->user()->hasPermissionTo('delete_payment_student') || auth()->user()->parent != null )
+                            @if(employeeHasPermission('delete_payment_student') || auth()->user()->parent != null )
                             {{ ($this->deleteReceipt)(['payment_id' => $payment->id]) }}
                             @endif
                             @endif

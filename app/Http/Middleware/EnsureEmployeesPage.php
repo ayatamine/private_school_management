@@ -16,9 +16,11 @@ class EnsureEmployeesPage
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(auth()->check()  && (!auth()->user()?->hasRole('super_admin')) && (count(request()->segments()) == 2 && request()->segments()[1] =='employees'))
+        if(auth()->check()  && (!auth()->user()?->hasRole('super_admin')) && 
+        (count(request()->segments()) == 2 && request()->segments()[1] =='employees'))
         {
-            return redirect(EmployeeResource::getUrl('view',[auth()->user()?->employee?->id]));
+            dd(employeeHasPermission('view_any_employee'));
+            if(!employeeHasPermission('view_any_employee')) return redirect(EmployeeResource::getUrl('view',[auth()->user()?->employee?->id]));
         }
         return $next($request);
     }

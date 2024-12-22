@@ -91,48 +91,49 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                     //     ->afterStateUpdated(function (Set $set, $state) {
                     //         if($state == true) return redirect()->route('filament.admin.resources.employees.create');
                     //     }),
-                            Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
-                                        ->preload()
-                                        ->options(Employee::whereDoesntHave('employmentDuration')->pluck('first_name', 'id'))
-                                        ->searchable()
-                                        ->columnSpanFull()
-                                        // ->visible(fn (Get $get) => $get('new_employee') == false )
-                                        ->hiddenOn(['edit','view'])
-                                        ->live()
-                                        ->afterStateUpdated(function (Set $set, $state) {
-                                            $employee = Employee::with('user')->find($state);
-                                            // dd($parent);
-                                            // $set('created_at', date('Y-m-d' ,strtotime($employee?->created_at)) );
-                                            $set('id', $employee?->id );
-                                            $set('first_name', $employee?->first_name );
-                                            $set('middle_name', $employee?->middle_name );
-                                            $set('third_name', $employee?->third_name );
-                                            $set('last_name', $employee?->last_name );
-                                            $set('gender', $employee?->gender );
-                                            $set('email', $employee?->user?->email );
-                                            $set('phone_number', $employee?->user?->phone_number );
-                                            $set('national_id', $employee?->user?->national_id );
-                                            $set('identity_type', $employee?->identity_type );
-                                            $set('identity_expire_date', date('Y-m-d',strtotime($employee?->identity_expire_date )));
-                                            // $set('password', $employee?->user?->password );
+                            // Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
+                            //             ->preload()
+                            //             ->options(Employee::whereDoesntHave('employmentDuration')->pluck('first_name', 'id'))
+                            //             ->searchable()
+                            //             ->columnSpanFull()
+                            //             // ->visible(fn (Get $get) => $get('new_employee') == false )
+                            //             ->hiddenOn(['edit','view'])
+                            //             ->live()
+                            //             ->afterStateUpdated(function (Set $set, $state) {
+                            //                 $employee = Employee::with('user')->find($state);
+                            //                 // dd($parent);
+                            //                 // $set('created_at', date('Y-m-d' ,strtotime($employee?->created_at)) );
+                            //                 $set('id', $employee?->id );
+                            //                 $set('first_name', $employee?->first_name );
+                            //                 $set('middle_name', $employee?->middle_name );
+                            //                 $set('third_name', $employee?->third_name );
+                            //                 $set('last_name', $employee?->last_name );
+                            //                 $set('gender', $employee?->gender );
+                            //                 $set('email', $employee?->user?->email );
+                            //                 $set('phone_number', $employee?->user?->phone_number );
+                            //                 $set('national_id', $employee?->user?->national_id );
+                            //                 $set('identity_type', $employee?->identity_type );
+                            //                 $set('identity_expire_date', date('Y-m-d',strtotime($employee?->identity_expire_date )));
+                            //                 // $set('password', $employee?->user?->password );
 
 
-                                            if($employee?->documents !="" ) $set('documents', [ $employee?->documents]);
+                            //                 if($employee?->documents !="" ) $set('documents', [ $employee?->documents]);
 
-                                            $set('birth_date', date('Y-m-d',strtotime($employee?->birth_date)));
-                                            $set('age',  (new Carbon($employee?->birth_date))->diffInYears(Carbon::now())." ".trans_choice('main.year',2) );
-                                            $set('social_status', $employee?->social_status );
-                                            $set('study_degree', $employee?->study_degree);
-                                            $set('study_speciality', $employee?->study_speciality);
-                                            $set('national_address', $employee?->national_address);
-                                            $set('iban', $employee?->iban);
-                                        }),
+                            //                 $set('birth_date', date('Y-m-d',strtotime($employee?->birth_date)));
+                            //                 $set('age',  (new Carbon($employee?->birth_date))->diffInYears(Carbon::now())." ".trans_choice('main.year',2) );
+                            //                 $set('social_status', $employee?->social_status );
+                            //                 $set('study_degree', $employee?->study_degree);
+                            //                 $set('study_speciality', $employee?->study_speciality);
+                            //                 $set('national_address', $employee?->national_address);
+                            //                 $set('iban', $employee?->iban);
+                            //             }),
                             Section::make()
                             ->columns(2)
                             ->schema([
                                 Forms\Components\TextInput::make('id')->label(trans('main.registration_number'))
                                 ->default(Employee::latest()->first()?->id + 1)
-                                // ->dehydrated(false)
+                                ->dehydrated(false)
+                                ->disabled()
                                 ,
                                 Forms\Components\TextInput::make('code')->label(trans('main.prefix_code'))->default('EM')->hidden(true),
                                 Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))->required(),
@@ -208,14 +209,16 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 
                     
                                 ]),
-                                Section::make()
+                                Section::make(trans('main.roles'))
+                                ->collapsed()
                                 ->visible(fn()=>employeeHasPermission('view_roles_and_permissions_employee'))
                                 ->schema([
                                     Forms\Components\CheckboxList::make('roles')
                                         ->label(trans('main.roles'))
                                         ->relationship('roles', 'name')
                                 ]),
-                                Section::make()
+                                Section::make(trans('main.permissions'))
+                                ->collapsed()
                                 ->visible(fn()=>employeeHasPermission('view_roles_and_permissions_employee'))
                                 ->schema([
                                     Forms\Components\Tabs::make('Permissions')
