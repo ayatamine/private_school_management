@@ -13,7 +13,7 @@ class ListRoles extends ListRecords
     protected function getActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->visible(employeeHasPermission('create_shield::role')),
         ];
     }
 }

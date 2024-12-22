@@ -94,6 +94,7 @@ class AdminPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
                 'is_administrator',
                 'can_see_employees_page',
+                'ensure_employee_view_roles_page',
             ])
             ->authMiddleware([
                 Authenticate::class,

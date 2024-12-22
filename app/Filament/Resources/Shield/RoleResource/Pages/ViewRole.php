@@ -13,7 +13,7 @@ class ViewRole extends ViewRecord
     protected function getActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Actions\EditAction::make()->visible(employeeHasPermission('update_shield::role')),
         ];
     }
 }

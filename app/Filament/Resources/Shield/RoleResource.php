@@ -30,7 +30,7 @@ class RoleResource extends Resource implements HasShieldPermissions
             'create',
             'update',
             'delete',
-            'delete_any',
+            // 'delete_any',
         ];
     }
 
@@ -105,11 +105,11 @@ class RoleResource extends Resource implements HasShieldPermissions
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()->visible(employeeHasPermission('update_shield::role')),
+                Tables\Actions\DeleteAction::make()->visible(employeeHasPermission('delete_shield::role')),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+                // Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
@@ -153,7 +153,7 @@ class RoleResource extends Resource implements HasShieldPermissions
     public static function shouldRegisterNavigation(): bool
     {
         // return Utils::isResourceNavigationRegistered();
-        return  employeeHasPermission('view_any_role');
+        return  employeeHasPermission('view_any_shield::role');
 
     }
 
