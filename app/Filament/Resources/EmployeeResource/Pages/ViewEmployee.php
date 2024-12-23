@@ -3,8 +3,16 @@
 namespace App\Filament\Resources\EmployeeResource\Pages;
 
 use Carbon\Carbon;
+use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use Filament\Forms\Form;
+use App\Models\Department;
+use App\Models\Designation;
+use App\Models\EmploymentDuration;
+use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use App\Filament\Resources\EmployeeResource;
 
@@ -17,6 +25,7 @@ class ViewEmployee extends ViewRecord
         return [
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),
+           
         ];
     }
     

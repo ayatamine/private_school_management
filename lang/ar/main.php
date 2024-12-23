@@ -255,7 +255,7 @@ return [
     'employee_info' => ' معلومات الموظف ',
     'contract_start_date' => ' تاريخ بداية العمل ',
     'contract_end_date' => ' تاريخ انهاء العقد ',
-    'employment_contract_image' => ' صورة عقد العمل ',
+    'employment_contract_image' => ' مرفق عقد العمل ',
     'employment_duration_active' => ' سارية العمل ',
     'end_employment_duration' => 'انهاء فترة عمل',
     // 'contract_end_reason' => 'سبب الانهاء',
@@ -322,4 +322,7 @@ return [
      'show_attachment'=>'عرض الملف المرفق',
      'roles'=>'الأدوار',
      'permissions'=>'الصلاحيات',
+     'add_employment_duration'=>'اضافة فترة عمل',
+     'download_end_duration_attachment'=>' مرفق انهاء الفترة',
+     'download_contract_attachment'=>' مرفق العقد',
      ];
