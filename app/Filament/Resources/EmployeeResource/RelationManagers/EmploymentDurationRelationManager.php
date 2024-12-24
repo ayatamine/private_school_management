@@ -19,6 +19,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 class EmploymentDurationRelationManager extends RelationManager
 {
     protected static string $relationship = 'employmentDuration';
+    protected static bool $canCreateAnother = false;
     protected static function getLabel(): ?string
     {
         return  trans_choice('main.employment_duration',1);
@@ -99,7 +100,7 @@ class EmploymentDurationRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->createAnother(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

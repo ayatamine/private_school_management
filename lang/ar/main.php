@@ -322,4 +322,7 @@ return [
      'show_attachment'=>'عرض الملف المرفق',
      'roles'=>'الأدوار',
      'permissions'=>'الصلاحيات',
+     'add_files'=>'اضافة ملفات',
+     'files'=>' الملفات',
+     'file_added_successfully'=>' تم اضافة الملفات بنجاح',
      ];

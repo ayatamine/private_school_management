@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasFiles;
 use Filament\Panel;
 use App\Models\User;
 use App\Models\Department;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Employee extends Model implements FilamentUser, HasName
 {
-    use HasFactory,HasRoles,HasPermissions;
+    use HasFactory,HasRoles,HasPermissions,HasFiles;
     protected $guard_name = 'web';
     public function canAccessPanel(Panel $panel): bool
     {
