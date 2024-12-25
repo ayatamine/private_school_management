@@ -219,7 +219,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 ]),
                                 Section::make(trans('main.files'))
                                 ->view('infolists.components.view-files')
-                                ->collapsed(),
+                                ->collapsible(),
                                 Section::make(trans('main.permissions'))
                                 ->collapsed()
                                 ->visible(fn()=>employeeHasPermission('view_roles_and_permissions_employee'))
