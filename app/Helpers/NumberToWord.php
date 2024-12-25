@@ -1,4 +1,5 @@
 <?php
+namespace App\Helpers;
 class NumberToWord{
     public $and = ' و';
     public function __construct()
