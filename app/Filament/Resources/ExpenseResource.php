@@ -69,6 +69,10 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                 Section::make()
                 ->columns(2)
                 ->schema([
+                    Forms\Components\TextInput::make('id')->label(trans('main.registration_number'))
+                        ->default(Expense::latest()->first()->id + 1)
+                        ->dehydrated()
+                        ->disabled(),
                     Forms\Components\Select::make('transaction_category_id')->label(trans('main.expense_name'))
                         ->relationship('transactionCategory', 'name')
                         ->createOptionForm([
@@ -90,6 +94,8 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                     Forms\Components\TextInput::make('value')->label(trans('main.value'))
                         ->required()
                         ->numeric(),
+                    Forms\Components\DatePicker::make('expensed_date')->label(trans('main.expensed_date'))
+                        ->required(),
                     Forms\Components\Toggle::make('is_tax_included')->label(trans('main.is_tax_included'))
                         ->columnSpanFull()
                         ->inline()
@@ -107,19 +113,28 @@ class ExpenseResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('transactionCategory.name')->label(trans('main.expense_name'))
+                Tables\Columns\TextColumn::make('id')->label(trans('main.registration_number'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
+                Tables\Columns\TextColumn::make('transactionCategory.name')->label(trans('main.expense_name'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
                     ->formatStateUsing(fn(string $state) =>$state." ".trans('main.'.env('DEFAULT_CURRENCY')) )
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_tax_included')->label(trans('main.is_tax_included'))
                     ->boolean(),
+                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('expensed_date')->label(trans('main.expensed_date'))
+                    ->date()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by')),
+                Tables\Columns\TextColumn::make('is_cancelled')->label(trans('main.status'))
+                    ->formatStateUsing(fn (string $state) => $state == true ? trans('main.cancelled') : trans('main.active'))
+                    ->color(fn (string $state) => $state == true ? "danger" : "success"),
+                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.username')),
                 // Tables\Columns\TextColumn::make('total')->label(trans('main.total'))
                 // ->state(function (Expense $record): float {
                 //     $vat = \App\Models\ValueAddedTax::first();
@@ -130,7 +145,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                  ->using(function(Builder $query): string {
                     $vat = \App\Models\ValueAddedTax::first();
                     $total =0;
-                    foreach(Expense::get() as $exp)
+                    foreach(Expense::whereIsCancelled(false)->get() as $exp)
                     {
                         if($exp->is_tax_included) {
                             if($vat->created_at > $exp->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$exp->created_at)->first() ?? $vat;
@@ -192,6 +207,14 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                     })
             ])
             ->actions([
+                Tables\Actions\Action::make('cancel')
+                ->label(fn(Expense $record )=> $record->is_cancelled == true ?  trans('main.activate') :  trans('main.cancel')  )
+                ->color(fn(Expense $record )=> $record->is_cancelled == true ? "success" : "danger"  )
+                ->requiresConfirmation()                
+                ->action(function(Expense $expense): void {
+                     $expense->is_cancelled = !$expense->is_cancelled;
+                     $expense->save();
+                }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),

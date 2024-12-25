@@ -26,6 +26,8 @@ class Expense extends Model
         'note',
         'attachment',
         'registered_by',
+        'expensed_date',
+        'is_cancelled',
     ];
 
     /**
@@ -38,6 +40,8 @@ class Expense extends Model
         'payment_method_id' => 'integer',
         'registered_by' => 'integer',
         'is_tax_included' => 'boolean',
+        'expensed_date' => 'date',
+        'is_cancelled' => 'boolean',
     ];
     public function transactionCategory():BelongsTo
     {

@@ -330,4 +330,9 @@ return [
      'download_contract_attachment'=>' مرفق العقد',
      'removeFile'=>' حدف الملف',
      'file_deleted_successfully'=>' تم حدف الملف بنجاح',
+     'cancelled'=>'ملغى',
+     'active'=>' ساري المفعول',
+     'expensed_date'=>' تاريخ المصروف',
+     'activate'=>' تفعيل',
+     'cancel'=>' الغاء',
      ];
