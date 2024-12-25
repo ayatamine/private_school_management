@@ -328,4 +328,6 @@ return [
      'add_employment_duration'=>'اضافة فترة عمل',
      'download_end_duration_attachment'=>' مرفق انهاء الفترة',
      'download_contract_attachment'=>' مرفق العقد',
+     'removeFile'=>' حدف الملف',
+     'file_deleted_successfully'=>' تم حدف الملف بنجاح',
      ];

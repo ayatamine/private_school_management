@@ -7,6 +7,7 @@ use App\Models\File;
 use App\Models\User;
 use Filament\Actions;
 use App\Models\Employee;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -89,5 +90,26 @@ class ViewEmployee extends ViewRecord
         }
 
         return $data;
+    }
+    public function removeFile(): Action
+    {
+        try{
+        return Action::make('removeFile')
+                    ->color('danger')
+                    ->size('xs')
+                    ->label(trans('main.removeFile'))
+                    ->action(function(array $arguments) {
+                        File::find($arguments['id'])->delete();
+                        Notification::make()
+                        ->title(trans('main.file_deleted_successfully'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('success')
+                        ->send();
+                    });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
     }
 }
