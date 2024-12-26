@@ -167,7 +167,7 @@
                 <tr>
                     @if($settings->logo)
                     <td class="border-0 pl-0" style="border: none" colspan="2" >
-                        <img style="margin:auto;text-align:center" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->logo" )) }}"  alt="logo" height="90">
+                        <img style="margin:auto;text-align:center" src="{{ url(asset("storage/$settings->logo")) }}"  alt="logo" height="90">
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">

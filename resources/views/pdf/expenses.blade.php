@@ -182,7 +182,7 @@
                 <tr>
                     @if($settings->logo)
                     <td class="border-0 pl-0" style="border: none" colspan="2" >
-                        <img style="margin:auto;text-align:center" src="{{ url("storage/$settings->logo") }}" alt="logo" height="100">
+                        <img style="margin:auto;text-align:center" src="{{ url(asset("storage/$settings->logo")) }}" alt="logo" height="100">
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
