@@ -297,7 +297,7 @@
                     </tr>
                 @endforelse
                     {{-- total sum --}}
-                    @if(count($student->receiptVoucher))
+                    @if(count($expenses))
                     <tr>
                         <td class="px-6 py-4 border-0" colspan="2" >{{trans('main.total')}}</td>
                         <td class="px-6 py-4 border-0 ">
