@@ -28,10 +28,13 @@
                             </td>
                             <td  class="border">
                                 <p class="text-sm">{{$file->description}}</p>
+                                <p class="text-xs mt-1">{{date('d-m-Y', strtotime($file->created_at))}}</p>
                             </td>
+                            @if((count(Request::segments()) == 4) && Request::segments()[3] =='edit')
                             <td  class="border remove-file" >
                                 {{ ($this->removeFile)(['id' => $file->id]) }}
                             </td>
+                            @endif
                         
                         </tr>
                         @else
@@ -45,9 +48,11 @@
                                 <td  class="border remove-file">
                                     <p class="text-sm">{{$file->description}}</p>
                                 </td>
+                                @if((count(Request::segments()) == 4) && Request::segments()[3] =='edit')
                                 <td >
                                     {{ ($this->removeFile)(['id' => $file->id]) }}
                                 </td>
+                                @endif
                             </tr>
                         @endif
                     @endforeach

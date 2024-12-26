@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('expenses', function (Blueprint $table) {
             $table->timestamp('expensed_date')->default(now());
             $table->boolean('is_cancelled')->default(false);
+            $table->string('cancel_reason')->nullable();
         });
     }
 
@@ -25,6 +26,7 @@ return new class extends Migration
         Schema::table('expenses', function (Blueprint $table) {
             $table->dropColumn('expensed_date');
             $table->dropColumn('is_cancelled');
+            $table->dropColumn('cancel_reason');
         });
     }
 };

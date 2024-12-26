@@ -25,7 +25,7 @@ class EditExpense extends EditRecord
     {
         try{
             DB::beginTransaction();
-       
+           
              $old_value = $record->value;
              $payment = PaymentMethod::findOrFail($data['payment_method_id']);
              $finance_account = FinanceAccount::findOrFail($payment->finance_account_id);
@@ -34,7 +34,7 @@ class EditExpense extends EditRecord
              $finance_account->update([
                 'balance'=> $finance_account->balance + $old_value  - $data['value']
              ]);
-
+             $record->update($data);
              DB::commit();
             
 

@@ -335,4 +335,6 @@ return [
      'expensed_date'=>' تاريخ المصروف',
      'activate'=>' تفعيل',
      'cancel'=>' الغاء',
+     'cancel_reason'=>' سبب الالغاء',
+     'file_type_is_not_supported'=>' صيغة الملف غير مدعومة',
      ];

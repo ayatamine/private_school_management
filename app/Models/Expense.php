@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\ExpenseName;
 use App\Models\PaymentMethod;
 use App\Models\TransactionCategory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,8 +29,9 @@ class Expense extends Model
         'registered_by',
         'expensed_date',
         'is_cancelled',
+        'cancel_reason',
     ];
-
+    protected $appends=['total'];
     /**
      * The attributes that should be cast to native types.
      *
@@ -42,6 +44,7 @@ class Expense extends Model
         'is_tax_included' => 'boolean',
         'expensed_date' => 'date',
         'is_cancelled' => 'boolean',
+        'value' => 'float',
     ];
     public function transactionCategory():BelongsTo
     {
@@ -54,5 +57,14 @@ class Expense extends Model
     public function registeredBy():BelongsTo
     {
         return $this->belongsTo(User::class,'registered_by','id');
+    }
+    public function value():Attribute
+    {
+       
+       return Attribute::make(
+            get: function ($value) {
+                 //format decimal
+                 return number_format($value, 2, '.', ',');
+            });
     }
 }

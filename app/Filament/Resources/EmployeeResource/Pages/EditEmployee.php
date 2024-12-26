@@ -3,15 +3,17 @@
 namespace App\Filament\Resources\EmployeeResource\Pages;
 
 use Carbon\Carbon;
+use App\Models\File;
 use App\Models\User;
 use Filament\Actions;
 use App\Models\Employee;
+use Filament\Actions\Action;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Spatie\Permission\Models\Permission;
 use App\Filament\Resources\EmployeeResource;
-use Illuminate\Database\Eloquent\Model;
 
 class EditEmployee extends EditRecord
 {
@@ -21,19 +23,20 @@ class EditEmployee extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Actions\Action::make('approve_employee')
-            ->visible(fn(Employee $record)=>$record->contract_end_date == null)
-                ->label(trans('main.approve_employee'))
-                ->color('success')
-                ->requiresConfirmation()
-                ->action(function(Employee $record){
+            addFile(record:$this->record,directory:"employees"),
+            // Actions\Action::make('approve_employee')
+            // ->visible(fn(Employee $record)=>$record->contract_end_date == null)
+            //     ->label(trans('main.approve_employee'))
+            //     ->color('success')
+            //     ->requiresConfirmation()
+            //     ->action(function(Employee $record){
 
-                    Notification::make()
-                        ->title(trans('main.employee_data_not_completed'))
-                        ->icon('heroicon-o-document-text')
-                        ->iconColor('danger')
-                        ->send();
-                }),
+            //         Notification::make()
+            //             ->title(trans('main.employee_data_not_completed'))
+            //             ->icon('heroicon-o-document-text')
+            //             ->iconColor('danger')
+            //             ->send();
+            //     }),
         ];
     }
     protected function mutateFormDataBeforeFill(array $data): array
@@ -130,5 +133,26 @@ class EditEmployee extends EditRecord
         return $employee;
 
 
+    }
+    public function removeFile(): Action
+    {
+        try{
+        return Action::make('removeFile')
+                    ->color('danger')
+                    ->size('xs')
+                    ->label(trans('main.removeFile'))
+                    ->action(function(array $arguments) {
+                        File::find($arguments['id'])->delete();
+                        Notification::make()
+                        ->title(trans('main.file_deleted_successfully'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('success')
+                        ->send();
+                    });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
     }
 }
