@@ -337,4 +337,11 @@ return [
      'cancel'=>' الغاء',
      'cancel_reason'=>' سبب الالغاء',
      'file_type_is_not_supported'=>' صيغة الملف غير مدعومة',
+     'yes'=>'نعم',
+     'no'=>' لا',
+     'date'=>'التاريخ',
+     'selected_duration'=>'الفترة المختارة',
+     'from'=>'من',
+     'to'=>'الى',
+     'no_expense_found'=>'لايوجد أي مصاريف',
      ];

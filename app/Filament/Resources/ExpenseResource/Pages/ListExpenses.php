@@ -14,6 +14,12 @@ class ListExpenses extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('printAllExpenses')
+                                ->icon('icon-print')
+                                ->color('info')
+                                ->label(trans('main.print'))
+                                ->visible(employeeHasPermission('print_payments_student'))
+                                ->url(route('print_pdf',['type'=>"expenses"]))
         ];
     }
 }

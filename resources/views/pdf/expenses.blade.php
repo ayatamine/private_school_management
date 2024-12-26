@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <head>
-        <title>{{trans_choice('main.receipt_voucher',1)}}</title>
+        <title>{{trans_choice('main.expense',1)}}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta charset="utf-8">
         <style type="text/css" >
@@ -75,23 +75,41 @@
                 font-size: 19px;direction: rtl;text-align:right;
             }
             h5{font-size: 17px;font-weight: 500;line-height: 1.1;direction: rtl;text-align:right;}
-            .table {
+            /* .table {
                 direction: ltr;text-align:right;
-                width: 100%;
+                width: 100%;border: 1px solid #262729;
                 margin-bottom: 1rem;
                 color: #212529;border-collapse: collapse; 
-            }
+            } */
 
-            .table th,
+            /* .table th,
             .table td {
-                vertical-align: top; border-top: 1px solid #3f4143;padding: 0.3rem;
+                vertical-align: top; 
+                border-top: 1px solid #3f4143;
+                padding: 0.3rem;
                 font-size: 14px !important;
             }
 
             table td ,table th{
                 vertical-align: middle;
                 border: 1px solid #262729;padding: 0.3rem;
-            }
+            } */
+            table {
+                    text-align:right;color: #212529;
+                    border-left: 0.01em solid #262729;
+                    border-right: 0;
+                    border-top: 0.01em solid #262729;
+                    border-bottom: 0;
+                    border-collapse: collapse;
+                }
+                table td,
+                table th {
+                    padding: 0.3rem;font-size: 14px;
+                    border-left: 0;
+                    border-right: 0.01em solid #262729;
+                    border-top: 0;
+                    border-bottom: 0.01em solid #262729;
+                }
 
             .mt-5 {
                 margin-top: 3rem !important;
@@ -158,11 +176,8 @@
         {{-- Header --}}
 
        
-        {{-- school info --}}
-        {{-- <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.school_info')}}</strong>
-        </h5> --}}
-        <table class=" mt-5" style="width: 100%">
+       
+        <table class=" mt-5"  style="width: 100%;border:none">
             <tbody>
                 <tr>
                     @if($settings->logo)
@@ -181,67 +196,49 @@
                 </tr>
             </tbody>
         </table>
-        <hr>
-        {{-- receipt info --}}
-        {{-- <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.receipt_voucher_info')}}</strong>
+        <br>
+        {{-- school info --}}
+         <h5 class="text-uppercase">
+            <strong style="text-align: right;direction: rtl">{{ trans('main.date')}}: </strong> <span style="text-size:12px">{{\Carbon\Carbon::createFromDate(now())->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>
         </h5>
-        <table class=" mt-5" style="width: 100%">
-            <tbody>
-                <tr>
-                    <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        {{ trans('main.serial_number') }} : <span style="">{{ $receipt->id }}</span> <br><br>
-                        {{ trans('main.name') }} : <span style="">{{ trans_choice('main.receipt_voucher',1)}}</span> <br>
-                        {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($receipt->created_at)) }}</span> <br>
-
-                    </td>
-                </tr>
-                
-            </tbody>
-        </table>
-        <hr> --}}
-        {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.student_info')}}</strong>
+        @if(isset($date_from) || isset($date_to))
+         <h5 class="text-uppercase">
+            <strong style="text-align: right;direction: rtl">{{ trans('main.selected_duration')}}: </strong>  
+            @if(isset($date_from)){{ trans('main.from')}} <span style="text-size:12px !important;margin:0 3px;">{{\Carbon\Carbon::createFromDate($date_from)->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>@endif
+            @if(isset($date_to)){{ trans('main.to')}} <span style="text-size:12px !important;margin:0 3px;">{{\Carbon\Carbon::createFromDate($date_to)->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>@endif
         </h5>
-        <table class=" mt-5"  style="width: 100%">
-            <tbody>
-                <tr>
-                    <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.name') }} : <span style="">{{ $student->username }}</span> <br><br>
-                        {{ trans('main.nationality') }} : <span style="">{{ $student->nationality }}</span> <br>
-                       
-                    </td>
-                    
-                    <td class="border-0 pl-0"  style="border: none"  colspan="2">
-                        {{ trans('main.registration_number') }} : <span style="">{{ $student->registration_number }}</span> <br><br>
-                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $student?->semester?->course?->name }}</span> <br>
-                    </td>
-                </tr>
-                
-            </tbody>
-        </table>
-        <hr>
-        {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.financial_infos')}}</strong>
-        </h5>
-        <table class="w-ful" style="width: 100%" id="payment_list">
+        @endif
+        <table class="w-ful border-collapse" style="width: 100%" id="expense_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
 
                 <tr>
                     <th scope="col" class="px-6 py-3 border">
-                       {{trans('main.receipt_number')}}
+                       {{trans('main.registration_number')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.payment_date')}}
+                        {{trans('main.expense_name')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.value')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.is_tax_included')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
                         {{trans_choice('main.payment_method',1)}}
                     </th>
                    
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.value')}}
+                        {{trans('main.expensed_date')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.created_at')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.status')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border" style="border-left: 1px solid #262729">
+                        {{trans('main.username')}}
                     </th>
                 </tr>
             </thead>
@@ -249,33 +246,57 @@
                 @php
                     $total=0;
                 @endphp
-                @forelse ($student->receiptVoucher as $payment)
+                @forelse ($expenses as $expense)
                 
                     <tr class="">
                         <td scope="row" class="px-6 py-4 ">
-                           {{$payment->id}}
+                           {{$expense->id}}
                         </td>
                         <td class="px-6 py-4  ">
-                            {{$payment->payment_date}}
+                            {{$expense->transactionCategory->name}}
+                        </td>
+                        <td class="px-6 py-4  ">
+                            {{$expense->value." ".trans('main.'.env('DEFAULT_CURRENCY'))}}
+                        </td>
+                        <td class="px-6 py-4  ">
+                            {{$expense->is_tax_included ? trans('main.yes') : trans('main.no')}}
+                        </td>
+                        <td class="px-6 py-4  ">
+                            {{$expense->paymentMethod->name}}
+                        </td>
+                        <td class="px-6 py-4  ">
+                            {{\Carbon\Carbon::createFromDate($expense->expensed_date)->isoFormat('D MMM YYYY','Asia/Riyadh')}}
+                        </td>
+                        <td class="px-6 py-4  ">
+                            {{\Carbon\Carbon::createFromDate($expense->created_at)->isoFormat('D MMM YYYY','Asia/Riyadh')}}
                         </td>
                         <td class="px-6 py-4 ">
-                            {{$payment->paymentMethod->name == "transfer" ? trans('main.transfer') : $payment->paymentMethod->name }}
+                            {{$expense->is_cancelled == true ? trans('main.cancelled') : trans('main.active') }}
                         </td>
                         
-                        <td class="px-6 py-4 " >
-                            {{$payment->value}}  {{trans("main.SAR")}}
+                        <td class="px-6 py-4 "  style="border-left: 1px solid #262729">
+                            {{$expense->registeredBy->username}}  
                         </td>
                         
                         @php
-                            $total+=$payment->value;
+                            $vat = \App\Models\ValueAddedTax::latest()->first();
+                            $value = floatval(str_replace(',', '', $expense->value));
+                            if($expense->is_tax_included) {
+                                if($vat->created_at > $expense->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$expense->created_at)->first() ?? $vat;
+                                $total+=floatval((($vat->percentage / 100) * $value) + $value);
+                            }else
+                            {
+                                $total+=$value;
+                            }
                         @endphp
                     </tr> 
                     {{-- total sum --}}
                     <tr>
-                        <td class="px-6 py-4 " colspan="3" >{{trans('main.total')}}</td>
-                        <td class="px-6 py-4 ">
+                        <td class="px-6 py-4 border-0" colspan="2" >{{trans('main.total')}}</td>
+                        <td class="px-6 py-4 border-0 ">
                         {{$total}} {{trans("main.SAR")}}
                         </td>
+                        <td colspan="6"  style="border-left: 1px solid #262729"></td>
                     </tr>
                 @empty 
                     <tr>
