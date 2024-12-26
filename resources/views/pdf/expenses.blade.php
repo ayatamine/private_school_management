@@ -290,7 +290,14 @@
                             }
                         @endphp
                     </tr> 
+
+                @empty 
+                    <tr>
+                        <td colspan="9" style="border-left: 1px solid #262729">{{trans('main.no_expense_found')}}</td>
+                    </tr>
+                @endforelse
                     {{-- total sum --}}
+                    @if(count($student->receiptVoucher))
                     <tr>
                         <td class="px-6 py-4 border-0" colspan="2" >{{trans('main.total')}}</td>
                         <td class="px-6 py-4 border-0 ">
@@ -298,12 +305,7 @@
                         </td>
                         <td colspan="6"  style="border-left: 1px solid #262729"></td>
                     </tr>
-                @empty 
-                    <tr>
-                        <td colspan="9" style="border-left: 1px solid #262729">{{trans('main.no_expense_found')}}</td>
-                    </tr>
-                @endforelse
-                
+                    @endif
             </tbody>
         </table>
 

@@ -270,19 +270,21 @@
                             $total+=$payment->value;
                         @endphp
                     </tr> 
-                    {{-- total sum --}}
-                    <tr>
-                        <td class="px-6 py-4 " colspan="3" >{{trans('main.total')}}</td>
-                        <td class="px-6 py-4 ">
-                        {{$total}} {{trans("main.SAR")}}
-                        </td>
-                    </tr>
+                    
                 @empty 
                     <tr>
                         <td colspan="9" style="border-left: 1px solid #262729">{{trans('main.no_expense_found')}}</td>
                     </tr>
                 @endforelse
-                
+                @if(count($student->receiptVoucher))
+                {{-- total sum --}}
+                <tr>
+                    <td class="px-6 py-4 " colspan="3" >{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 ">
+                    {{$total}} {{trans("main.SAR")}}
+                    </td>
+                </tr>
+                @endif
             </tbody>
         </table>
 
