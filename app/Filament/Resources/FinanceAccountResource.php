@@ -101,26 +101,31 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')->label(trans('main.finance_account_id'))
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')->label(trans('main.finance_account_name'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type')->label(trans('main.bank_type'))
+                Tables\Columns\TextColumn::make('type')->label(trans('main.type'))
                     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('bank_name')->label(trans('main.bank_name'))
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('account_number')->label(trans('main.account_number'))
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('opening_balance')->label(trans('main.opening_balance'))
-                    ->formatStateUsing(fn (string $state) => "$state ".trans('main.'.env("DEFAULT_CURRENCY"))),
-                Tables\Columns\TextColumn::make('balance')->label(trans('main.balance'))
-                    ->formatStateUsing(fn (string $state) => "$state ".trans('main.'.env("DEFAULT_CURRENCY"))),
+                    ->formatStateUsing(fn (string $state) => number_format($state, 2, '.', ',') .' '.trans('main.'.env("DEFAULT_CURRENCY"))),
                 Tables\Columns\ToggleColumn::make('link_with_employee_payments')->label(trans('main.link_with_employee_payments')),
                 Tables\Columns\ToggleColumn::make('is_active')->label(trans('main.is_account_active')),
                 Tables\Columns\ToggleColumn::make('is_visible')->label(trans('main.is_account_visible')),
+                // Tables\Columns\TextColumn::make('bank_name')->label(trans('main.bank_name'))
+                //     ->sortable()
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('account_number')->label(trans('main.account_number'))
+                //     ->sortable()
+                //     ->searchable(),
+                
+                // Tables\Columns\TextColumn::make('balance')->label(trans('main.balance'))
+                //     ->formatStateUsing(fn (string $state) => "$state ".trans('main.'.env("DEFAULT_CURRENCY"))),
+                
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->dateTime()
                     ->sortable()

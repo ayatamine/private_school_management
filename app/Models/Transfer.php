@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\FinanceAccount;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Transfer extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'from_account_id', 'to_account_id', 'amount', 'transfer_date', 'note'
+        'from_account_id', 'to_account_id', 'amount', 'transfer_date', 'note','registered_by','is_cancelled'
     ];
 
     public function fromAccount() {
@@ -31,5 +33,11 @@ class Transfer extends Model
         'to_account_id' => 'integer',
         'amount' => 'double',
         'transfer_date' => 'date',
+        'registered_by' => 'integer',
+        'is_cancelled' => 'boolean',
     ];
+    public function registeredBy():BelongsTo
+    {
+        return $this->belongsTo(User::class,'registered_by','id');
+    }
 }

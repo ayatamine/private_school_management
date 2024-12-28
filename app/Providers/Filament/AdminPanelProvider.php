@@ -58,7 +58,8 @@ class AdminPanelProvider extends PanelProvider
                     ->label(trans_choice('main.add_finance_account',2))
                     ->icon('icon-finance_accounts')
                     ->visible(fn()=>employeeHasPermission('view_any_finance::account'))
-                    ->group(trans('main.finance_settings'))
+                    ->group(trans('main.finance'))
+                    ->parentItem(trans_choice('main.finance_account',2))
                     ->url(fn (): string => FinanceAccountResource::getUrl('create')),
                 NavigationItem::make('add_student')
                     ->label(trans('main.add_student'))
@@ -67,12 +68,12 @@ class AdminPanelProvider extends PanelProvider
                     ->parentItem(trans('main.student_registration'))
                     ->visible(fn()=>employeeHasPermission('create_newest::student'))
                     ->url(fn (): string => NewestStudentResource::getUrl('create')),
-                NavigationItem::make('transfer_operation')
-                    ->label(trans_choice('main.transfer_operation',1))
-                    ->group(trans('main.finance'))
-                    ->parentItem(trans('main.finance_account'))
-                    ->visible(fn()=>employeeHasPermission('view_any_transfer'))
-                    ->url(fn (): string => TransferResource::getUrl('list')),
+                // NavigationItem::make('transfer_operation')
+                //     ->label(trans_choice('main.transfer_operation',1))
+                //     ->group(trans('main.finance'))
+                //     ->parentItem(trans_choice('main.finance_account',2))
+                //     ->visible(fn()=>employeeHasPermission('view_any_transfer'))
+                //     ->url(fn (): string => TransferResource::getUrl('index')),
             ])
             ->pages([
                 Pages\Dashboard::class,
