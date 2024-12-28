@@ -13,7 +13,7 @@ class ListFinanceAccounts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label(trans('main.create_account')),
         ];
     }
 }

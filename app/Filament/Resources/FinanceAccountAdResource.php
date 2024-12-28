@@ -9,21 +9,25 @@ use App\Models\Transfer;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\FinanceAccount;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
+use Filament\Support\Enums\FontWeight;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\TransferResource;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\FinanceAccountResource\Pages;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use App\Filament\Resources\FinanceAccountResource\RelationManagers;
+use App\Filament\Resources\FinanceAccountAdResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\FinanceAccountAdResource\RelationManagers;
 
-class FinanceAccountResource extends Resource implements HasShieldPermissions
+class FinanceAccountAdResource extends Resource
 {
     protected static ?string $model = FinanceAccount::class;
 
@@ -33,35 +37,27 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
         return trans('main.finance');
     }
    
-   
+    public static function canCreate(): bool
+    {
+        return false;
+    }
     public static function getModelLabel():string
     {
-        return trans_choice('main.finance_account',1);
+        return trans_choice('main.finance_account_main',1);
     }
     public static function getNavigationLabel():string
     {
-        return trans_choice('main.finance_account',2);
+        return trans_choice('main.finance_account_main',2);
     }
 
     public static function getPluralModelLabel():string
     {
-        return trans_choice('main.finance_account',2);
+        return trans_choice('main.finance_account_main',2);
     }
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view',
-            'view_any',
-            'create',
-            'update',
-            'delete',
-            // 'delete_any',
-            'print',
-        ];
-    }
+
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_any_finance::account');
+        return false;
     }
     public static function form(Form $form): Form
     {
@@ -100,6 +96,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->query(FinanceAccount::whereIsVisible(true))
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label(trans('main.finance_account_id'))
                     ->sortable()
@@ -111,20 +108,11 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
                     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('opening_balance')->label(trans('main.opening_balance'))
+                Tables\Columns\TextColumn::make('paymentMethods')->label(trans_choice('main.payment_method',2))
+                    ->state(fn (FinanceAccount $account): string => implode(', ', $account->paymentMethods()->pluck('name')->all()))
+                    ,
+                Tables\Columns\TextColumn::make('balance')->label(trans('main.balance'))
                     ->formatStateUsing(fn (string $state) => number_format($state, 2, '.', ',') .' '.trans('main.'.env("DEFAULT_CURRENCY"))),
-                Tables\Columns\ToggleColumn::make('link_with_employee_payments')->label(trans('main.link_with_employee_payments')),
-                Tables\Columns\ToggleColumn::make('is_active')->label(trans('main.is_account_active')),
-                Tables\Columns\ToggleColumn::make('is_visible')->label(trans('main.is_account_visible')),
-                // Tables\Columns\TextColumn::make('bank_name')->label(trans('main.bank_name'))
-                //     ->sortable()
-                //     ->searchable(),
-                // Tables\Columns\TextColumn::make('account_number')->label(trans('main.account_number'))
-                //     ->sortable()
-                //     ->searchable(),
-                
-                // Tables\Columns\TextColumn::make('balance')->label(trans('main.balance'))
-                //     ->formatStateUsing(fn (string $state) => "$state ".trans('main.'.env("DEFAULT_CURRENCY"))),
                 
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->dateTime()
@@ -159,7 +147,39 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
                 ]),
             ]);
     }
-
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                \Filament\Infolists\Components\Section::make(trans('main.radical_infos'))
+                        ->headerActions([
+                          
+                        ])
+                        ->id('main-section')
+                        ->schema([
+                            ViewEntry::make('')
+                            ->view('infolists.components.view-account-changes')                
+                        ]),
+                \Filament\Infolists\Components\Section::make(trans('main.balance'))
+                        ->columns(2)
+                        ->id('balance-section')
+                        ->schema([
+                                TextEntry::make('total_incomes')->label(trans('main.total_incomes'))
+                                ->state(fn(FinanceAccount $account) =>$account->totalIncomes())
+                                ->weight(FontWeight::Bold),
+                                TextEntry::make('totalExpenses')->label(trans('main.totalExpenses'))
+                                ->state(fn(FinanceAccount $account) =>$account->totalExpenses())
+                                ->weight(FontWeight::Bold),
+                                TextEntry::make('totalPayment')->label(trans('main.totalPayment'))
+                                ->state(fn(FinanceAccount $account) =>$account->totalPayment())
+                                ->weight(FontWeight::Bold),
+                                TextEntry::make('opening_balance')->label(trans('main.opening_balance'))->weight(FontWeight::Bold),
+                                TextEntry::make('balance')->label(trans('main.balance'))->weight(FontWeight::Bold),
+                            // ViewEntry::make('')
+                            // ->view('infolists.components.view-finance-accou')                
+                        ]),
+                    ]);
+     }
     public static function getRelations(): array
     {
         return [
@@ -170,9 +190,10 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListFinanceAccounts::route('/'),
-            'create' => Pages\CreateFinanceAccount::route('/create'),
-            'edit' => Pages\EditFinanceAccount::route('/{record}/edit'),
+            'index' => Pages\ListFinanceAccountAds::route('/'),
+            'create' => Pages\CreateFinanceAccountAd::route('/create'),
+            'edit' => Pages\EditFinanceAccountAd::route('/{record}/edit'),
+            'view' => Pages\ViewFinanceAccountAd::route('/{record}'),
         ];
     }
 }

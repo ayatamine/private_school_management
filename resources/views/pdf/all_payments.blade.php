@@ -273,7 +273,7 @@
                     
                 @empty 
                     <tr>
-                        <td colspan="9" style="border-left: 1px solid #262729">{{trans('main.no_expense_found')}}</td>
+                        <td colspan="9" style="border-left: 1px solid #262729">{{trans('main.no_payment_found')}}</td>
                     </tr>
                 @endforelse
                 @if(count($student->receiptVoucher))

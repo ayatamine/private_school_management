@@ -8,6 +8,7 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\Login;
+use App\Filament\Resources\FinanceAccountAdResource;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationItem;
 use Filament\Http\Middleware\Authenticate;
@@ -54,13 +55,6 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('icon-school')
                     ->visible(fn()=>employeeHasPermission('view_any_school::setting'))
                     ->url(fn (): string => SchoolSettingResource::getUrl('edit',[1])),
-                NavigationItem::make('finance_account')
-                    ->label(trans_choice('main.add_finance_account',2))
-                    ->icon('icon-finance_accounts')
-                    ->visible(fn()=>employeeHasPermission('view_any_finance::account'))
-                    ->group(trans('main.finance'))
-                    ->parentItem(trans_choice('main.finance_account',2))
-                    ->url(fn (): string => FinanceAccountResource::getUrl('create')),
                 NavigationItem::make('add_student')
                     ->label(trans('main.add_student'))
                     ->icon('heroicon-o-plus')
@@ -68,12 +62,12 @@ class AdminPanelProvider extends PanelProvider
                     ->parentItem(trans('main.student_registration'))
                     ->visible(fn()=>employeeHasPermission('create_newest::student'))
                     ->url(fn (): string => NewestStudentResource::getUrl('create')),
-                // NavigationItem::make('transfer_operation')
-                //     ->label(trans_choice('main.transfer_operation',1))
-                //     ->group(trans('main.finance'))
-                //     ->parentItem(trans_choice('main.finance_account',2))
-                //     ->visible(fn()=>employeeHasPermission('view_any_transfer'))
-                //     ->url(fn (): string => TransferResource::getUrl('index')),
+                NavigationItem::make('finance_account_main')
+                    ->label(trans_choice('main.finance_account_main',2))
+                    ->group(trans('main.finance'))
+                    ->parentItem(trans_choice('main.finance_account',2))
+                    ->visible(fn()=>employeeHasPermission('view_any_transfer'))
+                    ->url(fn (): string => FinanceAccountAdResource::getUrl('index')),
             ])
             ->pages([
                 Pages\Dashboard::class,
