@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Student;
 use App\Models\SchoolSetting;
@@ -28,7 +29,7 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-Route::get('print-pdf/{type}/{id?}',function($type,$id){
+Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
     
     switch ($type) {
         case 'receipt_voucher':
@@ -54,6 +55,29 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id){
                 $data = ['student' => $record,'settings'=>SchoolSetting::first()];
                 $view = "all_fees";
                 $file_name = "فاتورة_الرسوم_$record->username.pdf";
+            break;
+        case 'expenses':
+                $url =url()->previous();
+                $parsedUrl = parse_url($url);
+                if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
+
+                // Extract the date values
+                $date_from = $queryParams['tableFilters']['created_at']['created_from'] ?? null;
+                $date_to = $queryParams['tableFilters']['created_at']['created_until'] ?? null;
+
+                $expenses = Expense::latest()
+                ->when(
+                    $date_from, // Check if $date_from is not null or empty
+                    fn ($query) => $query->whereDate('created_at', '>=', $date_from),
+                )
+                ->when(
+                    $date_to, // Check if $date_to is not null or empty
+                    fn ($query) => $query->whereDate('created_at', '<=', $date_to),
+                )
+                ->get();
+                $data = ['settings'=>SchoolSetting::first(),'expenses'=>$expenses,'date_from'=>$date_from,'date_to'=>$date_to];
+                $view = "expenses";
+                $file_name = trans_choice('main.expense',2).".pdf";
             break;
         
         default:

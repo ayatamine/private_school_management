@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'buyer'=>'',
-]
+    'buyer'=>''
+];

@@ -338,9 +338,17 @@ return [
      'cancel'=>' الغاء',
      'cancel_reason'=>' سبب الالغاء',
      'file_type_is_not_supported'=>' صيغة الملف غير مدعومة',
+
      'finance_account_id'=>' رقم الحساب التسلسلي',
      'cancel_operation'=>' الغاء العملية',
      'activate_operation'=>'اعادة تفعيل العملية',
      'transfer_operation_cancel_success'=>'تم الغاء العملية بنجاح',
      'transfer_operation_activate_success'=>'تم اعادة تفعيل العملية بنجاح',
+     'yes'=>'نعم',
+     'no'=>' لا',
+     'date'=>'التاريخ',
+     'selected_duration'=>'الفترة المختارة',
+     'from'=>'من',
+     'to'=>'الى',
+     'no_expense_found'=>'لايوجد أي مصاريف',
      ];
