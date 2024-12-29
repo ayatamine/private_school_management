@@ -54,11 +54,14 @@ class FinanceAccountAdResource extends Resource
     {
         return trans_choice('main.finance_account_main',2);
     }
-
-    public static function shouldRegisterNavigation(): bool
+    public static function getnavigationParentItem():string
     {
-        return false;
+        return trans_choice('main.finance_account',2);
     }
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return false;
+    // }
     public static function form(Form $form): Form
     {
         return $form

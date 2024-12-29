@@ -29,6 +29,7 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
 class AdminPanelProvider extends PanelProvider
 {
+    
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -62,12 +63,6 @@ class AdminPanelProvider extends PanelProvider
                     ->parentItem(trans('main.student_registration'))
                     ->visible(fn()=>employeeHasPermission('create_newest::student'))
                     ->url(fn (): string => NewestStudentResource::getUrl('create')),
-                NavigationItem::make('finance_account_main')
-                    ->label(trans_choice('main.finance_account_main',2))
-                    ->group(trans('main.finance'))
-                    ->parentItem(trans_choice('main.finance_account',2))
-                    ->visible(fn()=>employeeHasPermission('view_any_transfer'))
-                    ->url(fn (): string => FinanceAccountAdResource::getUrl('index')),
             ])
             ->pages([
                 Pages\Dashboard::class,
