@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ExpenseResource\Pages;
 
 use DB;
 use Filament\Actions;
+use Filament\Actions\Action;
 use App\Models\PaymentMethod;
 use App\Models\FinanceAccount;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,12 @@ class EditExpense extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Action::make('show_attachment')
+            ->color('primary')
+            ->label(trans('main.show_attachment'))
+            ->visible($this->record?->document != null)
+            ->url(asset('storage/'.$this->record?->document))
+            ->openUrlInNewTab()
         ];
     }
     protected function handleRecordUpdate(Model $record, array $data): Model

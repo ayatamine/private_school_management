@@ -67,4 +67,13 @@ class Expense extends Model
                  return number_format($value, 2, '.', ',');
             });
     }
+    public function total():Attribute
+    {
+       
+       return Attribute::make(
+            get: function ($value) {
+                 //format decimal
+                 return number_format($value, 2, '.', ',');
+            });
+    }
 }
