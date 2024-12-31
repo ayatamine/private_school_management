@@ -70,7 +70,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                 Section::make()
                 ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('id')->label(trans('main.registration_number'))
+                    Forms\Components\TextInput::make('id')->label(trans('main.id_number'))
                         ->default(Expense::latest()->first()->id + 1)
                         ->dehydrated()
                         ->disabled(),
@@ -109,7 +109,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                     Forms\Components\TextArea::make('cancel_reason')->label(trans('main.cancel_reason'))
                         ->visible(fn (Expense $record) => $record->cancel_reason != null)
                         ->dehydrated()
-                        ->hiddenOn('edit')
+                        ->hiddenOn(['create','edit'])
                         ->columnSpanFull(),
                 ])
             ]);
@@ -120,24 +120,26 @@ class ExpenseResource extends Resource implements HasShieldPermissions
         return $table
             ->query(Expense::orderBy('expensed_date','desc'))
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label(trans('main.registration_number'))
+                Tables\Columns\TextColumn::make('id')->label(trans('main.id_number'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('transactionCategory.name')->label(trans('main.expense_name'))
+                Tables\Columns\TextColumn::make('transactionCategory.name')->label(trans('main.item_name'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+                Tables\Columns\TextColumn::make('value')
                     // ->numeric(2,',',',')
                     // ->formatStateUsing(fn(string $state) =>number_format($state, 2, '.', ',')." ".trans('main.'.env('DEFAULT_CURRENCY')) )
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_tax_included')->label(trans('main.is_tax_included'))
+                Tables\Columns\IconColumn::make('is_tax_included')->label(trans('main.tax'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
+                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans('main.payment'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('paymentMethod.financeAccount.name')->label(trans('main.account'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('expensed_date')->label(trans('main.expensed_date'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
-                    ->date()
+                Tables\Columns\TextColumn::make('created_at')->label(trans('main.creation'))
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_cancelled')->label(trans('main.status'))
                     ->formatStateUsing(fn (string $state) => $state == true ? trans('main.cancelled') : trans('main.active'))
@@ -148,8 +150,8 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                 //     $vat = \App\Models\ValueAddedTax::first();
                 //     return floatval((($vat->percentage / 100) * ($record->value)) + $record->value);
                 // })
-                Tables\Columns\TextColumn::make('value')->label(trans('main.total'))
-                ->summarize(Summarizer::make() 
+                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+                ->summarize(Summarizer::make()->label(trans('main.total_only'))->label(trans('main.total_only'))
                 ->using(function(\Illuminate\Database\Query\Builder $query): string {
                    $vat = \App\Models\ValueAddedTax::latest()->first();
                    $total =0;
