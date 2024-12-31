@@ -341,7 +341,7 @@ return [
      'cancel_reason'=>' سبب الالغاء',
      'file_type_is_not_supported'=>' صيغة الملف غير مدعومة',
 
-     'finance_account_id'=>' رقم الحساب التسلسلي',
+     'finance_account_id'=>' التسلسل',
      'cancel_operation'=>' الغاء العملية',
      'activate_operation'=>'اعادة تفعيل العملية',
      'transfer_operation_cancel_success'=>'تم الغاء العملية بنجاح',
@@ -367,4 +367,5 @@ return [
      'creation'=>'الانشاء',
      'account'=>'الحساب',
      'total_only'=>'اجمالي',
+     'expense_list'=>'قائمة المصاريف',
      ];

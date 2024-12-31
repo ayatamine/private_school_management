@@ -64,8 +64,10 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 // Extract the date values
                 $date_from = $queryParams['tableFilters']['created_at']['created_from'] ?? null;
                 $date_to = $queryParams['tableFilters']['created_at']['created_until'] ?? null;
+                $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
+                $is_tax_included = $queryParams['tableFilters']['is_tax_included']['value'] ?? null;
 
-                $expenses = Expense::latest()
+                $expenses = Expense::latest()->where('is_cancelled',false)
                 ->when(
                     $date_from, // Check if $date_from is not null or empty
                     fn ($query) => $query->whereDate('created_at', '>=', $date_from),
@@ -73,6 +75,14 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 ->when(
                     $date_to, // Check if $date_to is not null or empty
                     fn ($query) => $query->whereDate('created_at', '<=', $date_to),
+                )
+                ->when(
+                    $payment_method_id, // Check if $date_to is not null or empty
+                    fn ($query) => $query->wherePaymentMethodId($payment_method_id),
+                )
+                ->when(
+                    $is_tax_included == 1, // Check if $date_to is not null or empty
+                    fn ($query) => $query->whereIsTaxIncluded(true),
                 )
                 ->get();
                 $data = ['settings'=>SchoolSetting::first(),'expenses'=>$expenses,'date_from'=>$date_from,'date_to'=>$date_to];

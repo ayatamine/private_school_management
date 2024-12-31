@@ -72,6 +72,15 @@ class TransferResource extends Resource implements HasShieldPermissions
             ->schema(components: [
                 Forms\Components\Section::make()
                 ->schema([
+                Forms\Components\TextInput::make('id')
+                    ->dehydrated()
+                    ->disabled()
+                    ->default(Transfer::latest()->first()->id + 1)
+                    ->label(trans('main.id_number')),
+                Forms\Components\Select::make('from_account_id')->label(trans('main.from_account_id'))
+                    ->options(FinanceAccount::whereIsActive(true)->pluck('name','id'))
+                    ->live()
+                    ->required(),
                 Forms\Components\Select::make('from_account_id')->label(trans('main.from_account_id'))
                     ->options(FinanceAccount::whereIsActive(true)->pluck('name','id'))
                     ->live()
@@ -95,7 +104,7 @@ class TransferResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label(trans('main.id'))
+                Tables\Columns\TextColumn::make('id')->label(trans('main.id_number'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fromAccount.name')->label(trans('main.from_account_id'))
                     ->sortable(),
@@ -105,7 +114,7 @@ class TransferResource extends Resource implements HasShieldPermissions
                     ->formatStateUsing(fn(string $state) =>number_format($state, 2, '.', ',')." ".trans('main.'.env('DEFAULT_CURRENCY')) )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transfer_date')->label(trans('main.date'))
-                    ->date(),
+                    ->date('Y-m-d'),
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.username'))
                     ->searchable()
                     ->sortable(),

@@ -197,6 +197,12 @@
             </tbody>
         </table>
         <br>
+        <br>
+        <h5 class="text-uppercase" style="text-align: center;margin:auto">
+            <strong style="direction: rtl;font-weight:bold">{{ trans('main.expense_list')}} </strong> </span>
+        </h5>
+        <br>
+        <br>
         {{-- school info --}}
          <h5 class="text-uppercase">
             <strong style="text-align: right;direction: rtl">{{ trans('main.date')}}: </strong> <span style="text-size:12px">{{\Carbon\Carbon::createFromDate(now())->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>
