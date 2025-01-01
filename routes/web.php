@@ -60,12 +60,13 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $url =url()->previous();
                 $parsedUrl = parse_url($url);
                 if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
-
+               
                 // Extract the date values
                 $date_from = $queryParams['tableFilters']['created_at']['created_from'] ?? null;
                 $date_to = $queryParams['tableFilters']['created_at']['created_until'] ?? null;
                 $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
                 $is_tax_included = $queryParams['tableFilters']['is_tax_included']['value'] ?? null;
+                $transaction_category_id = $queryParams['tableFilters']['transaction_category_id']['value'] ?? null;
 
                 $expenses = Expense::oldest()->where('is_cancelled',false)
                 ->when(
@@ -73,21 +74,25 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                     fn ($query) => $query->whereDate('created_at', '>=', $date_from),
                 )
                 ->when(
-                    $date_to, // Check if $date_to is not null or empty
+                    $date_to, 
                     fn ($query) => $query->whereDate('created_at', '<=', $date_to),
                 )
                 ->when(
-                    $payment_method_id, // Check if $date_to is not null or empty
+                    $payment_method_id, 
                     fn ($query) => $query->wherePaymentMethodId($payment_method_id),
                 )
                 ->when(
-                    $is_tax_included == 1, // Check if $date_to is not null or empty
+                    $transaction_category_id, 
+                    fn ($query) => $query->whereTransactionCategoryId($transaction_category_id),
+                )
+                ->when(
+                    $is_tax_included == 1, 
                     fn ($query) => $query->whereIsTaxIncluded(true),
                 )
                 ->get();
                 $data = ['settings'=>SchoolSetting::first(),'expenses'=>$expenses,'date_from'=>$date_from,'date_to'=>$date_to];
                 $view = "expenses";
-                $file_name = trans('main.expense_list').date('Y-m-d').".pdf";
+                $file_name = trans('main.expense_list').'_'.date('Y-m-d').".pdf";
             break;
         
         default:

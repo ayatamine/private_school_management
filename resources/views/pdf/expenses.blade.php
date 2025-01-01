@@ -95,16 +95,17 @@
                 border: 1px solid #262729;padding: 0.3rem;
             } */
             table {
-                    text-align:right;color: #212529;
+                    padding:0.4rem;color: #212529;
                     border-left: 0.01em solid #262729;
                     border-right: 0;
                     border-top: 0.01em solid #262729;
                     border-bottom: 0;
                     border-collapse: collapse;
                 }
-                table td,
-                table th {
-                    padding: 0.3rem;font-size: 14px;
+                table td:not(:last-child),
+                table th:not(:last-child) {
+                    padding: 0.4rem;text-align: center;
+                    font-size: 14px;
                     border-left: 0;
                     border-right: 0.01em solid #262729;
                     border-top: 0;
@@ -247,37 +248,31 @@
                 @forelse ($expenses as $expense)
                 
                     <tr class="">
-                        <td scope="row" class="px-6 py-4 ">
+                        <td scope="row" class="px-6 py-4  border">
                            {{$expense->id}}
                         </td>
-                        <td class="px-6 py-4  ">
+                        <td class="px-6 py-4   border">
                             {{$expense->transactionCategory->name}}
                         </td>
-                        <td class="px-6 py-4  ">
+                        <td class="px-6 py-4   border">
                             {{$expense->value." ".trans('main.'.env('DEFAULT_CURRENCY'))}}
                         </td>
 
-                        <td class="px-6 py-4  ">
+                        <td class="px-6 py-4   border">
                             {{$expense->paymentMethod->name}}
                         </td>
-                        <td class="px-6 py-4  ">
-                            {{$paymentMethod?->financeAccount?->name}}
+                        <td class="px-6 py-4   border">
+                            {{$expense->paymentMethod?->financeAccount?->name}}
                         </td>
-                        <td class="px-6 py-4  ">
+                        <td class="px-6 py-4   border">
                             {{date('Y-m-d',strtotime($expense->expensed_date))}}
                         </td>
                       
                         
                         @php
-                            $vat = \App\Models\ValueAddedTax::latest()->first();
+
                             $value = floatval(str_replace(',', '', $expense->value));
-                            if($expense->is_tax_included) {
-                                if($vat->created_at > $expense->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$expense->created_at)->first() ?? $vat;
-                                $total+=floatval((($vat->percentage / 100) * $value) + $value);
-                            }else
-                            {
-                                $total+=$value;
-                            }
+                            $total+=$value;
                         @endphp
                     </tr> 
 
@@ -289,11 +284,11 @@
                     {{-- total sum --}}
                     @if(count($expenses))
                     <tr>
-                        <td class="px-6 py-4 border-0" colspan="2" >{{trans('main.total')}}</td>
-                        <td class="px-6 py-4 border-0 ">
+                        <td class="px-6 py-4 border" colspan="2" >{{trans('main.total')}}</td>
+                        <td class="px-6 py-4 border ">
                         {{$total}} {{trans("main.SAR")}}
                         </td>
-                        <td colspan="6"  style="border-left: 1px solid #262729"></td>
+                        <td colspan="6" class="px-6 py-4 border " style="border-left: 1px solid #262729"></td>
                     </tr>
                     @endif
             </tbody>

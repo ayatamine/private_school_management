@@ -106,5 +106,6 @@ return [
         'update_student_termination' => 'تحديث انهاء قيد',
         'print_student_termination' => 'طباعة انهاء قيد',
         'view_roles_and_permissions_employee' => 'عرض الأدوار والصلاحيات للموظف',
+        'view_finance_account_ad' => 'عرض الحسابات المالية',
     ],
 ];

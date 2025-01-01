@@ -105,7 +105,6 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                         ->maxLength(16777215)
                         ->columnSpanFull(),
                     Forms\Components\FileUpload::make('attachment')->label(trans('main.add_attachment'))
-                        ->directory('expenses')
                         ->columnSpanFull(),
                     Forms\Components\TextArea::make('cancel_reason')->label(trans('main.cancel_reason'))
                         ->visible(fn (Expense $record) => $record->cancel_reason != null)
@@ -152,56 +151,35 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                 //     return floatval((($vat->percentage / 100) * ($record->value)) + $record->value);
                 // })
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                ->summarize(Summarizer::make()->label(trans('main.total_only'))->label(trans('main.total_only'))
-                ->using(function(\Illuminate\Database\Query\Builder $query): string {
-                   $vat = \App\Models\ValueAddedTax::latest()->first();
-                   $total =0;
-                   $url =url()->current();
-                   $parsedUrl = parse_url($url);
-               
-                   $date_from = $queryParams['tableFilters']['created_at']['created_from'] ?? null;
-                   $date_to = $queryParams['tableFilters']['created_at']['created_until'] ?? null;
-                   $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
-                   $is_tax_included = $queryParams['tableFilters']['is_tax_included']['value'] ?? null;
-                   $transaction_category_id = $queryParams['tableFilters']['transaction_category_id']['value'] ?? null;
-                 if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
-                    $expenses = Expense::where('is_cancelled',false)
-                    ->when(
-                        $date_from, // Check if $date_from is not null or empty
-                        fn ($query) => $query->whereDate('created_at', '>=', $date_from),
-                    )
-                    ->when(
-                        $date_to, // Check if $date_to is not null or empty
-                        fn ($query) => $query->whereDate('created_at', '<=', $date_to),
-                    )
-                    ->when(
-                        $payment_method_id, // Check if $date_to is not null or empty
-                        fn ($query) => $query->wherePaymentMethodId($payment_method_id),
-                    )
-                    ->when(
-                        $is_tax_included == 1, // Check if $date_to is not null or empty
-                        fn ($query) => $query->whereIsTaxIncluded(true),
-                    )
-                   ->get();
-                   foreach($expenses as $exp)
-                   {
-                        $value = floatval(str_replace(',', '', $exp->value));
-                    //    if($exp->is_tax_included) {
-                    //        if($vat->created_at > $exp->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$exp->created_at)->first() ?? $vat;
-                    //        $total+=floatval((($vat->percentage / 100) * $value) + $value);
-                    //    }else
-                    //    {
-                           $total+=$value;
-                    //    }
-                   }
-                   return $total;
-                } )->numeric(
-                    2,',',','
-               ))->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
+                ->summarize(
+                    Sum::make()->query(fn (\Illuminate\Database\Query\Builder $query) => $query->where('is_cancelled', false))->numeric(
+                                2,',',','
+                           )
+            //         Summarizer::make()->label(trans('main.total_only'))->label(trans('main.total_only'))
+            //     ->using(function(\Illuminate\Database\Query\Builder $query): string {
+            //        $vat = \App\Models\ValueAddedTax::latest()->first();
+            //        $total =0;
+            //        foreach(Expense::where('is_cancelled',false)->get() as $exp)
+            //        {
+            //             $value = floatval(str_replace(',', '', $exp->value));
+            //         //    if($exp->is_tax_included) {
+            //         //        if($vat->created_at > $exp->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$exp->created_at)->first() ?? $vat;
+            //         //        $total+=floatval((($vat->percentage / 100) * $value) + $value);
+            //         //    }else
+            //         //    {
+            //                $total+=$value;
+            //         //    }
+            //        }
+            //        return $total;
+            //     } )->numeric(
+            //         2,',',','
+            //    )
+               )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
 
             ])
             ->filters([
                 SelectFilter::make('transaction_category_id')->label(trans_choice('main.expense_name',1))
+                    ->relationship('transactionCategory', 'name')
                     ->relationship('transactionCategory', titleAttribute: 'name')
                     ->preload(),
                 SelectFilter::make('payment_method_id')->label(trans_choice('main.payment_method',1))
@@ -298,6 +276,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
             'index' => Pages\ListExpenses::route('/'),
             'create' => Pages\CreateExpense::route('/create'),
             'edit' => Pages\EditExpense::route('/{record}/edit'),
+            'view' => Pages\ViewExpense::route('/{record}'),
         ];
     }
 }

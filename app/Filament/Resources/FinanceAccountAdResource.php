@@ -58,10 +58,10 @@ class FinanceAccountAdResource extends Resource
     {
         return trans_choice('main.finance_account',2);
     }
-    // public static function shouldRegisterNavigation(): bool
-    // {
-    //     return false;
-    // }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return employeeHasPermission('view_finance_account_ad');
+    }
     public static function form(Form $form): Form
     {
         return $form

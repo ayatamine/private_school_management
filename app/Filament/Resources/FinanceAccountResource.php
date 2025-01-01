@@ -57,6 +57,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
             'delete',
             // 'delete_any',
             'print',
+            'view_finance_account_ad',
         ];
     }
     public static function shouldRegisterNavigation(): bool

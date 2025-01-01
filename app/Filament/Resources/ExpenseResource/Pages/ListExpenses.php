@@ -18,7 +18,7 @@ class ListExpenses extends ListRecords
                                 ->icon('icon-print')
                                 ->color('info')
                                 ->label(trans('main.print'))
-                                ->visible(employeeHasPermission('print_payments_student'))
+                                ->visible(employeeHasPermission('print_expense'))
                                 ->url(route('print_pdf',['type'=>"expenses"]))
         ];
     }
