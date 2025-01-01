@@ -219,33 +219,25 @@
 
                 <tr>
                     <th scope="col" class="px-6 py-3 border">
-                       {{trans('main.registration_number')}}
+                       {{trans('main.id_number')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.expense_name')}}
+                        {{trans('main.item_name')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.value')}}
                     </th>
+
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.is_tax_included')}}
+                        {{trans_choice('main.payment',1)}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans_choice('main.payment_method',1)}}
+                        {{trans('main.account')}}
                     </th>
-                   
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.expensed_date')}}
                     </th>
-                    <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.created_at')}}
-                    </th>
-                    <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.status')}}
-                    </th>
-                    <th scope="col" class="px-6 py-3 border" style="border-left: 1px solid #262729">
-                        {{trans('main.username')}}
-                    </th>
+
                 </tr>
             </thead>
             <tbody>
@@ -264,25 +256,17 @@
                         <td class="px-6 py-4  ">
                             {{$expense->value." ".trans('main.'.env('DEFAULT_CURRENCY'))}}
                         </td>
-                        <td class="px-6 py-4  ">
-                            {{$expense->is_tax_included ? trans('main.yes') : trans('main.no')}}
-                        </td>
+
                         <td class="px-6 py-4  ">
                             {{$expense->paymentMethod->name}}
                         </td>
                         <td class="px-6 py-4  ">
-                            {{\Carbon\Carbon::createFromDate($expense->expensed_date)->isoFormat('D MMM YYYY','Asia/Riyadh')}}
+                            {{$paymentMethod?->financeAccount?->name}}
                         </td>
                         <td class="px-6 py-4  ">
-                            {{\Carbon\Carbon::createFromDate($expense->created_at)->isoFormat('D MMM YYYY','Asia/Riyadh')}}
+                            {{date('Y-m-d',strtotime($expense->expensed_date))}}
                         </td>
-                        <td class="px-6 py-4 ">
-                            {{$expense->is_cancelled == true ? trans('main.cancelled') : trans('main.active') }}
-                        </td>
-                        
-                        <td class="px-6 py-4 "  style="border-left: 1px solid #262729">
-                            {{$expense->registeredBy->username}}  
-                        </td>
+                      
                         
                         @php
                             $vat = \App\Models\ValueAddedTax::latest()->first();

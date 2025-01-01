@@ -67,7 +67,7 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
                 $is_tax_included = $queryParams['tableFilters']['is_tax_included']['value'] ?? null;
 
-                $expenses = Expense::latest()->where('is_cancelled',false)
+                $expenses = Expense::oldest()->where('is_cancelled',false)
                 ->when(
                     $date_from, // Check if $date_from is not null or empty
                     fn ($query) => $query->whereDate('created_at', '>=', $date_from),
@@ -87,7 +87,7 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 ->get();
                 $data = ['settings'=>SchoolSetting::first(),'expenses'=>$expenses,'date_from'=>$date_from,'date_to'=>$date_to];
                 $view = "expenses";
-                $file_name = trans_choice('main.expense',2).".pdf";
+                $file_name = trans('main.expense_list').date('Y-m-d').".pdf";
             break;
         
         default:

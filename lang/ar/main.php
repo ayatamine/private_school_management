@@ -368,4 +368,5 @@ return [
      'account'=>'الحساب',
      'total_only'=>'اجمالي',
      'expense_list'=>'قائمة المصاريف',
+     'apply'=>'تطبيق',
      ];

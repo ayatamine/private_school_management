@@ -163,7 +163,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                    $date_to = $queryParams['tableFilters']['created_at']['created_until'] ?? null;
                    $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
                    $is_tax_included = $queryParams['tableFilters']['is_tax_included']['value'] ?? null;
-
+                   $transaction_category_id = $queryParams['tableFilters']['transaction_category_id']['value'] ?? null;
                  if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
                     $expenses = Expense::where('is_cancelled',false)
                     ->when(
@@ -186,13 +186,13 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                    foreach($expenses as $exp)
                    {
                         $value = floatval(str_replace(',', '', $exp->value));
-                       if($exp->is_tax_included) {
-                           if($vat->created_at > $exp->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$exp->created_at)->first() ?? $vat;
-                           $total+=floatval((($vat->percentage / 100) * $value) + $value);
-                       }else
-                       {
+                    //    if($exp->is_tax_included) {
+                    //        if($vat->created_at > $exp->created_at)  $vat = \App\Models\ValueAddedTax::whereDate('created_at','<',$exp->created_at)->first() ?? $vat;
+                    //        $total+=floatval((($vat->percentage / 100) * $value) + $value);
+                    //    }else
+                    //    {
                            $total+=$value;
-                       }
+                    //    }
                    }
                    return $total;
                 } )->numeric(
@@ -202,10 +202,10 @@ class ExpenseResource extends Resource implements HasShieldPermissions
             ])
             ->filters([
                 SelectFilter::make('transaction_category_id')->label(trans_choice('main.expense_name',1))
-                    ->relationship('transactionCategory', 'name')->searchable()
+                    ->relationship('transactionCategory', titleAttribute: 'name')
                     ->preload(),
                 SelectFilter::make('payment_method_id')->label(trans_choice('main.payment_method',1))
-                    ->relationship('paymentMethod', 'name')->searchable()
+                    ->relationship('paymentMethod', 'name')
                     ->preload(),
                 TernaryFilter::make('is_tax_included')->label(trans('main.is_tax_included'))
                     ->nullable()
@@ -248,6 +248,11 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                       
                     })
             ])
+            ->deferFilters()
+            ->filtersApplyAction(
+                fn (\Filament\Tables\Actions\Action $action) => $action
+                    ->label(trans('main.apply')),
+            )
             ->actions([
                 Tables\Actions\Action::make('cancel')
                 ->label(fn(Expense $record )=> $record->is_cancelled == true ?  trans('main.activate') :  trans('main.cancel')  )
