@@ -22,6 +22,7 @@
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "solution-forest/filament-simplelightbox": "*",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {

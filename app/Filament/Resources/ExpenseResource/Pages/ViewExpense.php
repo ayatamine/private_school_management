@@ -14,12 +14,7 @@ class ViewExpense extends ViewRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Action::make('show_attachment')
-            ->color('primary')
-            ->label(trans('main.show_attachment'))
-            ->visible($this->record?->attachment != null)
-            ->url(asset('storage/'.$this->record?->attachment))
-            ->openUrlInNewTab()
+            Actions\EditAction::make(),
         ];
     }
 }

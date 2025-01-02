@@ -105,7 +105,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                         ->maxLength(16777215)
                         ->columnSpanFull(),
                     Forms\Components\FileUpload::make('attachment')->label(trans('main.add_attachment'))
-                        ->columnSpanFull(),
+                        ->columnSpanFull()->openable(),
                     Forms\Components\TextArea::make('cancel_reason')->label(trans('main.cancel_reason'))
                         ->visible(fn (Expense $record) => $record->cancel_reason != null)
                         ->dehydrated()
@@ -186,24 +186,23 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                     ->relationship('paymentMethod', 'name')
                     ->preload(),
                 TernaryFilter::make('is_tax_included')->label(trans('main.is_tax_included'))
-                    ->nullable()
                     ->attribute('is_tax_included'),
-                Filter::make('created_at')
-                ->label(trans('main.date_filter'))
+                Filter::make('expensed_date')
+                ->label(trans('main.expensed_date'))
                     ->indicator('date')
                     ->form([
-                        Forms\Components\DatePicker::make('created_from')->label(trans('main.date_from')),
-                        Forms\Components\DatePicker::make('created_until')->label(trans('main.date_to')),
+                        Forms\Components\DatePicker::make('created_from')->label(trans('main.expensed_date_from')),
+                        Forms\Components\DatePicker::make('created_until')->label(trans('main.expensed_date_to')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('expensed_date', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('expensed_date', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -213,12 +212,12 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                         $indicators = [];
  
                         if ($data['created_from'] ?? null) {
-                            $indicators[] = Indicator::make(trans('main.date_from') . Carbon::parse($data['created_from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make(trans('main.expensed_date_from') . Carbon::parse($data['created_from'])->toFormattedDateString())
                                 ->removeField('created_from');
                         }
                  
                         if ($data['created_until'] ?? null) {
-                            $indicators[] = Indicator::make(trans('main.date_to') . Carbon::parse($data['created_until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make(trans('main.expensed_date_to') . Carbon::parse($data['created_until'])->toFormattedDateString())
                                 ->removeField('created_until');
                         }
                  

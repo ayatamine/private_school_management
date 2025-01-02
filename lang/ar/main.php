@@ -369,4 +369,6 @@ return [
      'total_only'=>'اجمالي',
      'expense_list'=>'قائمة المصاريف',
      'apply'=>'تطبيق',
+     'expensed_date_from'=>'تاريخ الصرف من',
+     'expensed_date_to'=>'تاريخ الصرف الى',
      ];
