@@ -88,7 +88,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 ->live()
                 ->default(true)
                 ->hiddenOn('edit'),
-                Forms\Components\Select::make('registration_number')->label(trans('main.registration_number'))
+                Forms\Components\Select::make('registration_number')->label(trans('main.id_number'))
                             ->preload()
                             ->searchable()
                             ->getSearchResultsUsing(function(string $search): array {
@@ -155,7 +155,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                     ->columnSpanFull()
                     ->schema([ Grid::make()
                      ->schema([
-                        Forms\Components\TextInput::make('id')->label(trans('main.registration_number'))->columnSpanFull()->default(Student::latest()->first()?->id + 1)->disabled(),
+                        Forms\Components\TextInput::make('id')->label(trans('main.id_number'))->columnSpanFull()->default(Student::latest()->first()?->id + 1)->disabled(),
                         Forms\Components\DatePicker::make('created_at')->label(trans('main.registration_date'))->columnSpanFull()->default(now()),
                         Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                             ->options(AcademicYear::where('is_registration_active',true)->pluck('name', 'id'))
@@ -317,11 +317,11 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
         return $table
             ->query(Student::query()->whereNull('termination_reason'))
             ->columns([
-                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
+                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
-                    ->searchable()
+                Tables\Columns\TextColumn::make('student_name')->label(trans('main.student_name'))
+                    ->state(fn (Student $student) => $student?->first_name .' '.$student?->last_name)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
                     ->searchable()
@@ -329,21 +329,17 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('third_name')->label(trans('main.third_name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('last_name')->label(trans('main.last_name'))
+                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
                     ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
+                
+                Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
+                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
-                    ->formatStateUsing(fn (string $state) => trans("main.$state"))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status')->label(trans('main.approvel_status'))
+                Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                             'pending'=>'primary',
@@ -353,22 +349,25 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                     })
                     ->formatStateUsing(fn (string $state) =>trans("main.$state"))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.registration_date'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('approved_at')->label(trans('main.approvel_date'))
+                    ->date('Y-m-d')
+                    ->sortable(),
+               
             ])
             ->filters([
-                SelectFilter::make('semester_id')->label(trans_choice('main.semester',1))
-                    ->relationship('semester', 'name')->searchable()
-                    ->preload(),
-                
-                SelectFilter::make('gender')->label(trans('main.gender'))->options([
-                    'male' => trans('main.male'),
-                    'female' => trans('main.female'),
-                ]),
+                SelectFilter::make('course_id')->label(trans('main.course_enrolled'))
+                    ->options(Course::pluck('name','id'))
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->whereHas('semester', function ($query) use ($data) {
+                            return $query->whereNull('termination_reason')->where('course_id', $data['value']);
+                        });
+                    }),
+                SelectFilter::make('status')->label(trans('main.status'))
+                ->options(['pending'=>trans('main.pending'),'approved'=>trans('main.approved'), 'rejected'=>trans('main.rejected')]),
             ])
             ->actions([
                 Tables\Actions\Action::make('registeration_action')

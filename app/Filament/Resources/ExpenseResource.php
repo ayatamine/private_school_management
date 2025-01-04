@@ -105,7 +105,9 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                         ->maxLength(16777215)
                         ->columnSpanFull(),
                     Forms\Components\FileUpload::make('attachment')->label(trans('main.add_attachment'))
-                        ->columnSpanFull()->openable(),
+                        ->columnSpanFull()
+                        ->directory('expenses')
+                        ->openable(),
                     Forms\Components\TextArea::make('cancel_reason')->label(trans('main.cancel_reason'))
                         ->visible(fn (Expense $record) => $record->cancel_reason != null)
                         ->dehydrated()
