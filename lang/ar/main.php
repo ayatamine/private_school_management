@@ -277,7 +277,7 @@ return [
     'approved_students_list' => ' الطلاب المستجدين',
     'student_settings' => ' ادارة الطلاب',
     'student_registration' => 'التسجيل والقبول',
-    'add_student' => ' اضافة طالب جديد',
+    'add_student' => ' تسجيل طالب جديد',
     'approved' => 'مقبول',
     'rejected' => 'مرفوض',
     'contract_end_attachment' => '  ملف مرفق انهاء العقد ',

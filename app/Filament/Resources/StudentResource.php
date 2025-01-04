@@ -440,7 +440,8 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
-                                TextEntry::make('approved_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
+                                TextEntry::make('created_at')->label(trans('main.registration_date'))->date('Y-m-d')->weight(FontWeight::Bold),
+                                TextEntry::make('approved_at')->label(trans('main.approvel_date'))->date('Y-m-d')->weight(FontWeight::Bold),
                                 TextEntry::make('transport_registration_date')->label(trans('main.transport_registeration_date'))
                                 ->formatStateUsing(fn($state)=> $state!='' ? $state : trans('main.not_registered_yet') )
                                 ->date()->weight(FontWeight::Bold),

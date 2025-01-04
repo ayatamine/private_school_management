@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\NewestStudentResource\Pages;
 
-use App\Filament\Resources\NewestStudentResource;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
@@ -10,6 +9,7 @@ use App\Models\TuitionFee;
 use App\Models\ParentModel;
 use Filament\Actions\Action;
 use App\Models\ConcessionFee;
+use App\Models\ReceiptVoucher;
 use Forms\Components\TextInput;
 use Illuminate\Support\Facades\DB;
 use Filament\Forms\Contracts\HasForms;
@@ -18,7 +18,10 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\Contracts\HasActions;
 use App\Filament\Resources\StudentResource;
 use Filament\Forms\Concerns\InteractsWithForms;
+use App\Filament\Resources\NewestStudentResource;
+use App\Filament\Resources\ReceiptVoucherResource;
 use Filament\Actions\Concerns\InteractsWithActions;
+
 class ViewNewestStudent extends ViewRecord
 {
     use InteractsWithActions;
@@ -121,5 +124,86 @@ class ViewNewestStudent extends ViewRecord
             // DB::update('update student_fee set name = ? where id = ?',[$name,$arguments['fee_id']]);
             
         });
+    }
+    public function printReceipt(): Action
+    {
+        try{
+        return Action::make('printReceipt')
+                    // ->icon('icon-print')
+                    ->color('primary')
+                    ->label(trans('main.print'))
+                    ->url(fn(array $arguments) => route('print_pdf',['type'=>"receipt_voucher",'id'=>$arguments['payment_id']]));
+                    // ->action(function(array $arguments,array $data) {
+                    //     $data = ['receipt' => ReceiptVoucher::find($arguments['payment_id']),'settings'=>SchoolSetting::first()];
+                    //         $pdf = MPDF::loadView('pdf.receipt_voucher', $data);
+                    //         $pdf->simpleTables = true;
+
+                    //         $pdf->download('document.pdf');
+                    //         header("Refresh:0");
+
+                    // });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
+    public function viewReceipt(): Action
+    {
+        try{
+            
+        return Action::make('viewReceipt')
+                    // ->icon('icon-eye')
+                    ->color('gray')
+                    ->label(trans(key: 'main.view'))
+                    ->action(function(array $arguments) {
+                        return redirect(ReceiptVoucherResource::getUrl('view',['record'=>$arguments['payment_id']]));
+
+                    });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
+    public function editReceipt(): Action
+    {
+                try{
+                    
+                return Action::make('editReceipt')
+                            ->label(trans(key: 'main.edit'))
+                            // ->icon('icon-edit')
+                             ->color('info')
+                            ->action(function(array $arguments) {
+                                     return redirect(ReceiptVoucherResource::getUrl('edit',['record'=>$arguments['payment_id']]));
+                            });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
+    }
+    public function deleteReceipt(): Action
+    {
+                try{
+                    
+                return Action::make('deleteReceipt')
+                            // ->icon('icon-delete')
+                            ->label(trans(key: 'main.delete'))
+                             ->color('danger')
+                             ->requiresConfirmation()
+                            ->action(function(array $arguments) {
+                                    ReceiptVoucher::findOrFail($arguments['payment_id'])->delete();
+                                    Notification::make()
+                                    ->title(trans('main.deleted_success'))
+                                    ->icon(icon: 'heroicon-o-document-text')
+                                    ->iconColor('danger')
+                                    ->send();
+                            });
+                }
+                catch(\Exception $ex)
+                {
+                    dd($ex);
+                }
     }
 }
