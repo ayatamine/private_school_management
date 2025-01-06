@@ -62,6 +62,9 @@ class DesignationResource extends Resource implements HasShieldPermissions
                 ->schema([
                     Forms\Components\TextInput::make('name')->label(trans('main.name'))
                         ->required(),
+                    Forms\Components\Select::make('department_id')->label(trans_choice('main.department',1))
+                        ->required()
+                        ->relationship('department','name'),
                     Forms\Components\Toggle::make('is_active')->label(trans('main.is_designation_active')),
                 ])
             ]);
@@ -73,9 +76,10 @@ class DesignationResource extends Resource implements HasShieldPermissions
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->sortable(),
-                Tables\Columns\ToggleColumn::make('is_active')->label(trans('main.is_designation_active')),
+                Tables\Columns\TextColumn::make('department.name')->label(trans_choice('main.department',1)),
+                Tables\Columns\IconColumn::make('is_active')->label(trans('main.is_designation_active')),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
             ])
             ->filters([

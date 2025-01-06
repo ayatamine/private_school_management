@@ -146,8 +146,10 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 Forms\Components\TextInput::make('middle_name')->label(trans('main.middle_name'))->hiddenOn('view') ,
                                 Forms\Components\TextInput::make('third_name')->label(trans('main.third_name'))->hiddenOn('view') ,
                                 Forms\Components\TextInput::make( 'last_name')->label(trans('main.last_name'))->hiddenOn('view') ,
-                                Forms\Components\TextInput::make('name')->label(trans('main.name'))
-                                        ->state(fn(Employee $employee)=>  $employee?->first_name.' '.$employee?->middle_name.' '.$employee?->third_name.' '.$employee?->last_name)
+                                //this is not working
+                                
+                                Forms\Components\TextInput::make('first_name')->label(trans('main.name'))
+                                        ->formatStateUsing(fn(Employee $employee)=>  $employee?->first_name.' '.$employee?->middle_name.' '.$employee?->third_name.' '.$employee?->last_name)
                                         ->visibleOn('view') ,
 
                                 ]),
@@ -215,12 +217,12 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 ]),
                                 Forms\Components\TextInput::make('national_address')->label(trans('main.national_address'))->columnSpanFull(),
                                 Grid::make()
-                                ->columns(columns: 2)
+                                ->columns(columns: 3)
                                 ->schema([
                                     Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
                                             // ->unique(table:'users',ignoreRecord: true)
                                             ->maxLength(13),  
-                                            Forms\Components\TextInput::make('email')->label(trans('main.email'))
+                                    Forms\Components\TextInput::make('email')->label(trans('main.email'))
                                             ->maxLength(255),        
                                     Forms\Components\TextInput::make('password')->label(trans('main.password'))->hiddenOn('edit')
                                                 ->maxLength(255), 

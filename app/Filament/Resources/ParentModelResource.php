@@ -115,8 +115,11 @@ class ParentModelResource extends Resource implements HasShieldPermissions
                         Forms\Components\TextInput::make('username')
                         ->label(trans('main.student_name'))  
                         ->default(fn (Student $student) => $student?->first_name.' '.$student?->last_name),        
-                        Forms\Components\TextInput::make('national_id')->label(trans('main.national_id')),   
-                        Forms\Components\TextInput::make('parent_relation')->label(trans('main.relation'))
+                        Forms\Components\TextInput::make('national_id')->label(trans('main.national_id')),
+                        //this is not workig
+                        Forms\Components\TextInput::make('parent_relation')
+            ->label(trans('main.relation'))
+            ->formatStateUsing(fn ($record, $state) => $record->pivot?->relation ?? $record->parent?->relation)
                       
                           
                      ])->columns(3)

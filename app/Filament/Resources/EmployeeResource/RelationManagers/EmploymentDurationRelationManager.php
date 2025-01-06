@@ -52,6 +52,7 @@ class EmploymentDurationRelationManager extends RelationManager
                 Forms\Components\FileUpload::make('contract_image')
                     ->directory('employees')
                     ->label(trans('main.employment_contract_image'))
+                    ->openable()
                     ->columnSpanFull(),
                 Forms\Components\DatePicker::make('contract_end_date')->label(trans('main.contract_end_date'))
                     ->visible(fn(?EmploymentDuration $record)=>$record?->contract_end_date != null)
@@ -67,6 +68,7 @@ class EmploymentDurationRelationManager extends RelationManager
                 Forms\Components\FileUpload::make('attachment')
                     ->visible(fn(?EmploymentDuration $record)=>$record?->contract_end_date != null)
                     ->label(trans('main.attachment'))
+                    ->openable()
                     ->columnSpanFull(),
                 ]),
                 // Section::make()
@@ -88,18 +90,19 @@ class EmploymentDurationRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('department.name')->label(trans_choice('main.department',1)),
                 Tables\Columns\TextColumn::make('designation.name')->label(trans_choice('main.job',1)),
-                Tables\Columns\TextColumn::make('contract_start_date')->label(trans('main.the_start'))->date(),
+                Tables\Columns\TextColumn::make('contract_start_date')->label(trans('main.the_start'))->date('Y-m-d'),
                 Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.the_end'))
                         ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
                         ->date('Y-m-d'),
                 Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.contract_end_date'))
                         ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
                         ->date('Y-m-d'),
-                Tables\Columns\TextColumn::make('duration')
+                Tables\Columns\TextColumn::make('duration')->label(trans('main.duration'))
                         ->state(function (EmploymentDuration $duration){
                             $start = Carbon::parse($duration->contract_start_date);
                             $end = Carbon::parse($duration->contract_end_date);
-                            return $start->diffForHumans($end); 
+                            //duration between to date in days
+                            return $start->diff($end)->format('%d '.trans('main.days'));
                         } ),
             ])
             ->filters([
@@ -126,7 +129,9 @@ class EmploymentDurationRelationManager extends RelationManager
                     return response()->download('storage/'.$record->attachment);
                 }),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null),
+                Tables\Actions\EditAction::make()
+                // ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null)
+                ,
                 Tables\Actions\Action::make('end_duration')
                 ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null)
                 ->label(trans('main.finish'))
@@ -158,9 +163,9 @@ class EmploymentDurationRelationManager extends RelationManager
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 }

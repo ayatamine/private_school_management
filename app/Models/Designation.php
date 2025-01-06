@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Designation extends Model
 {
@@ -16,6 +17,7 @@ class Designation extends Model
      */
     protected $fillable = [
         'name',
+        'department_id',
         'is_active',
     ];
 
@@ -27,5 +29,11 @@ class Designation extends Model
     protected $casts = [
         'id' => 'integer',
         'is_active' => 'boolean',
+        'department_id' => 'integer',
     ];
+    public function department():BelongsTo
+    {
+        return $this->belongsTo(Department::class,'department_id','id');
+    }
+    
 }
