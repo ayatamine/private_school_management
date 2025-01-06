@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\EmployeeResource\RelationManagers;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -10,15 +11,15 @@ use Filament\Tables\Table;
 use App\Models\Designation;
 use App\Models\EmploymentDuration;
 use BladeUI\Icons\Components\Icon;
-use Filament\Notifications\Notification;
 use Filament\Forms\Components\Section;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class EmploymentDurationRelationManager extends RelationManager
 {
-    protected static string $relationship = 'employmentDuration';
+    protected static string $relationship = 'employmentDurations';
     protected static bool $canCreateAnother = false;
     protected static function getLabel(): ?string
     {
@@ -85,16 +86,21 @@ class EmploymentDurationRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('designation_id')
             ->columns([
-                Tables\Columns\TextColumn::make('department.name')->label(trans_choice('main.designation',1)),
-                Tables\Columns\TextColumn::make('designation.name')->label(trans_choice('main.contract_start_date',1)),
-                Tables\Columns\TextColumn::make('contract_start_date')->label(trans('main.contract_start_date'))->date(),
+                Tables\Columns\TextColumn::make('department.name')->label(trans_choice('main.department',1)),
+                Tables\Columns\TextColumn::make('designation.name')->label(trans_choice('main.job',1)),
+                Tables\Columns\TextColumn::make('contract_start_date')->label(trans('main.the_start'))->date(),
+                Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.the_end'))
+                        ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
+                        ->date('Y-m-d'),
                 Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.contract_end_date'))
                         ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
-                        ->date(),
-                Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.contract_end_date'))
-                        ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
-                        ->date(),
-                // Tables\Columns\TextColumn::make('start_date'),
+                        ->date('Y-m-d'),
+                Tables\Columns\TextColumn::make('duration')
+                        ->state(function (EmploymentDuration $duration){
+                            $start = Carbon::parse($duration->contract_start_date);
+                            $end = Carbon::parse($duration->contract_end_date);
+                            return $start->diffForHumans($end); 
+                        } ),
             ])
             ->filters([
                 //
@@ -123,7 +129,7 @@ class EmploymentDurationRelationManager extends RelationManager
                 Tables\Actions\EditAction::make()->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null),
                 Tables\Actions\Action::make('end_duration')
                 ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null)
-                ->label(trans('main.end_employment_duration'))
+                ->label(trans('main.finish'))
                 ->icon('icon-close')
                 ->color('danger')
                 ->requiresConfirmation()

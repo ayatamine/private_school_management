@@ -40,8 +40,8 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $file_name = "سند دفع $record->id.pdf";
             break;
         case 'receipt_voucher_list':
-                $record = ReceiptVoucher::latest()->get();
-                $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
+                $receipt_vouchers = ReceiptVoucher::latest()->get();
+                $data = ['receipt_vouchers' => $receipt_vouchers,'settings'=>SchoolSetting::first()];
                 $view = "receipt_voucher_list";
                 $file_name = "سندات الدفع.pdf";
             break;

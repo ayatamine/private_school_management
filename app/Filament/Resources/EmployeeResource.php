@@ -11,9 +11,12 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Employee;
 use Filament\Forms\Form;
+use App\Models\Department;
 use Filament\Tables\Table;
+use App\Models\Designation;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs\Tab;
@@ -30,8 +33,6 @@ use App\Filament\Resources\EmployeeResource\RelationManagers;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\EmployeeResource\RelationManagers\EmploymentDurationRelationManager;
-use App\Models\Department;
-use App\Models\Designation;
 
 class EmployeeResource extends Resource implements HasShieldPermissions
 {
@@ -130,28 +131,47 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                             //                 $set('iban', $employee?->iban);
                             //             }),
                             Section::make()
-                            ->columns(2)
+                            ->columns()
                             ->schema([
+                                Grid::make()
+                                ->columns(3)
+                                ->schema([
                                 Forms\Components\TextInput::make('id')->label(trans('main.id_number'))
                                 ->default(Employee::latest()->first()?->id + 1)
                                 ->dehydrated(false)
                                 ->disabled()
                                 ,
                                 Forms\Components\TextInput::make('code')->label(trans('main.prefix_code'))->default('EM')->hidden(true),
-                                Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))->required(),
-                                Forms\Components\TextInput::make('middle_name')->label(trans('main.middle_name')),
-                                Forms\Components\TextInput::make('third_name')->label(trans('main.third_name')),
-                                Forms\Components\TextInput::make('last_name')->label(trans('main.last_name')),
-                                Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                                        ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')]), 
-                                Forms\Components\TextInput::make('email')->label(trans('main.email'))
-                                ->maxLength(255),        
-                                Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))->hiddenOn('edit')
-                                    ->maxLength(255), 
-                                Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
-                                            // ->unique(table:'users',ignoreRecord: true)
-                                            ->maxLength(13),  
-                                Forms\Components\Select::make('nationality')->label(trans('main.nationality'))
+                                Forms\Components\TextInput::make('first_name')->label(trans('main.first_name'))->required()->hiddenOn('view') ,
+                                Forms\Components\TextInput::make('middle_name')->label(trans('main.middle_name'))->hiddenOn('view') ,
+                                Forms\Components\TextInput::make('third_name')->label(trans('main.third_name'))->hiddenOn('view') ,
+                                Forms\Components\TextInput::make( 'last_name')->label(trans('main.last_name'))->hiddenOn('view') ,
+                                Forms\Components\TextInput::make('name')->label(trans('main.name'))
+                                        ->state(fn(Employee $employee)=>  $employee?->first_name.' '.$employee?->middle_name.' '.$employee?->third_name.' '.$employee?->last_name)
+                                        ->visibleOn('view') ,
+
+                                ]),
+                                Grid::make()
+                                ->columns(4)
+                                ->schema([
+                                        Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
+                                                ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')]), 
+                                        Forms\Components\DatePicker::make('birth_date')->label(trans('main.birth_date'))
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, $state) {
+                                                    $set('age',(new Carbon($state))->diffInYears(Carbon::now())." ".trans_choice('main.year',2));
+                                                }),
+                                        Forms\Components\TextInput::make('age')->label(trans('main.age')),
+                                        Forms\Components\Select::make('social_status')->label(trans('main.social_status'))
+                                        ->options([
+                                            'single' =>trans('main.single'),
+                                            'marrieed' =>trans('main.married')
+                                        ]),
+                                ]),
+                                Grid::make()
+                                ->columns(4)
+                                ->schema([
+                                    Forms\Components\Select::make('nationality')->label(trans('main.nationality'))
                                     ->options(
                                         [
                                             'saudian'=>trans('main.saudian'),'other'=>trans('main.others')
@@ -159,55 +179,53 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                     )
                                     ->default('saudian')
                                     ->live(),
-                                Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
-                                    ->maxLength(255)
-                                    ->hidden(fn (Get $get) => $get('nationality') == 'saudian'),
-                                Forms\Components\Select::make(name: 'identity_type')->label(trans('main.identity_type'))
-                                    ->options(['national_identity'=>trans('main.national_identity'), 'resident_accommodation'=>trans('main.resident_accommodation'), 'visitor_accommodation'=>trans('main.visitor_accommodation')]),  
+                                    Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
+                                        ->maxLength(255)
+                                        ->hidden(fn (Get $get) => $get('nationality') == 'saudian'),
+                                    Forms\Components\Select::make(name: 'identity_type')->label(trans('main.identity_type'))
+                                        ->options(['national_identity'=>trans('main.national_identity'), 'resident_accommodation'=>trans('main.resident_accommodation'), 'visitor_accommodation'=>trans('main.visitor_accommodation')]),  
                                     Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
-                                    ->required()
-                                    ->rules([
-                                        fn (Employee $employee,Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($employee,$get) {
-                                            if($get('registration_number') != null) return;
-                                            if($employee?->id)
-                                            {
-                                                if (User::whereNationalId($value)->whereNot('id',$employee->user_id)->first() ) {
-                                                    $fail(trans('main.national_id_used_before'));
+                                        ->required()
+                                        ->rules([
+                                            fn (Employee $employee,Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($employee,$get) {
+                                                if($get('registration_number') != null) return;
+                                                if($employee?->id)
+                                                {
+                                                    if (User::whereNationalId($value)->whereNot('id',$employee->user_id)->first() ) {
+                                                        $fail(trans('main.national_id_used_before'));
+                                                    }
+                                                }else{
+                                                    if (User::whereNationalId($value)->first() ) {
+                                                        $fail(trans('main.national_id_used_before'));
+                                                    }
                                                 }
-                                            }else{
-                                                if (User::whereNationalId($value)->first() ) {
-                                                    $fail(trans('main.national_id_used_before'));
-                                                }
-                                            }
-                                        },
-                                    ])
-                                    // ->unique(table:'users',ignoreRecord: true)
-                                    ->maxLength(10), 
-                                Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date')),
+                                            },
+                                        ])
+                                        // ->unique(table:'users',ignoreRecord: true)
+                                        ->maxLength(10), 
+                                    Forms\Components\DatePicker::make('identity_expire_date')->label(trans('main.identity_expire_date')),
+                                ]),
+                                Forms\Components\TextInput::make('iban')->label(trans('main.iban'))->columnSpanFull(),
 
+                                Grid::make()
+                                ->columns(columns: 2)
+                                ->schema([
+                                    Forms\Components\TextInput::make('study_degree')->label(trans('main.study_degree')),
+                                    Forms\Components\TextInput::make('study_speciality')->label(trans('main.study_speciality')),
+                                ]),
+                                Forms\Components\TextInput::make('national_address')->label(trans('main.national_address'))->columnSpanFull(),
+                                Grid::make()
+                                ->columns(columns: 2)
+                                ->schema([
+                                    Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
+                                            // ->unique(table:'users',ignoreRecord: true)
+                                            ->maxLength(13),  
+                                            Forms\Components\TextInput::make('email')->label(trans('main.email'))
+                                            ->maxLength(255),        
+                                    Forms\Components\TextInput::make('password')->label(trans('main.password'))->hiddenOn('edit')
+                                                ->maxLength(255), 
+                                ]),
                                 
-                                // Forms\Components\DatePicker::make('joining_date')->label(trans('main.joining_date')),
-                                Forms\Components\DatePicker::make('birth_date')->label(trans('main.birth_date'))
-                                            ->live()
-                                            ->afterStateUpdated(function (Set $set, $state) {
-                                                $set('age',(new Carbon($state))->diffInYears(Carbon::now())." ".trans_choice('main.year',2));
-                                            }),
-                                Forms\Components\TextInput::make('age')->label(trans('main.age')),
-                                Forms\Components\Select::make('social_status')->label(trans('main.social_status'))
-                                    ->options([
-                                        'single' =>trans('main.single'),
-                                        'marrieed' =>trans('main.married')
-                                    ]),
-                                Forms\Components\TextInput::make('study_degree')->label(trans('main.study_degree')),
-                                Forms\Components\TextInput::make('study_speciality')->label(trans('main.study_speciality')),
-                                Forms\Components\TextInput::make('national_address')->label(trans('main.national_address')),
-                                Forms\Components\TextInput::make('iban')->label(trans('main.iban')),
-                               
-                                // Forms\Components\FileUpload::make('documents')
-                                //     ->label(trans('main.documents'))
-                                //     ->directory('employees')
-                                //     ->columnSpanFull()
-                                //     ->multiple(),
                                 
                     
                                 ]),

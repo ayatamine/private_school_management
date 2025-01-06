@@ -86,7 +86,7 @@
                 table td:not(:last-child),
                 table th:not(:last-child) {
                     padding: 0.4rem;text-align: center;
-                    font-size: 14px;
+                    font-size: 13px;
                     border-left: 0;
                     border-right: 0.01em solid #262729;
                     border-top: 0;
@@ -204,25 +204,35 @@
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
 
+            
                 <tr>
                     <th scope="col" class="px-6 py-3 border">
-                       {{trans('main.id_number')}}
+                       {{trans('main.receipt_number')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.name')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.id_number')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
                         {{trans('main.national_id_n')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.department_name_l')}}
+                        {{trans('main.payment')}}
                     </th>
                    
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans_choice('main.job',1)}}
+                        {{trans('main.account')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.status')}}
+                        {{trans('main.value')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.payment_date')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.creation')}}
                     </th>
                 </tr>
             </thead>
@@ -234,25 +244,34 @@
            
            
       
-                @forelse ($employees as $employee)
+                @forelse ($receipt_vouchers as $receipt)
                     <tr class="">
                         <td scope="row" class="px-6 py-4  border">
-                           {{$employee->id}}
+                           {{$receipt->id}}
                         </td>
                         <td class="px-6 py-4  border ">
-                            {{$employee->name}}
+                            {{$receipt->student?->username}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->user->national_id}}
+                            {{$receipt->student?->registration_number}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->employmentDurations?->first()?->department?->name}}
+                            {{$receipt->student?->user?->national_id}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->employmentDurations?->first()?->designation?->name}}
+                            {{ $receipt->paymentMethod?->name == 'transfer' ? trans('main.transfer') : $receipt->paymentMethod?->name}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->employmentDurations?->first()  ? trans('main.active_state') : trans('main.finished_state')}}
+                            {{$receipt->paymentMethod?->financeAccount?->name}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{$receipt->value." ".env('DEFAULT_CURRENCY')}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{date('Y-m-d',strtotime($receipt->payment_date))}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{date('Y-m-d',strtotime($receipt->created_at))}}
                         </td>
                         
                     </tr> 
@@ -262,7 +281,13 @@
                         <td colspan="6" style="border-left: 1px solid #262729">{{trans('main.no_employees')}}</td>
                     </tr>
                 @endforelse
-                
+                <tr>
+                    <td class="px-6 py-4 " colspan="6" class="border" >{{trans('main.total_only')}}</td>
+                    <td class="px-6 py-4 " class="border">
+                    {{$total}} {{env('DEFAULT_CURRENCY')}}
+                    </td>
+                    <td colspan="2" class="border"></td>
+                </tr>
             </tbody>
         </table>
 
