@@ -6,6 +6,7 @@ use Closure;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Student;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ParentModel;
@@ -15,19 +16,19 @@ use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ParentModelResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Filament\Resources\ParentModelResource\RelationManagers;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class ParentModelResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = ParentModel::class;
 
     protected static ?string $navigationIcon = 'icon-parents';
-    // public static function getNavigationGroup():string
-    // {
-    //     return trans('main.employee_settings');
-    // }
+    public static function getNavigationGroup():string
+    {
+        return trans('main.student_settings');
+    }
     public static function getModelLabel():string
     {
         return trans_choice('main.parent',1);
@@ -64,7 +65,7 @@ class ParentModelResource extends Resource implements HasShieldPermissions
                 Section::make(trans('main.parent_data'))
                   ->columns(2)
                   ->schema([   
-                Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
+                Forms\Components\TextInput::make('full_name')->label(trans('main.name'))
                     ->required()
                     ->maxLength(255),
                 // Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
@@ -74,7 +75,7 @@ class ParentModelResource extends Resource implements HasShieldPermissions
                 //             ]
                 //     )
                 //     ->required(),
-                Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
+                Forms\Components\TextInput::make('national_id')->label(trans('main.national_id_n'))
                     ->required()
                     ->rules([
                         fn (ParentModel $parent): Closure => function (string $attribute, $value, Closure $fail) use ($parent) {
@@ -93,7 +94,6 @@ class ParentModelResource extends Resource implements HasShieldPermissions
                     ])
                     ->maxLength(10),           
                 Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
-                    ->required()
                     // ->unique(table:'users',ignoreRecord: true)
                     ->maxLength(13),   
                 // Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
@@ -105,22 +105,18 @@ class ParentModelResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
                     ->maxLength(255)        
                     ->hiddenOn('view'),
-                Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
-                    ->options(
-                        [
-                            'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
-                            ]
-                    )
-                    ->disabled(),  
                 ]),
                 Section::make(trans('main.student_infos'))
                   ->columns(1)
                   ->schema([   
                     Repeater::make('students')
+                     ->hiddenLabel(true)
                      ->schema([
-                        Forms\Components\TextInput::make('username')->label(trans('main.student_name')),        
+                        Forms\Components\TextInput::make('username')
+                        ->label(trans('main.student_name'))  
+                        ->default(fn (Student $student) => $student?->first_name.' '.$student?->last_name),        
                         Forms\Components\TextInput::make('national_id')->label(trans('main.national_id')),   
-                        Forms\Components\TextInput::make('course')->label(trans_choice('main.academic_course',1)),   
+                        Forms\Components\TextInput::make('parent_relation')->label(trans('main.relation'))
                       
                           
                      ])->columns(3)
@@ -134,13 +130,13 @@ class ParentModelResource extends Resource implements HasShieldPermissions
         return $table
             ->columns([
                
-                Tables\Columns\TextColumn::make('full_name')->label(trans('main.full_name'))
+                Tables\Columns\TextColumn::make('full_name')->label(trans('main.name'))
                     ->sortable()
                     ->searchable(),
                 // Tables\Columns\TextColumn::make('relation')->label(trans('main.relation'))
                 //     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                 //     ->searchable(),
-                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
+                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id_n'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
@@ -148,22 +144,21 @@ class ParentModelResource extends Resource implements HasShieldPermissions
                 // Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
                 //     ->formatStateUsing(fn (string $state) => trans("main.$state"))
                 //     ->searchable(),
-                Tables\Columns\TextColumn::make('user.email')->label(trans('main.email'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('user.email')->label(trans('main.email'))
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
+                //     ->date()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
+                //     ->date()
+                //     ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\EditAction::make(),
+                
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')

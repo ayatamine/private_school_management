@@ -15,17 +15,18 @@ use App\Models\PaymentMethod;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReceiptVoucherResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Illuminate\Support\HtmlString;
-use Illuminate\Support\Facades\Blade;
 
 class ReceiptVoucherResource extends Resource implements HasShieldPermissions
 {
@@ -70,12 +71,13 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
         return $form
             ->schema([
                 Section::make('')
+                ->columns(2)
                 ->schema([
-                Forms\Components\TextInput::make('id')->label(trans('main.id'))
+                    Forms\Components\TextInput::make('id')->label(trans('main.id'))
                     ->disabledOn('view')
                     ->visibleOn('view')
                     ->maxLength(255),
-                Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
+                    Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                     ->relationship('student', 'username')
                     ->preload()
                     ->searchable()
@@ -86,6 +88,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                                                             ->pluck('username', 'id')->toArray())
                     ->required()
                     ->default(request()['student']),
+                
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric()
@@ -95,6 +98,8 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     })
                     ->live(onBlur: true)
                     ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.value" />'))),
+                Forms\Components\TextInput::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
+                    ->maxLength(255),    
                 // Forms\Components\TextInput::make('payment_method')
                 //     ->label(trans_choice('main.payment_method',1))
                 //     ->default(trans('main.transfer'))
@@ -119,12 +124,11 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                         return !$payment_method?->is_code_required ?? true ;
                     })
                     ->maxLength(255),
-                Forms\Components\TextInput::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
-                    ->maxLength(255),
+               
                 Forms\Components\DatePicker::make('payment_date')->label(trans('main.payment_date'))
                     ->required(),
-                Forms\Components\FileUpload::make('document')->label(trans('main.document')),
-                Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))
+                Forms\Components\FileUpload::make('document')->label(trans('main.document'))->columnSpanFull()->openable(),
+                Forms\Components\Textarea::make('simple_note')->label(trans('main.note'))->columnSpanFull()
                         ->maxLength(255),
                 Forms\Components\Textarea::make('reject_note')->label(trans('main.reject_note'))
                         ->disabled()
@@ -139,38 +143,42 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
         return $table
         ->query(ReceiptVoucher::whereNull('added_by'))
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label(trans_choice('main.id',1))
-                    ->formatStateUsing(fn($state)=>$state."#")
+                Tables\Columns\TextColumn::make('id')->label(trans('main.receipt_number'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('student.registration_number')->label(trans_choice('main.registration_number',1))
+                Tables\Columns\TextColumn::make('student.username')->label(trans('main.name'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
+                Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.id_number'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
+                
+                Tables\Columns\TextColumn::make('student.user.national_id')->label(trans('main.national_id_n'))
+                    ->sortable(),
+                
+                Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans('main.payment'))
                     ->formatStateUsing(fn($state)=> $state == 'transfer' ? trans('main.transfer') : $state)
+                    ->sortable(),
+                
+                Tables\Columns\TextColumn::make('paymentMethod.financeAccount.name')->label(trans('main.account'))
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
                     ->formatStateUsing(fn($state)=>  $state." ".env('DEFAULT_CURRENCY'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('value_in_alphabetic')->label(trans('main.value_in_alphabetic'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status')->label(trans('main.approvel_status'))
-                    ->badge()
-                    ->formatStateUsing(fn($state)=> trans("main.$state"))
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'info',
-                        'paid' => 'success',
-                        'rejected' => 'danger',
-                    }),
                 Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.registered_by'))
+                Tables\Columns\TextColumn::make('created_at')->label(trans('main.creation'))
+                    ->date('Y-m-d')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('reject_note')->label(trans('main.reject_note'))
-                    ->state(fn(ReceiptVoucher $receiptVoucher)=>isset($receiptVoucher->reject_note) ? $receiptVoucher->reject_note : "/" ),
                 
+               
+                Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.username'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+                    ->summarize(
+                        Sum::make()->numeric(
+                                    2,',',','
+                               )
+                   )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -241,11 +249,11 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                 // Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(employeeHasPermission('print_receipt::voucher'))
-                ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.receipt_voucher',2)
-                ])->disableXlsx(),
+                // FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                // ->visible(employeeHasPermission('print_receipt::voucher'))
+                // ->extraViewData([
+                //     'table_header' => trans('main.menu').' '.trans_choice('main.receipt_voucher',2)
+                // ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Employee;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Student;
@@ -36,7 +37,13 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $record = ReceiptVoucher::findOrFail($id);
                 $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
                 $view = "receipt_voucher";
-                $file_name = "fee_payment_receipt_$record->id.pdf";
+                $file_name = "سند دفع $record->id.pdf";
+            break;
+        case 'receipt_voucher_list':
+                $record = ReceiptVoucher::latest()->get();
+                $data = ['receipt' => $record,'settings'=>SchoolSetting::first()];
+                $view = "receipt_voucher_list";
+                $file_name = "سندات الدفع.pdf";
             break;
         case 'invoice':
                 $record = Invoice::findOrFail($id);
@@ -55,6 +62,12 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $data = ['student' => $record,'settings'=>SchoolSetting::first()];
                 $view = "all_fees";
                 $file_name = "فاتورة_الرسوم_$record->username.pdf";
+            break;
+        case 'employees':
+                $employees = Employee::latest()->get();
+                $data = ['employees' => $employees,'settings'=>SchoolSetting::first()];
+                $view = "employees";
+                $file_name = "قائمة العاملين.pdf";
             break;
         case 'expenses':
                 $url =url()->previous();

@@ -21,17 +21,30 @@ class CreateNewestStudent extends CreateRecord
      
         if($data['new_student'] == true)
         {
-            $user = User::create([
-                'national_id' =>$data['national_id'],
-                'gender' =>$data['gender'],
-                'phone_number' =>$data['phone_number'],
-                'email' =>$data['email'],
-                'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
-            ]);
-            $data['registered_by'] = Auth::id();
-            $data['user_id'] = $user?->id;
-            $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
-
+            try{
+                DB::beginTransaction();
+                $user = User::create([
+                    'national_id' =>$data['national_id'],
+                    'gender' =>$data['gender'],
+                    'phone_number' =>$data['phone_number'],
+                    'email' =>$data['email'],
+                    'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+                ]);
+                $data['registered_by'] = Auth::id();
+                $data['user_id'] = $user?->id;
+                $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
+                DB::commit();
+            }
+            catch(\Exception $ex)
+            {
+                DB::rollBack();
+                        Notification::make()
+                            ->title($ex->getMessage())
+                            ->icon('heroicon-o-document-text')
+                            ->iconColor('danger')
+                            ->send();
+            }
+            $this->halt();
            
         return $data;
         }

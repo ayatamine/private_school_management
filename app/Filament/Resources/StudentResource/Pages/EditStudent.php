@@ -58,14 +58,14 @@ class EditStudent extends EditRecord
         $data['parent_phone_number']  = $parent?->user->phone_number;
         $data['parent_gender']  = $parent?->user->gender ? trans("main.".$parent?->user?->gender."") : "";
 
-        if($data['nationality'] == 'saudian')
-        {
-            $data['nationality2'] = "";            
-        }else
-        {
-            $data['nationality2'] = $data['nationality']; 
-            $data['nationality'] = "other"; 
-        }
+        // if($data['nationality'] == 'saudian')
+        // {
+        //     $data['nationality2'] = "";            
+        // }else
+        // {
+        //     $data['nationality2'] = $data['nationality']; 
+        //     $data['nationality'] = "other"; 
+        // }
 
       
         return $data;
@@ -89,7 +89,7 @@ class EditStudent extends EditRecord
                 $data['password'] = bcrypt($password);
                 User::findOrFail($this->record->user_id)->update(['password'=>$data['password']]);
             }
-            $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
+            // $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
             $is_semester_changed = false;
             $last_semester_id = $this->record->semester_id;
            

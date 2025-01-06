@@ -30,6 +30,8 @@ use App\Filament\Resources\EmployeeResource\RelationManagers;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\EmployeeResource\RelationManagers\EmploymentDurationRelationManager;
+use App\Models\Department;
+use App\Models\Designation;
 
 class EmployeeResource extends Resource implements HasShieldPermissions
 {
@@ -130,7 +132,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                             Section::make()
                             ->columns(2)
                             ->schema([
-                                Forms\Components\TextInput::make('id')->label(trans('main.registration_number'))
+                                Forms\Components\TextInput::make('id')->label(trans('main.id_number'))
                                 ->default(Employee::latest()->first()?->id + 1)
                                 ->dehydrated(false)
                                 ->disabled()
@@ -247,60 +249,96 @@ class EmployeeResource extends Resource implements HasShieldPermissions
             })->first()?->id))
             ->columns([
                
-                Tables\Columns\TextColumn::make('id')->label(trans('main.registration_number'))
+                Tables\Columns\TextColumn::make('id')->label(trans('main.id_number'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('first_name')->label(trans('main.first_name'))
+                Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
+                    ->state(function (Employee $record) {
+                        return $record->first_name." ".$record->last_name;
+                    })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id_n'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
-                    ->searchable()
+                
+                Tables\Columns\TextColumn::make('department_name_l')->label(trans('main.department_name_l'))
+                    ->state(function (Employee $record) { 
+                        return $record?->employmentDurations?->first()?->department?->name;
+                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('third_name')->label(trans('main.third_name'))
-                    ->searchable()
+                Tables\Columns\TextColumn::make('job')->label(trans_choice('main.job',1))
+                    ->state(function (Employee $record) { 
+                        return $record?->employmentDurations?->first()?->designation?->name;
+                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('last_name')->label(trans('main.last_name'))
-                    ->searchable()
+                Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
+                    ->state(function (Employee $record) { 
+                        return $record?->employmentDurations?->first()  ? trans('main.active_state') : trans('main.finished_state');
+                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user.gender')->label(trans('main.gender'))
-                    ->formatStateUsing(fn (string $state) => trans("main.$state"))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->label(trans('main.registration_date'))
-                    ->date()
-                    ->sortable(),
+               
             ])
             ->filters([
-                // SelectFilter::make('account_status')->label('Account Status')->options([
-                //     'pending' => 'Pending',
-                //     'accepted' => 'Accepted',
-                //     'blocked' => 'Blocked',
-                // ]),
-                SelectFilter::make('gender')->label(trans('main.gender'))->options([
-                    'male' => trans('main.male'),
-                    'female' => trans('main.female'),
-                ]),
+                SelectFilter::make('department')->label(trans('main.department_name_l'))
+                    ->options(Department::all()->pluck('name', 'id'))
+                    ->preload()
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                        //select employees that has employment durations and the department is selected 
+                        return $query->whereHas('employmentDurations', function ($query) use ($data) {
+                            return $query->whereNull('termination_reason')->where('department_id', $data['value']);
+                        });
+                    }),
+                SelectFilter::make('designation')->label(trans('main.job_name_l'))
+                    ->options(Designation::all()->pluck('name', 'id'))
+                    ->preload()
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                        //select employees that has employment durations and the department is selected 
+                        return $query->whereHas('employmentDurations', function ($query) use ($data) {
+                            return $query->whereNull('termination_reason')->where('designation_id', $data['value']);
+                        });
+                    }),
+                SelectFilter::make('status')->label(trans('main.status'))
+                    ->options(['active_state'=>trans('main.active_state'), 'finished_state'=>trans('main.finished_state')])
+                    ->preload()
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                        if($data['value'] == 'active_state') return $query->whereHas('employmentDurations');
+                        return $query->whereDoesntHave('employmentDurations');
+                    }),
             ])
+            ->deferFilters()
+            ->filtersApplyAction(
+                fn (\Filament\Tables\Actions\Action $action) => $action
+                    ->label(trans('main.apply')),
+            )
             ->actions([
                 Tables\Actions\ViewAction::make()->visible(fn()=>employeeHasPermission('view_employee')),
                
 
             ])
             ->bulkActions([
-                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>employeeHasPermission('print_employee'))
-                ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.designation',2)
-                ])->disableXlsx(),
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                // ->visible(fn()=>employeeHasPermission('print_employee'))
+                // ->extraViewData([
+                //     'table_header' => trans('main.menu').' '.trans_choice('main.designation',2)
+                // ])->disableXlsx(),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 

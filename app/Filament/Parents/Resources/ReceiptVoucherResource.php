@@ -125,10 +125,9 @@ class ReceiptVoucherResource extends Resource
                     $query->whereParentId(auth()->user()?->parent?->id);
             }))
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label(trans_choice('main.id',1))
-                    ->formatStateUsing(fn($state)=>$state."#")
+                Tables\Columns\TextColumn::make('id')->label(trans('main.receipt_number'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('student.registration_number')->label(trans_choice('main.registration_number',1))
+                Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.id_number'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
                     ->sortable(),

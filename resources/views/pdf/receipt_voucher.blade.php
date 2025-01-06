@@ -171,12 +171,13 @@
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
-                        {{ trans('main.school_title') }} : <span style="">{{ $settings->title }}</span> <br>
-                        {{ trans('main.permit_number') }} : <span style="">{{ $settings->permit_number }}</span> <br>
-                        {{ trans('main.commercial_register_number') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-                        {{ trans('main.tax_number') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-
-                    </td>
+                        <span style="">{{ $settings->title }}</span> <br>
+                       {{ trans('main.permit_number_2') }} : <span style="">{{ $settings->permit_number }}</span> 
+                       {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
+                       {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
+                        <span style="">{{ $settings->address }}</span> <br>
+                       {{ $settings->email }} {{ trans('main.phone_number') }} : <span style="">{{ $settings->phone_number }}</span> 
+                   </td>
                     
                 </tr>
             </tbody>
@@ -189,63 +190,53 @@
         <table class=" mt-5" style="width: 100%">
             <tbody>
                 <tr>
-                    <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        {{ trans('main.serial_number') }} : <span style="">{{ $receipt->id }}</span> <br><br>
-                        {{ trans('main.name') }} : <span style="">{{ trans_choice('main.receipt_voucher',1)}}</span> <br>
-                        {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($receipt->created_at)) }}</span> <br>
-
-                    </td>
-                </tr>
-                
-            </tbody>
-        </table>
-        <hr>
-        {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.student_info')}}</strong>
-        </h5>
-        <table class=" mt-5"  style="width: 100%">
-            <tbody>
-                <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.name') }} : <span style="">{{ $receipt?->student?->username ??  $receipt?->studentAttached?->username }}</span> <br><br>
-                        {{ trans('main.nationality') }} : <span style="">{{ $receipt?->student?->nationality ??  $receipt?->studentAttached?->nationality }}</span> <br>
-                       
+                        {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student?->registration_number ??  $receipt?->studentAttached?->registration_number }}</span> <br><br>                       
+                    </td>
+                    <td class="border-0 pl-0" style="border: none"  colspan="2">
+                        {{ trans('main.name') }} : <span style="">{{ $receipt?->student?->username ??  $receipt?->studentAttached?->username }}</span> <br><br>                       
                     </td>
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2"> 
-                        {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student?->registration_number ??  $receipt?->studentAttached?->registration_number}}</span> <br><br>
-                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $receipt?->student?->semester?->course?->name ??  "/" }}</span> <br>
+                        {{ trans('main.national_id') }} : <span style="">{{ $receipt?->student?->user?->national_id ??  $receipt?->studentAttached?->user?->national_id}}</span> <br><br>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="border-0 pl-0" colspan="2" style="border: none" >
+                        {{ trans('main.serial_number') }} : <span style="">{{ $receipt->id }}</span> <br><br>
+                    </td>
+                    <td class="border-0 pl-0" colspan="2" style="border: none" >
+                        {{ trans('main.date') }} : <span style="">{{ date('Y-m-d',strtotime($receipt->created_at)) }}</span> <br>
                     </td>
                 </tr>
-                
-            </tbody>
-        </table>
-        <hr>
-        {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.financial_infos')}}</strong>
-        </h5>
-        <table class=" mt-5"  style="width: 100%">
-            <tbody>
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.value') }} : <span style="">{{ $receipt->value }}</span> <br><br>
+                        {{ trans('main.value') }} : <span style="">{{ $receipt->value }}</span> <br><br>                       
+                    </td>
+                    <td class="border-0 pl-0" style="border: none"  colspan="2">
                         {{ trans('main.value_in_alphabetic') }} : <span style="">{{ $receipt->value_in_alphabetic  }}</span> <br>
-                       
                     </td>
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2">
                         {{ trans_choice('main.payment_method',1) }} : <span style="">{{ $receipt?->paymentMethod?->name == "transfer" ? trans('main.transfer') : $receipt?->paymentMethod?->name }}</span> <br><br>
-                        {{ trans('main.payment_date') }} : <span style="">{{ $receipt?->payment_date }}</span> <br>
                     </td>
                 </tr>
                 
             </tbody>
         </table>
-
-        <br>
-   
+        <hr>
+        <br> <br> <br> <br>
+        <table style="width: 100%;border-collapse: collapse;">
+            <tbody>
+                <tr style="border:none">
+                    
+                    <th style="border:none;text-align:left" colspan="3">
+                        <img style="margin:auto;text-align:center;margin-left:2rem;display:block" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="75">
+                    </th>
+                </tr>
+            </tbody>
+        </table>
 
     </body>
 </html>

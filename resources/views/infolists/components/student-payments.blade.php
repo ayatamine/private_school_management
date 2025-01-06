@@ -63,7 +63,7 @@
                            {{$payment->id}}
                         </td>
                         <td class="px-6 py-4 border ">
-                            {{$payment->payment_date}}
+                            {{date('Y-m-d', strtotime($payment->payment_date))}}
                         </td>
                         <td class="px-6 py-4 border">
                             {{$payment->paymentMethod->name == "transfer" ? trans('main.transfer') : $payment->paymentMethod->name }}
@@ -100,7 +100,7 @@
                 @endforelse
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 border" colspan="3" >{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 border" colspan="3" >{{trans('main.total_payments')}}</td>
                     <td class="px-6 py-4 border">
                        {{$total}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>

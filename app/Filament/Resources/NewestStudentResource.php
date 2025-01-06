@@ -37,6 +37,7 @@ use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\NewestStudentResource\Pages;
+use Filament\Infolists\Components\TextEntry\TextEntrySize;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
@@ -101,7 +102,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             })
                             ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
                             ->visible(fn (Get $get) => $get('new_student') == false )
-                            // ->hiddenOn('edit')
+                            ->hiddenOn('edit')
                             ->live()
                             ->afterStateUpdated(function (Set $set, $state) {
                                 $student = Student::with('user')->with('parent')->with('parent.user')->find($state);
@@ -166,13 +167,16 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->live(),
                             Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
                                 ->options( AcademicStage::pluck('name', 'id'))
+                                ->required()
                                 ->live(),
                             Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                                 ->options(fn (Get $get): Collection => Course::query()
                                 ->where('academic_stage_id', $get('academic_stage_id'))
                                 ->pluck('name', 'id'))
+                                ->required()
                                 ->live(),
                             Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))
+                                ->required()
                                 ->options(fn (Get $get): Collection => Semester::query()
                                 ->where('course_id', $get('course_id'))
                                 ->where('is_registration_active', true)
@@ -185,19 +189,18 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                 ->required()
                                 ->maxLength(255),
                             Forms\Components\TextInput::make( 'middle_name')->label(trans('main.middle_name'))
-                                ->required()
                                 ->maxLength(255),
                             Forms\Components\TextInput::make('third_name')->label(trans('main.third_name'))
                                 ->maxLength(255),
                             Forms\Components\TextInput::make('last_name')->label(trans('main.last_name'))
+                                ->required()
                                 ->maxLength(255),
                         ]),
                         Grid::make()
                         ->columns(4)
                         ->schema([
                             Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                        ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')])
-                        ->required(),        
+                            ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')]),        
                             Forms\Components\DatePicker::make('birth_date')->label(label: trans('main.birth_date')),
                             Forms\Components\Select::make('nationality')->label(trans('main.nationality'))
                                 ->options(
@@ -206,11 +209,17 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                     ]
                                 )
                                 ->default('saudian')
+                                ->hiddenOn('edit')
                                 ->required()
                                 ->live(),
                             Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
                                 ->maxLength(255)
-                                ->hidden(fn (Get $get) => $get('nationality') == 'saudian'),
+                                ->visible(fn (Get $get) => $get('nationality') != 'saudian')
+                                ->hiddenOn('edit'),
+                            Forms\Components\TextInput::make('nationality')->label(trans('main.nationality'))
+                                ->maxLength(255)
+                                ->required()
+                                ->hiddenOn('create'),
                             Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                 ->required()
                                 ->rules([
@@ -234,15 +243,13 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         ->columns(3)
                         ->schema([  
                             Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
-                                ->required()
                                 ->numeric()
                                 // ->unique(table:'users',ignoreRecord: true)
                                 ->maxLength(13),   
-                            Forms\Components\TextInput::make('email')->label(trans('main.email'))
-                                ->required(),
+                            Forms\Components\TextInput::make('email')->label(trans('main.email')),
                                 // ->unique(table:'users',ignoreRecord: true),   
                         
-                            Forms\Components\TextInput::make('password')->label(trans('main.password'))->hint(trans('main.you_can_change_password'))
+                            Forms\Components\TextInput::make('password')->label(trans('main.password'))
                                 ->maxLength(255)
                                 // ->hidden(fn (Get $get) => $get('new_student') == false)
                                 ,        
@@ -254,60 +261,59 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 // ->visible(fn (Get $get) => $get('new_student') == null || $get('new_student') == true),
                 Section::make(trans('main.parent_data'))
                     ->columnSpanFull()
-                    ->schema([ Grid::make()
-                     ->schema([
-                        Forms\Components\Select::make('parent_id')->label(trans_choice('main.parent',1))
-                            ->relationship('parent','full_name')
-                            ->preload()
-                            ->live()
-                            ->afterStateUpdated(function (Set $set, $state) {
-                                $parent = ParentModel::with('user:id,national_id,email,gender,phone_number')->findOrFail($state);
-                                // dd($parent);
-                                $set('parent_relation', $parent->relation);
-                                $set('parent_national_id', $parent?->user->national_id);
-                                $set('parent_email', $parent?->user->email);
-                                $set('parent_phone_number', $parent?->user->phone_number);
-                                $set('parent_gender', trans("main.".$parent?->user?->gender.""));
-                            })
-                            ->searchable()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
-                                ->required()
-                                ->maxLength(255),
-                                Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
-                                    ->options(
-                                        [
-                                            'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
-                                        ]
-                                    )
-                                    ->required(),
-                                Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
+                    ->schema([ 
+                        Grid::make()
+                        ->columns(3)
+                        ->schema([
+                            Forms\Components\Select::make('parent_id')->label(trans_choice('main.parent',1))
+                                ->relationship('parent','full_name')
+                                ->preload()
+                                ->live()
+                                ->afterStateUpdated(function (Set $set, $state) {
+                                    $parent = ParentModel::with('user:id,national_id,email,gender,phone_number')->findOrFail($state);
+                                    // dd($parent);
+                                    $set('parent_relation', $parent->relation);
+                                    $set('parent_national_id', $parent?->user->national_id);
+                                    $set('parent_email', $parent?->user->email);
+                                    $set('parent_phone_number', $parent?->user->phone_number);
+                                    $set('parent_gender', trans("main.".$parent?->user?->gender.""));
+                                })
+                                ->searchable()
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
                                     ->required()
-                                    // ->unique(table:'users',ignoreRecord: true)
-                                    ->maxLength(10),           
-                                Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
-                                    ->required()
-                                    ->maxLength(13),   
-                                Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                                    ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
-                                    ->required(),        
-                                Forms\Components\TextInput::make('email')->label(trans('main.email'))
-                                    ->maxLength(255),   
-                            ]),
-                            //parent model only to show 
-                            Forms\Components\Select::make('parent_relation')->label(trans('main.relation'))
-                            ->options(
-                                [
-                                    'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
-                                ]
-                            ),
-                            Forms\Components\TextInput::make('parent_national_id')->label(trans('main.national_id'))->disabled(),
-                            Forms\Components\TextInput::make('parent_email')->label(trans('main.email'))->disabled(),
-                            Forms\Components\TextInput::make('parent_phone_number')->label(trans('main.phone_number'))->disabled(),
-                            Forms\Components\TextInput::make('parent_gender')->label(trans('main.gender'))->disabled(),
-                    
+                                    ->maxLength(255),
+                                    Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
+                                        ->options(
+                                            [
+                                                'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
+                                            ]
+                                        )
+                                        ->required(),
+                                    Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
+                                        ->required()
+                                        // ->unique(table:'users',ignoreRecord: true)
+                                        ->maxLength(10),           
+                                    Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
+                                        ->required()
+                                        ->maxLength(13),   
+                                    Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
+                                        ->options(['male'=>trans('main.male'), 'id'=>trans('main.female')])
+                                        ->required(),        
+                                    Forms\Components\TextInput::make('email')->label(trans('main.email'))
+                                        ->maxLength(255),   
+                                ]),
+                                Forms\Components\TextInput::make('parent_national_id')->label(trans('main.national_id'))->disabled(),
+                                Forms\Components\Select::make('parent_relation')->label(trans('main.relation'))
+                                ->options(
+                                    [
+                                        'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')
+                                    ]
+                                ),
+                               
                         
-                ])
+                            
+                    ])
                         ]),
                 Section::make(trans('main.financial_infos'))
                     ->columnSpanFull()
@@ -390,6 +396,11 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 SelectFilter::make('status')->label(trans('main.status'))
                 ->options(['pending'=>trans('main.pending'),'approved'=>trans('main.approved'), 'rejected'=>trans('main.rejected')]),
             ])
+            ->deferFilters()
+            ->filtersApplyAction(
+                fn (\Filament\Tables\Actions\Action $action) => $action
+                    ->label(trans('main.apply')),
+            )
             ->actions([
                 Tables\Actions\Action::make('registeration_action')
                 // ->visible(fn(Student $record)=>$record->is_banned == null)
@@ -508,55 +519,98 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 \Filament\Infolists\Components\Section::make(trans('main.radical_infos'))
                         ->headerActions([
                             Action::make(trans('main.edit'))
-                                ->url(fn (Student $record): string => route('filament.admin.resources.students.edit', $record)),
+                                ->url(fn (Student $record): string => route('filament.admin.resources.newest-students.edit', $record)),
                             Action::make(trans('main.delete'))
                                 ->color('danger')
                                 ->requiresConfirmation()
                                 ->action(function(Student $student){
                                      $student->delete();
-                                     return redirect()->route('filament.admin.resources.students.index');
+                                     return redirect()->route('filament.admin.resources.newest-students.index');
                                 })
                         ])
-                        ->columns(2)
+                        ->columns(3)
                         ->id('main-section')
                         ->schema([
-                                TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                                TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
-                                TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
-                                TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
-                                TextEntry::make('first_name')->label(trans('main.first_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('middle_name')->label(trans('main.middle_name'))->weight(FontWeight::Bold),
-                                TextEntry::make(name: 'third_name')->label(trans('main.third_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('last_name')->label(trans('main.last_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('nationality')->label(trans('main.nationality'))->weight(FontWeight::Bold),
-                                TextEntry::make('user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
-                                TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
-                                TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
-                                TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
-                                TextEntry::make('created_at')->label(trans('main.registration_date'))->date()->weight(FontWeight::Bold),
-                                TextEntry::make('approved_at')->label(trans('main.approvel_date'))->date()->weight(FontWeight::Bold),
+                            TextEntry::make('registration_number')->label(trans('main.registration_number'))
+                            ->formatStateUsing(fn($state)=>$state."#")
+                            ->weight(FontWeight::Bold)
+                            ->size(TextEntrySize::Large)
+                            ->color('danger'),
+                            TextEntry::make('created_at')->label(trans('main.registration_date'))->date('Y-m-d')->weight(FontWeight::Bold),
+                            TextEntry::make('approved_at')->label(trans('main.approvel_date'))->date('Y-m-d')->weight(FontWeight::Bold),
+                            TextEntry::make('name')->label(trans('main.name'))
+                            ->columnSpanFull()
+                            ->weight(FontWeight::Bold)
+                            ->state(fn (Student $student) => $student?->first_name .' '.$student?->middle_name .' '.$student?->third_name .' '.$student?->last_name)
+                            ->columnSpanFull(),
+                            TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
+                            TextEntry::make('nationality')->label(trans('main.nationality'))
+                                ->formatStateUsing(fn($state)=>$state == "saudian" ? trans('main.saudian') : $state)
+                                ->weight(FontWeight::Bold),
+                            TextEntry::make('user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
+                            TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
+                            TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.parent_data'))
-                        ->columns(2)
+                        ->columns(3)
                         ->id('parent-section')
                         ->schema([
                                 TextEntry::make('parent.full_name')->label(trans('main.full_name'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
+                                TextEntry::make('parent.relation')->label(trans('main.relation'))
+                                ->formatStateUsing(fn($state)=>  trans('main.'.$state) )
+                                ->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
+                                TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
+                        ]),
+                \Filament\Infolists\Components\Section::make(trans('main.academic_data'))
+                        ->columns(3)
+                        ->id('parent-section')
+                        ->schema([
+                            TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
+                            TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
+                            TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
+                            TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
+                            TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.financial_infos'))
-                        ->columns(2)
+                        ->columns(3)
                         ->id('financial-section')
                         ->schema([
 
 
-                                TextEntry::make('opening_balance')->label(trans('main.opening_balance'))
-                                ->formatStateUsing(fn (string $state) => $state." ".trans("main.".env('DEFAULT_CURRENCY')))
-                                ->weight(FontWeight::Bold),
-                                ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
-                                TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold)
+                            TextEntry::make('opening_balance')->label(trans('main.opening_balance'))
+                            ->formatStateUsing(fn (string $state) => $state." ".trans("main.".env('DEFAULT_CURRENCY')))
+                            ->weight(FontWeight::Bold),
+                            TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold),
+                            ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
+                            TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
+                            ->color('primary')
+                            ->size(TextEntry\TextEntrySize::Large)
+                            ->weight(FontWeight::Bold)
+                            ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                            ->tooltip(function (TextEntry $component): ?string {
+                                
+                                return trans('main.balance_calculate_method');
+                            }),
+                            TextEntry::make('total_fees_after_due_date')->label(trans('main.total_fees_to_pay'))
+                            ->color('primary')
+                            ->size(TextEntry\TextEntrySize::Large)
+                            ->weight(FontWeight::Bold)
+                            ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                            ->tooltip(function (TextEntry $component): ?string {
+                                
+                                return trans('main.total_fees_to_pay_method');
+                            }),
+                            TextEntry::make('total_fees_rest')->label(trans('main.total_fees_rest'))
+                            ->color('primary')
+                            ->size(TextEntry\TextEntrySize::Large)
+                            ->weight(FontWeight::Bold)
+                            ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                            ->tooltip(function (TextEntry $component): ?string {
+                                
+                                return trans('main.total_fees_rest_method');
+                            })
 
                        
                         ]),
@@ -564,20 +618,6 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         ->id('payments-section')
                         ->schema([
                             ViewEntry::make('receiptVoucher')->label(trans_choice('main.payments',2))->view('infolists.components.student-payments')
-                       
-                        ]),
-                \Filament\Infolists\Components\Section::make(trans('main.account_ballance'))
-                        ->columns(2)
-                        ->id('account_ballance-section')
-                        ->schema([
-                                TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
-                                ->color('primary')
-                                ->size(TextEntry\TextEntrySize::Large)
-                                ->weight(FontWeight::Bold)
-                                ->tooltip(function (TextEntry $component): ?string {
-                                    
-                                    return trans('main.balance_calculate_method');
-                                })
                        
                         ]),
                 \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))

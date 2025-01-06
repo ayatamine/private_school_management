@@ -94,9 +94,9 @@ class Employee extends Model implements FilamentUser, HasName
         return $this->belongsTo(User::class,'user_id','id');
     }
 
-    public function employmentDuration(): HasMany
+    public function employmentDurations(): HasMany
     {
-        return $this->hasMany(EmploymentDuration::class);
+        return $this->hasMany(EmploymentDuration::class,'employee_id','id');
     }
     public function getFullTitleAttribute()
     {

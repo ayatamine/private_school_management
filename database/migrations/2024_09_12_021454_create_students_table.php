@@ -34,7 +34,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
          
-            $table->enum('gender', ["male","female"]);
+            $table->enum('gender', ["","male","female"])->nullable();;
             $table->double('opening_balance')->default(0);
             $table->string('finance_document')->nullable();
             $table->string('note')->nullable();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <head>
-        <title>{{trans_choice('main.expense',1)}}</title>
+        <title>{{trans_choice('main.receipt_voucher',1)}}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta charset="utf-8">
         <style type="text/css" >
@@ -75,25 +75,6 @@
                 font-size: 19px;direction: rtl;text-align:right;
             }
             h5{font-size: 17px;font-weight: 500;line-height: 1.1;direction: rtl;text-align:right;}
-            /* .table {
-                direction: ltr;text-align:right;
-                width: 100%;border: 1px solid #262729;
-                margin-bottom: 1rem;
-                color: #212529;border-collapse: collapse; 
-            } */
-
-            /* .table th,
-            .table td {
-                vertical-align: top; 
-                border-top: 1px solid #3f4143;
-                padding: 0.3rem;
-                font-size: 14px !important;
-            }
-
-            table td ,table th{
-                vertical-align: middle;
-                border: 1px solid #262729;padding: 0.3rem;
-            } */
             table {
                     padding:0.4rem;color: #212529;
                     border-left: 0.01em solid #262729;
@@ -111,6 +92,18 @@
                     border-top: 0;
                     border-bottom: 0.01em solid #262729;
                 }
+
+            /* .table th,
+            .table td {
+                vertical-align: top; border-top: 1px solid #3f4143;padding: 0.3rem;
+                font-size: 14px !important;
+            } */
+
+            table td ,table th{
+                vertical-align: middle;
+                /* border: 1px solid #262729; */
+                padding: 0.3rem;
+            }
 
             .mt-5 {
                 margin-top: 3rem !important;
@@ -177,13 +170,16 @@
         {{-- Header --}}
 
        
-       
-        <table class=" mt-5"  style="width: 100%;border:none">
+        {{-- school info --}}
+        {{-- <h5 class="text-uppercase cool-gray">
+            <strong style="text-align: right;direction: rtl">{{ trans('main.school_info')}}</strong>
+        </h5> --}}
+        <table class=" mt-5" style="width: 100%;border:none">
             <tbody>
                 <tr>
                     @if($settings->logo)
                     <td class="border-0 pl-0" style="border: none" colspan="2" >
-                        <img style="margin:auto;text-align:center" src="{{ url(asset("storage/$settings->logo")) }}" alt="logo" height="100">
+                        <img style="margin:auto;text-align:center" src="{{ url("storage/$settings->logo") }}" alt="logo" height="100">
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
@@ -198,25 +194,14 @@
                 </tr>
             </tbody>
         </table>
+        <hr>
         <br>
         <br>
-        <h5 class="text-uppercase" style="text-align: center;margin:auto">
-            <strong style="direction: rtl;font-weight:bold">{{ trans('main.expense_list')}} </strong> </span>
+    
+        <h5 class="text-uppercase cool-gray">
+            <strong style="text-align: right;direction: rtl">{{ trans('main.employees_list')}}</strong>
         </h5>
-        <br>
-        <br>
-        {{-- school info --}}
-         <h5 class="text-uppercase">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.date')}}: </strong> <span style="text-size:12px">{{\Carbon\Carbon::createFromDate(now())->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>
-        </h5>
-        @if(isset($date_from) || isset($date_to))
-         <h5 class="text-uppercase">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.selected_duration')}}: </strong>  
-            @if(isset($date_from)){{ trans('main.from')}} <span style="text-size:12px !important;margin:0 3px;">{{\Carbon\Carbon::createFromDate($date_from)->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>@endif
-            @if(isset($date_to)){{ trans('main.to')}} <span style="text-size:12px !important;margin:0 3px;">{{\Carbon\Carbon::createFromDate($date_to)->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>@endif
-        </h5>
-        @endif
-        <table class="w-ful border-collapse" style="width: 100%" id="expense_list">
+        <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
 
                 <tr>
@@ -224,74 +209,60 @@
                        {{trans('main.id_number')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.item_name')}}
+                        {{trans('main.name')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.value')}}
-                    </th>
-
-                    <th scope="col" class="px-6 py-3 border">
-                        {{trans_choice('main.payment',1)}}
+                        {{trans('main.national_id_n')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.account')}}
+                        {{trans('main.department_name_l')}}
+                    </th>
+                   
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans_choice('main.job',1)}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.expensed_date')}}
+                        {{trans('main.status')}}
                     </th>
-
                 </tr>
             </thead>
             <tbody>
                 @php
                     $total=0;
                 @endphp
-                @forelse ($expenses as $expense)
-                
+               
+           
+           
+      
+                @forelse ($employees as $employee)
                     <tr class="">
                         <td scope="row" class="px-6 py-4  border">
-                           {{$expense->id}}
+                           {{$employee->id}}
                         </td>
-                        <td class="px-6 py-4   border">
-                            {{$expense->transactionCategory->name}}
+                        <td class="px-6 py-4  border ">
+                            {{$employee->name}}
                         </td>
-                        <td class="px-6 py-4   border">
-                            {{$expense->value." ".trans('main.'.env('DEFAULT_CURRENCY'))}}
+                        <td class="px-6 py-4  border">
+                            {{$employee->user->national_id}}
                         </td>
-
-                        <td class="px-6 py-4   border">
-                            {{$expense->paymentMethod->name}}
+                        <td class="px-6 py-4  border">
+                            {{$employee->employmentDurations?->first()?->department?->name}}
                         </td>
-                        <td class="px-6 py-4   border">
-                            {{$expense->paymentMethod?->financeAccount?->name}}
+                        <td class="px-6 py-4  border">
+                            {{$employee->employmentDurations?->first()?->designation?->name}}
                         </td>
-                        <td class="px-6 py-4   border">
-                            {{date('Y-m-d',strtotime($expense->expensed_date))}}
+                        <td class="px-6 py-4  border">
+                            {{$employee->employmentDurations?->first()  ? trans('main.active_state') : trans('main.finished_state')}}
                         </td>
-                      
                         
-                        @php
-
-                            $value = floatval(str_replace(',', '', $expense->value));
-                            $total+=$value;
-                        @endphp
                     </tr> 
-
+                    
                 @empty 
                     <tr>
-                        <td colspan="9" style="border-left: 1px solid #262729">{{trans('main.no_expense_found')}}</td>
+                        <td colspan="6" style="border-left: 1px solid #262729">{{trans('main.no_employees')}}</td>
                     </tr>
                 @endforelse
-                    {{-- total sum --}}
-                    @if(count($expenses))
-                    <tr>
-                        <td class="px-6 py-4 border" colspan="2" >{{trans('main.total')}}</td>
-                        <td class="px-6 py-4 border ">
-                        {{$total}} {{trans("main.SAR")}}
-                        </td>
-                        <td colspan="6" class="px-6 py-4 border " style="border-left: 1px solid #262729"></td>
-                    </tr>
-                    @endif
+                
             </tbody>
         </table>
 

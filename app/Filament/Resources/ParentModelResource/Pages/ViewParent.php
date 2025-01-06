@@ -10,6 +10,13 @@ use App\Filament\Resources\ParentModelResource;
 class ViewParent extends ViewRecord
 {
     protected static string $resource = ParentModelResource::class;
+    public function getHeaderActions(): array
+    {
+        return [
+            Actions\EditAction::make(),
+            Actions\DeleteAction::make(),
+        ];
+    }
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $user = User::findOrFail($data['user_id']);

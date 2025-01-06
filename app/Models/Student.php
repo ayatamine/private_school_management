@@ -100,7 +100,7 @@ class Student extends Model
         'terminated_by' => 'integer',
         'opening_balance' => 'double',
     ];
-    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','transport_registration_date'];
+    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','transport_registration_date','parent_relation'];
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
@@ -147,7 +147,7 @@ class Student extends Model
         return Attribute::make(
             get: function ($value) {
              
-                return "$this->first_name  $this->middle_name" ;
+                return "$this->first_name  $this->last_name" ;
             }
         );
     }
@@ -208,6 +208,14 @@ class Student extends Model
             get: function ($value) {
                 $transport = $this->transport;
                 return $transport?->created_at;
+            }
+        );
+    }
+    public function parentRelation():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                return  'yes';
             }
         );
     }

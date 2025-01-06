@@ -72,3 +72,15 @@ if(!function_exists('addFile'))
         });
     }
 }
+if(!function_exists('print_table_resrource_list'))
+{
+    function print_table_resrource_list($permission_name,$route):Action
+    {
+        return  Actions\Action::make('print_table')
+        ->icon('icon-print')
+        ->color('info')
+        ->label(trans('main.print'))
+        ->visible(employeeHasPermission($permission_name))
+        ->url($route);
+    }
+}

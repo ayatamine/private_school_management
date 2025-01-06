@@ -113,8 +113,7 @@ class ReceiptVoucherResource extends Resource
         return $table
             ->query(ReceiptVoucher::whereStudentId(auth()->user()?->student?->id))
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label(trans_choice('main.id',1))
-                    ->formatStateUsing(fn($state)=>$state."#")
+                Tables\Columns\TextColumn::make('id')->label(trans('main.receipt_number'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paymentMethod.name')->label(trans_choice('main.payment_method',1))
                     ->formatStateUsing(fn($state)=> $state == 'transfer' ? trans('main.transfer') : $state)

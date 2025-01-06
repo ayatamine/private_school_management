@@ -171,12 +171,13 @@
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
-                        {{ trans('main.school_title') }} : <span style="">{{ $settings->title }}</span> <br>
-                        {{ trans('main.permit_number') }} : <span style="">{{ $settings->permit_number }}</span> <br>
-                        {{ trans('main.commercial_register_number') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-                        {{ trans('main.tax_number') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-
-                    </td>
+                        <span style="">{{ $settings->title }}</span> <br>
+                       {{ trans('main.permit_number_2') }} : <span style="">{{ $settings->permit_number }}</span> 
+                       {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
+                       {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
+                        <span style="">{{ $settings->address }}</span> <br>
+                       {{ $settings->email }} {{ trans('main.phone_number') }} : <span style="">{{ $settings->phone_number }}</span> 
+                   </td>
                     
                 </tr>
             </tbody>

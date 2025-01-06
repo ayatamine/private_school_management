@@ -253,11 +253,11 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible(fn()=>employeeHasPermission('print_expense'))
-                ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.expense',2)
-                ])->disableXlsx(),
+                // FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                // ->visible(fn()=>employeeHasPermission('print_expense'))
+                // ->extraViewData([
+                //     'table_header' => trans('main.menu').' '.trans_choice('main.expense',2)
+                // ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

@@ -171,12 +171,13 @@
                     </td>
                     @endif
                     <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
-                        {{ trans('main.school_title') }} : <span style="">{{ $settings->title }}</span> <br>
-                        {{ trans('main.permit_number') }} : <span style="">{{ $settings->permit_number }}</span> <br>
-                        {{ trans('main.commercial_register_number') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-                        {{ trans('main.tax_number') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-
-                    </td>
+                        <span style="">{{ $settings->title }}</span> <br>
+                       {{ trans('main.permit_number_2') }} : <span style="">{{ $settings->permit_number }}</span> 
+                       {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
+                       {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
+                        <span style="">{{ $settings->address }}</span> <br>
+                       {{ $settings->email }} {{ trans('main.phone_number') }} : <span style="">{{ $settings->phone_number }}</span> 
+                   </td>
                     
                 </tr>
             </tbody>
@@ -201,21 +202,21 @@
         </table>
         <hr> --}}
         {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
+        {{-- <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.student_info')}}</strong>
-        </h5>
+        </h5> --}}
         <table class=" mt-5"  style="width: 100%">
             <tbody>
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.name') }} : <span style="">{{ $student->username }}</span> <br><br>
-                        {{ trans('main.nationality') }} : <span style="">{{ $student->nationality }}</span> <br>
-                       
+                        {{ trans('main.registration_number') }} : <span style="">{{ $student->registration_number }}</span> <br><br>                       
                     </td>
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2">
-                        {{ trans('main.registration_number') }} : <span style="">{{ $student->registration_number }}</span> <br><br>
-                        {{ trans_choice('main.academic_course',1) }} : <span style="">{{ $student?->semester?->course?->name }}</span> <br>
+                        {{ trans('main.name') }} : <span style="">{{ $student->username }}</span> <br><br>
+                    </td>
+                    <td class="border-0 pl-0"  style="border: none"  colspan="2">
+                        {{ trans('main.national_id') }} : <span style="">{{ $student->user->national_id }}</span> <br><br>
                     </td>
                 </tr>
                 
@@ -279,7 +280,7 @@
                 @if(count($student->receiptVoucher))
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 " colspan="3" >{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 " colspan="3" >{{trans('main.total_payments')}}</td>
                     <td class="px-6 py-4 ">
                     {{$total}} {{trans("main.SAR")}}
                     </td>
