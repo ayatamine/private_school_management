@@ -43,7 +43,7 @@ class JobResource extends Resource  implements HasShieldPermissions
     }
     public static function shouldRegisterNavigation(): bool
     {
-        return employeeHasPermission('view_any_job');
+        return false;
     }
     public static function getPermissionPrefixes(): array
     {

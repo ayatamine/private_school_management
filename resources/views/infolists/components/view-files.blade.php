@@ -6,7 +6,7 @@
     /* .remove-file{max-width: 50px;} */
   </style>
     <div class="bg-white p-3">
-        @if(count($getRecord()->files))
+        @if($getRecord()?->files && count($getRecord()->files))
             @php
                 function isImage($filePath) {
                     $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp','svg'];

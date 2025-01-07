@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use MPDF;
 use NumberToWord;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Student;
@@ -17,8 +18,10 @@ use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Section;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -181,13 +184,50 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                    )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
             ])
             ->filters([
-                SelectFilter::make('status')
-                   ->label(trans('main.status'))
-                   ->options([
-                    'pending'=>trans('main.pending'),
-                    'paid'=>trans('main.paid'),
-                    'rejected'=>trans('main.rejected'),
-                   ])
+                SelectFilter::make('payment_method')
+                ->relationship('paymentMethod', 'name')
+                ->label(trans('main.payment_method')),
+                SelectFilter::make('finance_account')
+                ->relationship('paymentMethod', 'financeAccount.name')
+                ->label(trans('main.finance_account_name')),
+                Filter::make('payment_date')
+                ->label(trans('main.payment_date'))
+                    ->indicator('date')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label(trans('main.from')),
+                        Forms\Components\DatePicker::make('created_until')->label(trans('main.to')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('payment_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('payment_date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        if (!$data['created_from'] && !$data['created_until']) {
+                            return [];
+                        }
+                        $indicators = [];
+ 
+                        if ($data['created_from'] ?? null) {
+                            $indicators[] = Indicator::make(trans('main.from') . Carbon::parse($data['created_from'])->toFormattedDateString())
+                                ->removeField('created_from');
+                        }
+                 
+                        if ($data['created_until'] ?? null) {
+                            $indicators[] = Indicator::make(trans('main.to') . Carbon::parse($data['created_until'])->toFormattedDateString())
+                                ->removeField('created_until');
+                        }
+                 
+                        return $indicators;
+                      
+                    })
+               
                    
             ])
             ->actions([
