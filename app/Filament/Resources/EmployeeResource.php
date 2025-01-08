@@ -148,6 +148,13 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                 Forms\Components\TextInput::make( 'last_name')->label(trans('main.last_name'))->hiddenOn('view') ,
                                 //this is not working
                                 
+                                Forms\Components\TextInput::make('status')->label(trans('main.status'))
+                                        ->formatStateUsing(function(Employee $employee){
+                                            if($employee?->employmentDurations) return trans('main.active_state');
+                                            return trans('main.finished_state');
+                                        })
+                                        ->visibleOn('view') ,
+                                        
                                 Forms\Components\TextInput::make('first_name')->label(trans('main.name'))
                                         ->formatStateUsing(fn(Employee $employee)=>  $employee?->first_name.' '.$employee?->middle_name.' '.$employee?->third_name.' '.$employee?->last_name)
                                         ->visibleOn('view') ,
@@ -186,7 +193,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                                         ->hidden(fn (Get $get) => $get('nationality') == 'saudian'),
                                     Forms\Components\Select::make(name: 'identity_type')->label(trans('main.identity_type'))
                                         ->options(['national_identity'=>trans('main.national_identity'), 'resident_accommodation'=>trans('main.resident_accommodation'), 'visitor_accommodation'=>trans('main.visitor_accommodation')]),  
-                                    Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
+                                    Forms\Components\TextInput::make('national_id')->label(trans('main.national_id_n'))
                                         ->required()
                                         ->rules([
                                             fn (Employee $employee,Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($employee,$get) {

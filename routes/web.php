@@ -1,9 +1,10 @@
 <?php
 
-use App\Models\Employee;
+use App\Models\User;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Student;
+use App\Models\Employee;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Illuminate\Support\Facades\Route;
@@ -40,10 +41,39 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $file_name = "سند دفع $record->id.pdf";
             break;
         case 'receipt_voucher_list':
-                $receipt_vouchers = ReceiptVoucher::latest()->get();
-                $data = ['receipt_vouchers' => $receipt_vouchers,'settings'=>SchoolSetting::first()];
+                $url =url()->previous();
+                $parsedUrl = parse_url($url);
+                if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
+               
+                // Extract the date values
+                $date_from = $queryParams['tableFilters']['payment_date']['created_from'] ?? null;
+                $date_to = $queryParams['tableFilters']['payment_date']['created_until'] ?? null;
+                $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
+                $finance_account = $queryParams['tableFilters']['finance_account']['value'] ?? null;
+
+                $receipt_vouchers = ReceiptVoucher::oldest()->whereNull('added_by')
+                ->when(
+                    $date_from, // Check if $date_from is not null or empty
+                    fn ($query) => $query->whereDate('created_at', '>=', $date_from),
+                )
+                ->when(
+                    $date_to, 
+                    fn ($query) => $query->whereDate('created_at', '<=', $date_to),
+                )
+                ->when(
+                    $payment_method_id, 
+                    fn ($query) => $query->wherePaymentMethodId($payment_method_id),
+                )
+                ->when(
+                    $finance_account, 
+                    fn ($query) => $query->whereHas('paymentMethod',function($query) use ($finance_account){
+                        $query->whereFinanceAccountId($finance_account);
+                    }),
+                )
+                ->get();
+                $data = ['receipt_vouchers' => $receipt_vouchers,'settings'=>SchoolSetting::first(),'date_from'=>$date_from,'date_to'=>$date_to];
                 $view = "receipt_voucher_list";
-                $file_name = "سندات الدفع.pdf";
+                $file_name = "سداد الرسوم.pdf";
             break;
         case 'invoice':
                 $record = Invoice::findOrFail($id);
@@ -64,7 +94,10 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $file_name = "فاتورة_الرسوم_$record->username.pdf";
             break;
         case 'employees':
-                $employees = Employee::latest()->get();
+            //remove the super admin
+                $employees = Employee::whereNot('user_id',User::whereHas('roles', function($query) {
+                    $query->where('name', 'super_admin')->orWhere('id',1);
+                })->first()?->id)->latest()->get();
                 $data = ['employees' => $employees,'settings'=>SchoolSetting::first()];
                 $view = "employees";
                 $file_name = "قائمة العاملين.pdf";

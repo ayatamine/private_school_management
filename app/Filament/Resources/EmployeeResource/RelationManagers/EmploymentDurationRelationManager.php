@@ -12,6 +12,7 @@ use App\Models\Designation;
 use App\Models\EmploymentDuration;
 use BladeUI\Icons\Components\Icon;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -33,7 +34,10 @@ class EmploymentDurationRelationManager extends RelationManager
     {
         return trans_choice('main.employment_duration',1);
     }
-
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+      return __('main.employment_history');
+    }
     public function isReadOnly(): bool { return false; }
     public function form(Form $form): Form
     {
@@ -94,10 +98,10 @@ class EmploymentDurationRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.the_end'))
                         ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
                         ->date('Y-m-d'),
-                Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.contract_end_date'))
+                Tables\Columns\TextColumn::make('contract_end_date')->label(trans('main.the_end'))
                         ->formatStateUsing(fn (string $state) => $state ?? trans("main.employment_duration_active"))
                         ->date('Y-m-d'),
-                Tables\Columns\TextColumn::make('duration')->label(trans('main.duration'))
+                Tables\Columns\TextColumn::make('duration')->label(trans('main.duration_day'))
                         ->state(function (EmploymentDuration $duration){
                             $start = Carbon::parse($duration->contract_start_date);
                             $end = Carbon::parse($duration->contract_end_date);
@@ -109,7 +113,7 @@ class EmploymentDurationRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->createAnother(false),
+                Tables\Actions\CreateAction::make()->modalHeading(trans('main.add_employment_duration'))->createAnother(false),
             ])
             ->actions([
                 Tables\Actions\Action::make('download_contract_attachment')

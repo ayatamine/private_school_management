@@ -100,7 +100,7 @@ class Student extends Model
         'terminated_by' => 'integer',
         'opening_balance' => 'double',
     ];
-    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','transport_registration_date','parent_relation'];
+    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','current_balance','transport_registration_date','parent_relation'];
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
@@ -191,6 +191,14 @@ class Student extends Model
         return Attribute::make(
             get: function ($value) {
                 return floatval($this->totalFeesAfterDueDate) -  $this->payments() ;
+            }
+        );
+    }
+    public function currentBalance():Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                return floatval($this->totalFeesRest) + $this->opening_balance;
             }
         );
     }

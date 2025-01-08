@@ -617,7 +617,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                     
                                     return trans('main.total_fees_to_pay_method');
                                 }),
-                                TextEntry::make('total_fees_rest')->label(trans('main.total_fees_rest'))
+                                TextEntry::make('current_balance')->label(trans('main.current_balance'))
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)

@@ -240,7 +240,7 @@
                            {{$employee->id}}
                         </td>
                         <td class="px-6 py-4  border ">
-                            {{$employee->name}}
+                            {{$employee?->user?->username}}
                         </td>
                         <td class="px-6 py-4  border">
                             {{$employee->user->national_id}}
