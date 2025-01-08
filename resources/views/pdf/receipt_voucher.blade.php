@@ -212,7 +212,7 @@
                 </tr>
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.value') }} : <span style="">{{ $receipt->value }}</span> <br><br>                       
+                        {{ trans('main.value') }} : <span style="">{{ number_format($receipt->value, 2, '.', ',') }}</span> <br><br>                       
                     </td>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
                         {{ trans('main.value_in_alphabetic') }} : <span style="">{{ $receipt->value_in_alphabetic  }}</span> <br>
