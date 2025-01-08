@@ -204,7 +204,7 @@
                 </tr>
                 <tr>
                     <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        {{ trans('main.serial_number') }} : <span style="">{{ $receipt->id }}</span> <br><br>
+                        {{ trans('main.receipt_number') }} : <span style="">{{ $receipt->id }}</span> <br><br>
                     </td>
                     <td class="border-0 pl-0" colspan="2" style="border: none" >
                         {{ trans('main.date') }} : <span style="">{{ date('Y-m-d',strtotime($receipt->created_at)) }}</span> <br>

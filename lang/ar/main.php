@@ -75,7 +75,7 @@ return [
     'saudi_arabia'=>'السعودية',
     'others'=>'اخرى',
     'birth_date'=>'تاريخ الميلاد',
-    'financial_infos'=>'البيانات المالية',
+    'financial_infos'=>'ملخص البيانات المالية',
     'radical_infos'=>'المعلومات الأساسية',
     'document'=>'مستند',
     'balance'=>'الرصيد ',

@@ -335,6 +335,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make(name: 'finance_document')->label(trans('main.document'))
                             ->directory('students_financial_documents')
+                            ->openable()
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('note')->label(trans('main.note'))
                             ->columnSpanFull()
@@ -398,7 +399,6 @@ class StudentResource extends Resource implements HasShieldPermissions
                             'pending'=>'primary',
                             'approved'=>'success',
                             'rejected'=>'danger',
-
                     })
                     ->formatStateUsing(fn (string $state) =>trans("main.$state"))
                     ->sortable(),
@@ -511,7 +511,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ]),
                             
                              
-                        ]),
+                ]),
                 \Filament\Infolists\Components\Section::make(trans('main.parent_data'))
                         ->columns(3)
                         ->id('parent-section')
@@ -523,7 +523,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 ->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
-                        ]),
+                ]),
                 \Filament\Infolists\Components\Section::make(trans('main.academic_data'))
                         ->columns(6)
                         ->id('parent-sectidon')
@@ -534,7 +534,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                             TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
                             TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
                             TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold),
-                        ]),
+                ]),
                 \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
                         ->id('tuition_fee-section')
                         ->schema([
@@ -595,7 +595,7 @@ class StudentResource extends Resource implements HasShieldPermissions
 
 
                                 TextEntry::make('opening_balance')->label(trans('main.opening_balance'))
-                                ->formatStateUsing(fn (string $state) => $state." ".trans("main.".env('DEFAULT_CURRENCY')))
+                                ->formatStateUsing(fn (string $state) => number_format($state, 2, '.', ',')." ".trans("main.".env('DEFAULT_CURRENCY')))
                                 ->weight(FontWeight::Bold),
                                 TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold),
                                 ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
@@ -603,7 +603,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
-                                ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.balance_calculate_method');
@@ -612,7 +612,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
-                                ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.total_fees_to_pay_method');
@@ -621,7 +621,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
-                                ->formatStateUsing(fn(string $state)=>$state." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.total_fees_rest_method');

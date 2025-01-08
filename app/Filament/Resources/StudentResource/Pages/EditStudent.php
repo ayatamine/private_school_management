@@ -71,16 +71,16 @@ class EditStudent extends EditRecord
         return $data;
     }
     
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
 
  
            try{
-          
+  
             DB::beginTransaction();
             User::findOrFail($this->record->user_id)->update([
                 'national_id' =>$data['national_id'],
-                'gender' =>$data['gender'],
+                'gender' =>$data['gender'] ?? null,
                 'phone_number' =>$data['phone_number'],
                 'email' =>$data['email'],
             ]);
@@ -92,15 +92,10 @@ class EditStudent extends EditRecord
             // $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
             $is_semester_changed = false;
             $last_semester_id = $this->record->semester_id;
-           
-            $this->record->update($data);
+            $record->update($data);
+            $record->finance_document = $data['finance_document'];
              if($last_semester_id !== $this->record->semester_id)
              {
-                $is_semester_changed =true;
-             }
-             return [];
-                if($is_semester_changed)
-                {
                     // add tuiton fees
                     $tuitionFee = TuitionFee::whereCourseId($data['course_id'])->first();
                     if($tuitionFee)
@@ -152,8 +147,9 @@ class EditStudent extends EditRecord
                         ]);
                         $this->record->invoices()->save($invoice);
                     }
-                    DB::commit(); 
+                   
                 }    
+                DB::commit(); 
                 Notification::make()
                     ->title(trans('main.student_updated_successfully'))
                     ->icon('heroicon-o-document-text')
@@ -173,8 +169,7 @@ class EditStudent extends EditRecord
                     ->send();
            }
 
-            $this->halt();
-        return $data;
+        return $record;
 
     }
 }

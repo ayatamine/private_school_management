@@ -70,7 +70,7 @@
                         </td>
                         
                         <td class="px-6 py-4 border" >
-                            {{$payment->value}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                            {{number_format($payment->value, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                         @php
@@ -102,7 +102,7 @@
                 <tr>
                     <td class="px-6 py-4 border" colspan="3" >{{trans('main.total_payments')}}</td>
                     <td class="px-6 py-4 border">
-                       {{$total}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                       {{number_format($total, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
             </tbody>

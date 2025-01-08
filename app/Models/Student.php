@@ -133,15 +133,7 @@ class Student extends Model
     {
         return $this->hasMany(Invoice::class);
     }
-    public function financeDocument():Attribute
-    {
-        return Attribute::make(
-            get: function ($value) {
-             
-                return $value ? asset("storage/$value") :"";
-            }
-        );
-    }
+
     public function username():Attribute
     {
         return Attribute::make(
