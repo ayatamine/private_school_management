@@ -198,7 +198,7 @@
                     </td>
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2"> 
-                        {{ trans('main.national_id') }} : <span style="">{{ $receipt?->student?->user?->national_id ??  $receipt?->studentAttached?->user?->national_id}}</span> <br><br>
+                        {{ trans('main.national_id_n') }} : <span style="">{{ $receipt?->student?->user?->national_id ??  $receipt?->studentAttached?->user?->national_id}}</span> <br><br>
                     </td>
                     
                 </tr>

@@ -345,12 +345,6 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('student_name')->label(trans('main.student_name'))
                     ->state(fn (Student $student) => $student?->first_name .' '.$student?->last_name)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('third_name')->label(trans('main.third_name'))
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
@@ -543,11 +537,13 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->weight(FontWeight::Bold)
                             ->state(fn (Student $student) => $student?->first_name .' '.$student?->middle_name .' '.$student?->third_name .' '.$student?->last_name)
                             ->columnSpanFull(),
-                            TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
+                            TextEntry::make('user.gender')->label(trans('main.gender'))
+                            ->formatStateUsing(fn($state)=> trans('main.'.$state))
+                            ->weight(FontWeight::Bold),
                             TextEntry::make('nationality')->label(trans('main.nationality'))
                                 ->formatStateUsing(fn($state)=>$state == "saudian" ? trans('main.saudian') : $state)
                                 ->weight(FontWeight::Bold),
-                            TextEntry::make('user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
+                            TextEntry::make('user.national_id')->label(trans('main.national_id_n'))->weight(FontWeight::Bold),
                             TextEntry::make('user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                             TextEntry::make('user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                         ]),
@@ -556,7 +552,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         ->id('parent-section')
                         ->schema([
                                 TextEntry::make('parent.full_name')->label(trans('main.full_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
+                                TextEntry::make('parent.user.national_id')->label(trans('main.national_id_n'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.relation')->label(trans('main.relation'))
                                 ->formatStateUsing(fn($state)=>  trans('main.'.$state) )
                                 ->weight(FontWeight::Bold),
@@ -564,9 +560,10 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                 TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.academic_data'))
-                        ->columns(3)
-                        ->id('parent-section')
+                        ->columns(6)
+                        ->id('parent-secdtion')
                         ->schema([
+                            TextEntry::make('registration_number')->label(trans('main.id_ne'))->weight(FontWeight::Bold),
                             TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
                             TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
                             TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),

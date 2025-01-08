@@ -351,6 +351,7 @@ return [
      'file_type_is_not_supported'=>' صيغة الملف غير مدعومة',
 
      'finance_account_id'=>' التسلسل',
+     'id_ne'=>' التسلسل',
      'cancel_operation'=>' الغاء العملية',
      'activate_operation'=>'اعادة تفعيل العملية',
      'transfer_operation_cancel_success'=>'تم الغاء العملية بنجاح',

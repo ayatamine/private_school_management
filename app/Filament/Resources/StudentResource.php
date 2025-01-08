@@ -382,12 +382,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('student_name')->label(trans('main.student_name'))
                     ->state(fn (Student $student) => $student?->first_name .' '.$student?->last_name)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('third_name')->label(trans('main.third_name'))
-                    ->searchable()
-                    ->sortable(),
+               
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
@@ -417,10 +412,13 @@ class StudentResource extends Resource implements HasShieldPermissions
                         if ($data['value'] == null) {
                             return $query;
                         }
-                        // $courses = AcademicStage::findOrFail($data['value'])->courses()->pluck('id');
-
-                        return $query->whereHas('courses', function ($query) use ($courses) {
-                            return $query;
+                        //semester->course->academic_stage
+                        //select courses where academic_stage_id = $data['value']
+                       $courses = Course::whereHas('academicStage', function ($query) use ($data) {
+                            return $query->where('academic_stage_id', $data['value']);
+                        })->pluck('id');
+                        return $query->whereHas('semester', function ($query) use ($data,$courses) {
+                            return $query->whereIn('course_id', $courses);
                         });
                     }),
                 SelectFilter::make('course_id')->label(trans('main.course_enrolled'))
@@ -435,6 +433,20 @@ class StudentResource extends Resource implements HasShieldPermissions
                         return $query->whereHas('semester', function ($query) use ($data) {
                             return $query->whereNull('termination_reason')->where('course_id', $data['value']);
                         });
+                    }),
+                    //add nationality saudian or other
+                    SelectFilter::make('nationality')->label(trans('main.nationality'))
+                    ->options([
+                        'saudian'=>trans('main.saudian'),
+                        'other'=>trans('main.other')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                
+                        return $data['value'] == 'saudian' ? $query->where('nationality', 'saudian') : $query->where('nationality', '!=', 'saudian');
                     }),
             ])
             ->deferFilters()
@@ -483,11 +495,13 @@ class StudentResource extends Resource implements HasShieldPermissions
                             \Filament\Infolists\Components\Grid::make()
                             ->columns(3)
                             ->schema([
-                                TextEntry::make('user.gender')->label(trans('main.gender'))->weight(FontWeight::Bold),
+                                TextEntry::make('user.gender')->label(trans('main.gender'))
+                                ->formatStateUsing(fn($state)=> trans('main.'.$state))
+                                ->weight(FontWeight::Bold),
                                 TextEntry::make('nationality')->label(trans('main.nationality'))
                                 ->formatStateUsing(fn($state)=>$state == "saudian" ? trans('main.saudian') : $state)
                                 ->weight(FontWeight::Bold),
-                                TextEntry::make('user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
+                                TextEntry::make('user.national_id')->label(trans('main.national_id_n'))->weight(FontWeight::Bold),
                             ]),
                             \Filament\Infolists\Components\Grid::make()
                             ->columns(3)
@@ -503,7 +517,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                         ->id('parent-section')
                         ->schema([
                                 TextEntry::make('parent.full_name')->label(trans('main.full_name'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.user.national_id')->label(trans('main.national_id'))->weight(FontWeight::Bold),
+                                TextEntry::make('parent.user.national_id')->label(trans('main.national_id_n'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.relation')->label(trans('main.relation'))
                                 ->formatStateUsing(fn($state)=>  trans('main.'.$state) )
                                 ->weight(FontWeight::Bold),
@@ -511,9 +525,10 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.academic_data'))
-                        ->columns(3)
-                        ->id('parent-section')
+                        ->columns(6)
+                        ->id('parent-sectidon')
                         ->schema([
+                            TextEntry::make('registration_number')->label(trans('main.id_ne'))->weight(FontWeight::Bold),
                             TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
                             TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
                             TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),

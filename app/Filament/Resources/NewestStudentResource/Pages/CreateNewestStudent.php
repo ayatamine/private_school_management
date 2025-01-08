@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\NewestStudentResource;
+use Illuminate\Database\Eloquent\Model;
+
 class CreateNewestStudent extends CreateRecord
 {
     protected static string $resource = NewestStudentResource::class;
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-     
+    protected function handleRecordCreation(array $data): Model
+    {     
         if($data['new_student'] == true)
         {
             try{
@@ -33,20 +34,27 @@ class CreateNewestStudent extends CreateRecord
                 $data['registered_by'] = Auth::id();
                 $data['user_id'] = $user?->id;
                 $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
-                DB::commit();
+
+                $student = Student::create($data);
             }
             catch(\Exception $ex)
             {
                 DB::rollBack();
-                        Notification::make()
+                Notification::make()
                             ->title($ex->getMessage())
                             ->icon('heroicon-o-document-text')
                             ->iconColor('danger')
                             ->send();
+                 $this->halt();
             }
-            $this->halt();
            
-        return $data;
+           DB::commit();
+           Notification::make()
+                        ->title(trans('main.student_registered_successfully'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('success')
+                        ->send();
+            return $student;
         }
         else
         {

@@ -216,7 +216,7 @@
                         {{ trans('main.name') }} : <span style="">{{ $student->username }}</span> <br><br>
                     </td>
                     <td class="border-0 pl-0"  style="border: none"  colspan="2">
-                        {{ trans('main.national_id') }} : <span style="">{{ $student->user->national_id }}</span> <br><br>
+                        {{ trans('main.national_id_n') }} : <span style="">{{ $student->user->national_id }}</span> <br><br>
                     </td>
                 </tr>
                 
@@ -225,7 +225,7 @@
         <hr>
         {{-- receipt info --}}
         <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.financial_infos')}}</strong>
+            <strong style="text-align: right;direction: rtl">{{ trans('main.payments_list')}}</strong>
         </h5>
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
@@ -257,7 +257,7 @@
                            {{$payment->id}}
                         </td>
                         <td class="px-6 py-4  ">
-                            {{$payment->payment_date}}
+                            {{date('Y-m-d',strtotime($payment->payment_date))}}
                         </td>
                         <td class="px-6 py-4 ">
                             {{$payment->paymentMethod->name == "transfer" ? trans('main.transfer') : $payment->paymentMethod->name }}
