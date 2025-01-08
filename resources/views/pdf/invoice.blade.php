@@ -771,7 +771,7 @@
                 <tr style="border:none">
                     
                     <th style="border:none;text-align:left" colspan="3">
-                        <img style="margin:auto;text-align:center;margin-left:2rem;display:block" src="data:image/png;base64,{{ base64_encode(file_get_contents( "storage/$settings->stamp" )) }}"  alt="logo" height="75">
+                        <img style="margin:auto;text-align:center;margin-left:2rem;display:block" src="{{url(asset("storage/$settings->stamp"))}}"  alt="logo" height="75">
                     </th>
                     <th style="border:none;text-align:right;margin-right:4rem;display:block" colspan="3">
                         <div style="border:none;float:left:margin-right:3rem" colspan="3">
