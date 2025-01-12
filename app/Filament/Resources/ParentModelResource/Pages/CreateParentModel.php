@@ -11,6 +11,8 @@ use App\Filament\Resources\ParentModelResource;
 class CreateParentModel extends CreateRecord
 {
     protected static string $resource = ParentModelResource::class;
+    protected static bool $canCreateAnother = false;
+    
     protected function mutateFormDataBeforeCreate(array $data): array
     {
      

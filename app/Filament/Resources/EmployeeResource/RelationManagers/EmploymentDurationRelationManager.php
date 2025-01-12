@@ -116,22 +116,22 @@ class EmploymentDurationRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make()->modalHeading(trans('main.add_employment_duration'))->createAnother(false),
             ])
             ->actions([
-                Tables\Actions\Action::make('download_contract_attachment')
-                ->label(trans('main.download_contract_attachment'))
-                ->icon('icon-download')
-                ->color('info')
-                ->visible(fn(EmploymentDuration $record)=>$record->contract_image != null)
-                ->action(function(EmploymentDuration $record,array $data){
-                    return response()->download('storage/'.$record->contract_image);
-                }),
-                Tables\Actions\Action::make('download_end_duration_attachment')
-                ->label(trans('main.download_end_duration_attachment'))
-                ->icon('icon-download')
-                ->color('info')
-                ->visible(fn(EmploymentDuration $record)=>$record->attachment != null)
-                ->action(function(EmploymentDuration $record,array $data){
-                    return response()->download('storage/'.$record->attachment);
-                }),
+                // Tables\Actions\Action::make('download_contract_attachment')
+                // ->label(trans('main.download_contract_attachment'))
+                // ->icon('icon-download')
+                // ->color('info')
+                // ->visible(fn(EmploymentDuration $record)=>$record->contract_image != null)
+                // ->action(function(EmploymentDuration $record,array $data){
+                //     return response()->download('storage/'.$record->contract_image);
+                // }),
+                // Tables\Actions\Action::make('download_end_duration_attachment')
+                // ->label(trans('main.download_end_duration_attachment'))
+                // ->icon('icon-download')
+                // ->color('info')
+                // ->visible(fn(EmploymentDuration $record)=>$record->attachment != null)
+                // ->action(function(EmploymentDuration $record,array $data){
+                //     return response()->download('storage/'.$record->attachment);
+                // }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                 // ->visible(fn(EmploymentDuration $record)=>$record->contract_end_date == null)

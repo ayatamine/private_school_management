@@ -48,26 +48,25 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 // Extract the date values
                 $date_from = $queryParams['tableFilters']['payment_date']['created_from'] ?? null;
                 $date_to = $queryParams['tableFilters']['payment_date']['created_until'] ?? null;
-                $payment_method_id = $queryParams['tableFilters']['payment_method_id']['value'] ?? null;
-                $finance_account = $queryParams['tableFilters']['finance_account']['value'] ?? null;
-
+                $payment_method_id = $queryParams['tableFilters']['payment_method']['value'] ?? null;
+                $finance_account_id = $queryParams['tableFilters']['finance_account']['value'] ?? null;
                 $receipt_vouchers = ReceiptVoucher::oldest()->whereNull('added_by')
                 ->when(
-                    $date_from, // Check if $date_from is not null or empty
-                    fn ($query) => $query->whereDate('created_at', '>=', $date_from),
+                    $date_from, 
+                    fn ($query) => $query->whereDate('payment_date', '>=', $date_from),
                 )
                 ->when(
                     $date_to, 
-                    fn ($query) => $query->whereDate('created_at', '<=', $date_to),
+                    fn ($query) => $query->whereDate('payment_date', '<=', $date_to),
                 )
                 ->when(
                     $payment_method_id, 
                     fn ($query) => $query->wherePaymentMethodId($payment_method_id),
                 )
                 ->when(
-                    $finance_account, 
-                    fn ($query) => $query->whereHas('paymentMethod',function($query) use ($finance_account){
-                        $query->whereFinanceAccountId($finance_account);
+                    $finance_account_id, 
+                    fn ($query) => $query->whereHas('paymentMethod',function($query) use ($finance_account_id){
+                        $query->whereFinanceAccountId($finance_account_id);
                     }),
                 )
                 ->get();
@@ -85,7 +84,7 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $record = Student::findOrFail($id);
                 $data = ['student' => $record,'settings'=>SchoolSetting::first()];
                 $view = "all_payments";
-                $file_name = "student_payments_$record->id.pdf";
+                $file_name = "قائمة المدفوعات $record->id.pdf";
             break;
         case 'all_fees':
                 $record = Student::findOrFail($id);

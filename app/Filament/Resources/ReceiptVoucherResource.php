@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use MPDF;
-use NumberToWord;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
@@ -12,6 +11,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Helpers\NumberToWord;
 use App\Models\PaymentMethod;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;

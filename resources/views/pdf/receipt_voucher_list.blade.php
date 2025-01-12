@@ -203,13 +203,13 @@
         </h5>
          {{-- school info --}}
          <h5 class="text-uppercase">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.date')}}: </strong> <span style="text-size:12px">{{\Carbon\Carbon::createFromDate(now())->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>
+            <strong style="text-align: right;direction: rtl">{{ trans('main.date')}}: </strong> <span style="text-size:12px">{{date('d-m-Y')}}</span>
         </h5>
         @if(isset($date_from) || isset($date_to))
          <h5 class="text-uppercase">
             <strong style="text-align: right;direction: rtl">{{ trans('main.selected_duration')}}: </strong>  
-            @if(isset($date_from)){{ trans('main.from')}} <span style="text-size:12px !important;margin:0 3px;">{{\Carbon\Carbon::createFromDate($date_from)->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>@endif
-            @if(isset($date_to)){{ trans('main.to')}} <span style="text-size:12px !important;margin:0 3px;">{{\Carbon\Carbon::createFromDate($date_to)->isoFormat('D MMM YYYY','Asia/Riyadh')}}</span>@endif
+            @if(isset($date_from)){{ trans('main.from')}} <span style="text-size:12px !important;margin:0 3px;">{{date('d-m-Y',strtotime($date_from))}}</span>@endif
+            @if(isset($date_to)){{ trans('main.to')}} <span style="text-size:12px !important;margin:0 3px;">{{date('d-m-Y',strtotime($date_to))}}</span>@endif
         </h5>
         @endif
         <table class="w-ful" style="width: 100%" id="payment_list">

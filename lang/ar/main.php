@@ -183,7 +183,7 @@ return [
     'stamp'=>'ختم المدرسة',
     'school_title'=>'اسم المدرسة',
     'payments'=>'المدفوعات',
-    'payments_list'=>'المدفوعات قائمة ',
+    'payments_list'=>' قائمةالمدفوعات ',
     'no_payment_found'=>'لايوجد أي مدفوعات بعد',
     'receipt_number'=>'رقم السند',
     'print_invoice'=>'طباعة الفاتورة',
