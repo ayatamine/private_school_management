@@ -200,7 +200,6 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make( 'middle_name')->label(trans('main.middle_name'))
-                            ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('third_name')->label(trans('main.third_name'))
                             ->maxLength(255),
@@ -211,8 +210,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                         ->columns(4)
                         ->schema([
                             Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                                ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')])
-                                ->required(),   
+                                ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')]),   
                             Forms\Components\DatePicker::make('birth_date')->label(label: trans('main.birth_date')),
                             Forms\Components\Select::make('nationality')->label(trans('main.nationality'))
                                 ->options(
@@ -222,7 +220,6 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 )
                                 ->default('saudian')
                                 ->hiddenOn('edit')
-                                ->required()
                                 ->live(),
                             Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
                                 ->maxLength(255)
@@ -255,6 +252,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                         ->columns(3)
                         ->schema([        
                             Forms\Components\TextInput::make('phone_number')->label(trans('main.phone_number'))
+                                ->numeric()
                                 // ->unique(table:'users',ignoreRecord: true)
                                 ->maxLength(13),   
                             Forms\Components\TextInput::make('email')->label(trans('main.email')),
@@ -378,10 +376,10 @@ class StudentResource extends Resource implements HasShieldPermissions
                 )
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
-                    ->searchable()
+                    ->searchable('id')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('student_name')->label(trans('main.student_name'))
-                    ->state(fn (Student $student) => $student?->first_name .' '.$student?->last_name)
+                Tables\Columns\TextColumn::make('username')->label(trans('main.student_name'))
+                    ->searchable(['first_name','last_name'])
                     ->sortable(),
                
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
@@ -391,8 +389,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
-                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)
-                    ->searchable(),
+                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)                    ,
                 Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

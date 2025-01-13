@@ -340,10 +340,11 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
             ->query(Student::query()->whereNull('termination_reason'))
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
-                    ->searchable()
+                    ->searchable('id')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('student_name')->label(trans('main.student_name'))
-                    ->state(fn (Student $student) => $student?->first_name .' '.$student?->last_name)
+                Tables\Columns\TextColumn::make('username')->label(trans('main.student_name'))
+                    // ->state(fn (Student $student) => $student?->first_name .' '.$student?->last_name)
+                    ->searchable(['first_name','last_name'])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
@@ -354,7 +355,8 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 
                 Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
                     ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)
-                    ->searchable(),
+                    // ->searchable()
+                    ,
                 Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

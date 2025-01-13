@@ -52,7 +52,7 @@ class EditStudent extends EditRecord
        
         
         $parent = ParentModel::find($data['parent_id']);
-        $data['parent_relation']  = $parent?->relation ;
+        $data['relation']  = $parent?->relation ;
         $data['parent_national_id']  = $parent?->user->national_id;
         $data['parent_email']  = $parent?->user->email;
         $data['parent_phone_number']  = $parent?->user->phone_number;
