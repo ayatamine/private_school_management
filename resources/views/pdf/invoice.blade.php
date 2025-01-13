@@ -304,7 +304,7 @@
                             if($invoice->student->termination_date && $invoice->student->termination_date < $partition['due_date']) $partition['value'] =  0;
                         @endphp
                         <td >
-                            {{$partition['value']}}
+                            {{number_format($partition['value'], 2, '.', ',')}}
                         </td>
                         @php
                             $discounts = DB::table('student_fee')
@@ -338,7 +338,7 @@
                                 $total_transport_without_taxes[$i]=$tuituion_value_after_discount[$i];
                             @endphp
                             
-                            {{$tuituion_value_after_discount[$i]}}
+                            {{number_format($tuituion_value_after_discount[$i], 2, '.', ',')}}
                         </td>
                          @else 
     
@@ -370,7 +370,7 @@
 
                                 $total_of_tuition_taxes[$i]=$value_after_tax[$i];
                             @endphp
-                            {{$value_after_tax[$i]}}
+                            {{number_format($value_after_tax[$i], 2, '.', ',')}}
                         </td>
                         @endif
                         <td >
@@ -381,7 +381,7 @@
                                 $tuition_total[$i] = (isset($tuituion_value_after_discount[$i]) ? $tuituion_value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                                 
                             @endphp
-                            {{$tuition_total[$i]}}
+                            {{number_format($tuition_total[$i], 2, '.', ',')}}
                         </td>
                     </tr> 
                   @endforeach
@@ -453,7 +453,7 @@
                             if($invoice->student->termination_date && $invoice->student->termination_date < $partition['due_date']) $partition['value'] =  0;
                         @endphp
                         <td >
-                            {{$partition['value']}}
+                            {{number_format($partition['value'], 2, '.', ',')}}
                         </td>
                         @php
                             $discounts = DB::table('student_fee')
@@ -487,7 +487,7 @@
                                 $total_transport_without_taxes[$i]=$transport_value_after_discount[$i];
                             @endphp
                             
-                            {{$transport_value_after_discount[$i]}}
+                            {{number_format($transport_value_after_discount[$i], 2, '.', ',')}}
                         </td>
                          @else 
     
@@ -519,7 +519,7 @@
 
                                 $total_of_transport_taxes[$i]=$value_after_tax[$i];
                             @endphp
-                            {{$value_after_tax[$i]}}
+                            {{number_format($value_after_tax[$i], 2, '.', ',')}}
                         </td>
               
                         <td >
@@ -529,7 +529,7 @@
                             @php
                                 $transport_total[$i] = (isset($transport_value_after_discount[$i]) ? $transport_value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                             @endphp
-                            {{$transport_total[$i]}}
+                            {{number_format($transport_total[$i], 2, '.', ',')}}
                         </td>
                     </tr> 
                   @endforeach
@@ -640,7 +640,7 @@
                             $total_other_without_taxes[$i]=$value_after_discount[$i];
                             @endphp
                             
-                            {{$value_after_discount[$i]}}
+                            {{number_format($value_after_discount[$i], 2, '.', ',')}}
                         </td>
                          @else 
                            
@@ -673,7 +673,7 @@
 
                                 $total_of_other_taxes[$i]=$value_after_tax[$i];
                             @endphp
-                            {{$value_after_tax[$i]}}
+                            {{number_format($value_after_tax[$i], 2, '.', ',')}}
                            
                         </td>
                       
@@ -684,7 +684,7 @@
                             @php
                                 $other_total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                             @endphp
-                            {{$other_total[$i]}}
+                            {{number_format($other_total[$i], 2, '.', ',')}}
                         </td>
                     </tr> 
                   @endforeach
@@ -719,13 +719,13 @@
                                 <tr>
                                     <td>{{trans('main.total_without_taxes')}}</td>
                                     <td>
-                                        {{$total_without_tax}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                                        {{number_format($total_without_tax, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>{{trans('main.total_with_tax')}}</td>
                                     <td>
-                                        {{$total_with_tax}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                                        {{number_format($total_with_tax, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
                                 {{-- total without taxes --}}
@@ -742,14 +742,14 @@
                                         ({{$applied_vat?->percentage }}%)
                                     </td>
                                     <td>
-                                        {{$total_of_tax}}  {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                                        {{number_format($total_of_tax, 2, '.', ',')}}  {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
                                 {{-- total sum --}}
                                 <tr>
                                     <td>{{trans('main.total_of_total_with_tax')}} ({{$applied_vat?->percentage }}%)</td>
                                     <td>
-                                        {{$total}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                                        {{number_format($total, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                                     </td>
                                 </tr>
             </tbody>
@@ -761,9 +761,10 @@
                 'student_registeration_number'=>$invoice->student->registration_number,
                 'added_value_tax_number'=>$settings->added_value_tax_number,
                 'invoice_date'=>$invoice->created_at,
-                'total_without_tax'=>$total_without_tax,
-                'total_without_tax'=>$total_with_tax,
-                'total'=>$total
+                'total_without_tax'=>number_format($total_without_tax, 2, '.', ','),
+                'total_with_tax'=>number_format($total_with_tax, 2, '.', ','),
+                'total_of_taxes'=>number_format($total_of_tax, 2, '.', ','),
+                'total'=>number_format($total, 2, '.', ',')
             ]);
         @endphp
         <table style="width: 100%;border-collapse: collapse;">

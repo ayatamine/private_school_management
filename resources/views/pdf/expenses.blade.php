@@ -198,6 +198,7 @@
                 </tr>
             </tbody>
         </table>
+        <hr>
         <br>
         <br>
         <h5 class="text-uppercase" style="text-align: center;margin:auto">
@@ -256,7 +257,7 @@
                             {{$expense->transactionCategory->name}}
                         </td>
                         <td class="px-6 py-4   border">
-                            {{$expense->value." ".trans('main.'.env('DEFAULT_CURRENCY'))}}
+                            {{number_format($expense->value, 2, '.', ',')}}
                         </td>
 
                         <td class="px-6 py-4   border">
@@ -287,7 +288,7 @@
                     <tr>
                         <td class="px-6 py-4 border" colspan="2" >{{trans('main.total')}}</td>
                         <td class="px-6 py-4 border ">
-                        {{$total}} {{trans("main.SAR")}}
+                        {{number_format($total, 2, '.', ',')}} {{trans("main.SAR")}}
                         </td>
                         <td colspan="6" class="px-6 py-4 border " style="border-left: 1px solid #262729"></td>
                     </tr>

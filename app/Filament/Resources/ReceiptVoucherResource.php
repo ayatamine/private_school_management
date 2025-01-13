@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use MPDF;
-use NumberToWord;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
@@ -12,6 +11,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Helpers\NumberToWord;
 use App\Models\PaymentMethod;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
@@ -164,9 +164,9 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                    ->formatStateUsing(fn($state)=>  $state." ".env('DEFAULT_CURRENCY'))
+                    ->formatStateUsing(fn($state)=>  number_format($state, 2, '.', ',')." ".env('DEFAULT_CURRENCY'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment_date'))
+                Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment'))
                     ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.creation'))
@@ -186,7 +186,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
             ->filters([
                 SelectFilter::make('payment_method')
                 ->relationship('paymentMethod', 'name')
-                ->label(trans('main.payment_method')),
+                ->label(trans_choice('main.payment_method',1)),
                 SelectFilter::make('finance_account')
                 ->relationship('paymentMethod', 'financeAccount.name')
                 ->label(trans('main.finance_account_name')),
@@ -230,6 +230,11 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                
                    
             ])
+            ->deferFilters()
+            ->filtersApplyAction(
+                fn (\Filament\Tables\Actions\Action $action) => $action
+                    ->label(trans('main.apply')),
+            )
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),

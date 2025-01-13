@@ -225,7 +225,7 @@
         <hr>
         {{-- receipt info --}}
         <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.payments_list')}}</strong>
+            <strong style="text-align: right;direction: rtl">{{ trans('main.payments_list')}} {{date('Y-m-d')}}</strong>
         </h5>
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
@@ -264,7 +264,7 @@
                         </td>
                         
                         <td class="px-6 py-4 " >
-                            {{$payment->value}}  {{trans("main.SAR")}}
+                            {{number_format($payment->value, 2, '.', ',')}}  {{trans("main.SAR")}}
                         </td>
                         
                         @php
@@ -282,7 +282,7 @@
                 <tr>
                     <td class="px-6 py-4 " colspan="3" >{{trans('main.total_payments')}}</td>
                     <td class="px-6 py-4 ">
-                    {{$total}} {{trans("main.SAR")}}
+                    {{number_format($total, 2, '.', ',')}} {{trans("main.SAR")}}
                     </td>
                 </tr>
                 @endif

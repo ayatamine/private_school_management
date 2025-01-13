@@ -199,8 +199,19 @@
         <br>
     
         <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.employees_list')}}</strong>
+            <strong style="text-align: right;direction: rtl">{{ trans_choice('main.receipt_voucher',2)}}</strong>
         </h5>
+         {{-- school info --}}
+         <h5 class="text-uppercase">
+            <strong style="text-align: right;direction: rtl">{{ trans('main.date')}}: </strong> <span style="text-size:12px">{{date('d-m-Y')}}</span>
+        </h5>
+        @if(isset($date_from) || isset($date_to))
+         <h5 class="text-uppercase">
+            <strong style="text-align: right;direction: rtl">{{ trans('main.selected_duration')}}: </strong>  
+            @if(isset($date_from)){{ trans('main.from')}} <span style="text-size:12px !important;margin:0 3px;">{{date('d-m-Y',strtotime($date_from))}}</span>@endif
+            @if(isset($date_to)){{ trans('main.to')}} <span style="text-size:12px !important;margin:0 3px;">{{date('d-m-Y',strtotime($date_to))}}</span>@endif
+        </h5>
+        @endif
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
 
@@ -265,7 +276,7 @@
                             {{$receipt->paymentMethod?->financeAccount?->name}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$receipt->value." ".env('DEFAULT_CURRENCY')}}
+                            {{number_format($receipt->value, 2, '.', ',')." ".env('DEFAULT_CURRENCY')}}
                         </td>
                         <td class="px-6 py-4  border">
                             {{date('Y-m-d',strtotime($receipt->payment_date))}}
@@ -275,16 +286,18 @@
                         </td>
                         
                     </tr> 
-                    
+                    @php
+                        $total+=$receipt->value;
+                    @endphp
                 @empty 
                     <tr>
-                        <td colspan="6" style="border-left: 1px solid #262729">{{trans('main.no_employees')}}</td>
+                        <td colspan="6" style="border-left: 1px solid #262729">{{trans('main.no_operation_found')}}</td>
                     </tr>
                 @endforelse
                 <tr>
                     <td class="px-6 py-4 " colspan="6" class="border" >{{trans('main.total_only')}}</td>
                     <td class="px-6 py-4 " class="border">
-                    {{$total}} {{env('DEFAULT_CURRENCY')}}
+                    {{number_format($total, 2, '.', ',')}} {{env('DEFAULT_CURRENCY')}}
                     </td>
                     <td colspan="2" class="border"></td>
                 </tr>
