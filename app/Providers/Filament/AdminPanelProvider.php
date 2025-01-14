@@ -54,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationItem::make('school_settings')
                     ->label(trans('main.school_settings'))
                     ->icon('icon-school')
+                    ->group(trans('main.settings'))
                     ->visible(fn()=>employeeHasPermission('view_any_school::setting'))
                     ->url(fn (): string => SchoolSettingResource::getUrl('edit',[1])),
                 NavigationItem::make('add_student')

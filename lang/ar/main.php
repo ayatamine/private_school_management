@@ -394,4 +394,6 @@ return [
      'no_employees'=>'لايوجد اي عاملين',
      'job_name_l'=>'المسمى الوظيفي',
      'days'=>'',
+     'human_resource_settings'=>'اعدادات الموارد البشرية',
+     'settings'=>'الاعدادات',
      ];

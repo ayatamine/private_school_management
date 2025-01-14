@@ -164,8 +164,12 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                    ->formatStateUsing(fn($state)=>  number_format($state, 2, '.', ',')." ".env('DEFAULT_CURRENCY'))
-                    ->sortable(),
+                ->formatStateUsing(fn($state)=>  number_format($state, 2, '.', ','))
+                    ->summarize(
+                        Sum::make()->numeric(
+                                    2,',',','
+                               )
+                   )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY'))),
                 Tables\Columns\TextColumn::make('payment_date')->label(trans('main.payment'))
                     ->date('Y-m-d')
                     ->sortable(),
@@ -176,12 +180,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                
                 Tables\Columns\TextColumn::make('registeredBy.username')->label(trans('main.username'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                    ->summarize(
-                        Sum::make()->numeric(
-                                    2,',',','
-                               )
-                   )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
+               
             ])
             ->filters([
                 SelectFilter::make('payment_method')

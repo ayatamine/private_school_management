@@ -30,7 +30,7 @@ class FinanceAccountResource extends Resource implements HasShieldPermissions
     protected static ?string $navigationIcon = 'icon-finance_accounts';
     public static function getNavigationGroup():string
     {
-        return trans('main.finance');
+        return trans('main.finance_settings');
     }
    
    

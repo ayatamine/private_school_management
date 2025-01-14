@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <head>
-        <title>{{trans_choice('main.employee',1)}}</title>
+        <title>{{trans('main.termination')}}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta charset="utf-8">
         <style type="text/css" >
@@ -199,12 +199,13 @@
         <br>
     
         <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.employees_list')}}</strong>
+            <strong style="text-align: right;direction: rtl">{{ trans('main.students_list')}}</strong>
         </h5>
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
 
                 <tr>
+                    
                     <th scope="col" class="px-6 py-3 border">
                        {{trans('main.id_number')}}
                     </th>
@@ -215,14 +216,17 @@
                         {{trans('main.national_id_n')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.department_name_l')}}
+                        {{trans('main.nationality')}}
                     </th>
                    
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans_choice('main.job',1)}}
+                        {{trans('main.course_enrolled')}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
-                        {{trans('main.status')}}
+                        {{trans('main.termination_date')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.termination_reason')}}
                     </th>
                 </tr>
             </thead>
@@ -230,36 +234,37 @@
                 @php
                     $total=0;
                 @endphp
-               
-           
-           
+
       
-                @forelse ($employees as $employee)
+                @forelse ($students as $student)
                     <tr class="">
                         <td scope="row" class="px-6 py-4  border">
-                           {{$employee->id}}
+                           {{$student?->id}}
                         </td>
                         <td class="px-6 py-4  border ">
-                            {{$employee?->user?->username}}
+                            {{$student?->username}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->user->national_id}}
+                            {{$student->user->national_id}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->employmentDurations?->first()?->department?->name}}
+                            {{ $student->nationality == 'saudian' ? trans("main.saudian") :  $student->nationality}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->employmentDurations?->first()?->designation?->name}}
+                            {{$student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name}}
                         </td>
                         <td class="px-6 py-4  border">
-                            {{$employee->employmentDurations?->first()  ? trans('main.active_state') : trans('main.finished_state')}}
+                            {{date('Y-m-d',strtotime($student?->termination_date))}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{$student?->termination_reason}}
                         </td>
                         
                     </tr> 
                     
                 @empty 
                     <tr>
-                        <td colspan="6" style="border-left: 1px solid #262729">{{trans('main.no_employees')}}</td>
+                        <td colspan="6" style="border-left: 1px solid #262729">{{trans('main.no_students')}}</td>
                     </tr>
                 @endforelse
                 

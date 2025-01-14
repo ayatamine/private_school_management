@@ -177,17 +177,19 @@ class StudentResource extends Resource implements HasShieldPermissions
                             ->live(),
                         Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
                             ->options( AcademicStage::pluck('name', 'id'))
+                            ->required()
                             ->live(),
                         Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
                             ->options(fn (Get $get): Collection => Course::query()
                             ->where('academic_stage_id', $get('academic_stage_id'))
                             ->pluck('name', 'id'))
+                            ->required()
                             ->live()
                             ->afterStateUpdated(function (Forms\Set $set,) {
                                 $set('semester_id', null);
                             })
                             ,
-                        Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))
+                        Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))->required()
                             ->options(fn (Get $get): Collection => Semester::query()
                             ->where('course_id', $get('course_id'))
                             ->where('is_registration_active', true)
@@ -289,7 +291,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                     Forms\Components\TextInput::make('full_name')->label(trans('main.full_name'))
                                     ->required()
                                     ->maxLength(255),
-                                    Forms\Components\Select::make('relation')->label(trans('main.parent_relation'))
+                                    Forms\Components\Select::make('parent_relation')->label(trans('main.parent_relation'))
                                         ->options(
                                             [
                                                 'father'=>trans('main.father'),'mother'=>trans('main.mother'),'brother'=>trans('main.brother'),'sister'=>trans('main.sister'),'guardian'=>trans('main.guardian'),'other'=>trans('main.other')

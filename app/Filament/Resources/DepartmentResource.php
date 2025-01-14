@@ -22,7 +22,7 @@ class DepartmentResource extends Resource implements HasShieldPermissions
     protected static ?string $navigationIcon = 'icon-department';
     public static function getNavigationGroup():string
     {
-        return trans('main.human_resource');
+        return trans('main.human_resource_settings');
     }
     public static function getModelLabel():string
     {

@@ -283,6 +283,7 @@ class EmployeeResource extends Resource implements HasShieldPermissions
                     ->state(function (Employee $record) {
                         return $record->first_name." ".$record->last_name;
                     })
+                    ->searchable(['first_name','last_name','middle_name','third_name'])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id_n'))
                     ->searchable()

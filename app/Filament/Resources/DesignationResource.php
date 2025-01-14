@@ -25,7 +25,7 @@ class DesignationResource extends Resource implements HasShieldPermissions
     
     public static function getNavigationGroup():string
     {
-        return trans('main.human_resource');
+        return trans('main.human_resource_settings');
     }
     public static function getModelLabel():string
     {

@@ -139,7 +139,13 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $view = "expenses";
                 $file_name = trans('main.expense_list').'_'.date('Y-m-d').".pdf";
             break;
-        
+            case 'student_termination':
+                //remove the super admin
+                    $students = Student::whereNotNull('termination_reason')->latest()->get();
+                    $data = ['students' => $students,'settings'=>SchoolSetting::first()];
+                    $view = "student_termination";
+                    $file_name = "قائمة الطلاب منتهي القيد.pdf";
+                break;
         default:
             # code...
             break;

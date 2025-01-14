@@ -59,6 +59,10 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     {
         return employeeHasPermission('view_any_student_termination_student::termination');
     }
+    public static function canCreate(): bool
+    {
+        return false;
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -80,6 +84,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                             ->maxLength(26663)->required(),
                         Forms\Components\FileUpload::make(name: 'termination_document')->label(trans('main.document'))
                             ->columnSpanFull()
+                            ->openable()
                             ->directory('termination_documents'),
                         
                 ])
@@ -93,21 +98,23 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
             ->query(Student::query()->whereNotNull('termination_reason'))
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
-                    ->searchable()
+                    ->searchable('id')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('username')->label(trans('main.name'))
-                ->searchable()
+                ->searchable(['first_name','last_name'])
                 ->sortable(),
-                Tables\Columns\TextColumn::make('middle_name')->label(trans('main.middle_name'))
+                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
+                    ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
+                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)                    ,
                 Tables\Columns\TextColumn::make('termination_date')->label(trans('main.termination_date'))
-                    ->searchable()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('termination_reason')->label(trans('main.termination_reason'))
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('terminatedBy.username')->label(trans('main.terminated_by'))
                     ->searchable()
                     ->sortable(),
             ])
@@ -115,10 +122,11 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                 //
             ])
             ->actions([
-                Action::make(trans('main.view'))
-                ->icon('icon-eye')
-                ->color('info')
-                ->url(fn(Student $record)=> StudentResource::getUrl('view',[$record])),
+                // Action::make(trans('main.view'))
+                // ->icon('icon-eye')
+                // ->color('info')
+                // ->url(fn(Student $record)=> StudentResource::getUrl('view',[$record])),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Action::make(trans('main.restore'))
                 ->color('success')

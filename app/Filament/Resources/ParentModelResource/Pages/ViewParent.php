@@ -26,15 +26,12 @@ class ViewParent extends ViewRecord
         $data['email'] = $user->email;
         if($students =$this->record->students)
         {
-            // $data['username'] = $student->username;
-            // $data['national_id'] = $student->user->national_id;
-            // $data['course'] = $student->semester->course->name;
             $stds=[];
             foreach($students as $i=>$student)
             {
                  $stds[$i]['username'] = $student->username;
                  $stds[$i]['national_id'] = $student->user?->national_id;
-                 $stds[$i]['course'] = $student->semester?->course?->name;
+                 $stds[$i]['parent_relation'] = trans('main.'.$this->record->relation);
             }
           
         }
