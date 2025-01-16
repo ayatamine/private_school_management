@@ -337,7 +337,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::query()->whereNull('termination_reason'))
+            ->query(Student::query()->whereDoesntHave('termination'))
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable('id')

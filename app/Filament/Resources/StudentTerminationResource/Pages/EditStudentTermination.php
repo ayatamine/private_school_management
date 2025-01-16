@@ -21,5 +21,5 @@ class EditStudentTermination extends EditRecord
             $data['student_id'] = $this->record->id;
 
         return $data;
-    }
+    } 
 }

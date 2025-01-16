@@ -57,8 +57,7 @@ class StudentResource extends Resource
         return $table
             ->query(
                 Student::query()
-                ->whereNull('termination_reason')
-                ->whereNull('termination_reason')
+                ->whereDoesntHave('termination')
                 ->where('status','approved')
                 ->whereParentId(auth()?->user()?->parent?->id)
                 )

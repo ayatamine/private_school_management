@@ -12,6 +12,7 @@ use App\Models\ParentModel;
 use App\Traits\HasPayments;
 use App\Models\TransportFee;
 use App\Models\ReceiptVoucher;
+use App\Models\StudentTermination;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -218,5 +219,9 @@ class Student extends Model
                 return  'yes';
             }
         );
+    }
+    public function termination():HasOne
+    {
+        return $this->hasOne(StudentTermination::class);
     }
 }

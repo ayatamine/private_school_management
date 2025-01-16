@@ -21,7 +21,7 @@ use App\Filament\Resources\StudentTerminationResource\RelationManagers;
 
 class StudentTerminationResource extends Resource implements HasShieldPermissions 
 {
-    protected static ?string $model = Student::class;
+    protected static ?string $model = StudentTermination::class;
 
     protected static ?string $navigationIcon = 'icon-student_termination';
 
@@ -72,12 +72,14 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                     ->schema([ Grid::make()
                      ->schema([
                         Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                            ->options( Student::whereNull('termination_date')->selectRaw("id, concat(first_name, ' ', middle_name) as full_name")->pluck('full_name', 'id'))
-                            ->searchable()
+                            ->options( Student::whereDoesntHave('termination')->selectRaw("id, concat(first_name, ' ', middle_name) as full_name")->pluck('full_name', 'id'))
+                            // ->searchable()
                             ->preload()
                             ->required()
-                            ->hiddenOn('edit'),
-                        Forms\Components\TextInput::make('username')->label(trans_choice('main.student',1))->hiddenOn('create')->disabled(),
+                            ->hiddenOn(['edit', 'view']),
+                        Forms\Components\TextInput::make('student.username')->label(trans_choice('main.student',1))
+                            ->hiddenOn('create')
+                            ->disabled(),
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
                         Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
                             ->columnSpanFull()
@@ -95,27 +97,28 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::query()->whereNotNull('termination_reason'))
+            // ->query(StudentTermination::query())
             ->columns([
-                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
+                Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.registration_number'))
                     ->searchable('id')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('username')->label(trans('main.name'))
+                Tables\Columns\TextColumn::make('student.username')->label(trans('main.name'))
                 ->searchable(['first_name','last_name'])
                 ->sortable(),
-                Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
+                Tables\Columns\TextColumn::make('student.user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
+                Tables\Columns\TextColumn::make('student.nationality')->label(trans('main.nationality'))
                     ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
-                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)                    ,
+                Tables\Columns\TextColumn::make('course_enrolled')->label(trans('main.course_enrolled'))
+                    ->state(fn (StudentTermination $student_termination) => $student_termination?->semester?->academicYear?->name .' '.$student_termination?->semester?->course?->name)                    ,
                 Tables\Columns\TextColumn::make('termination_date')->label(trans('main.termination_date'))
                     ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('termination_reason')->label(trans('main.termination_reason'))
                     ->searchable()
+                    ->limit(50)
                     ->sortable(),
             ])
             ->filters([
@@ -134,14 +137,10 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                 ->modalHeading(trans('main.restore_student'))
                 ->modalDescription(trans('main.restore_student_description'))
                 ->visible(employeeHasPermission('restore_student'))
-                ->action(function (Student $record) {
+                ->action(function (StudentTermination $record) {
                   
-                   $record->update([
-                        'terminated_by'=>null,
-                        'termination_date'=>null,
-                        'termination_reason'=>null,
-                        'termination_document'=>null,
-                   ]);
+                   $record->student()->update(['semester_id' => $record->terminated_semester_id]);
+                   $record->delete();
                    Notification::make()
                                        ->title(trans('main.student_restored_success'))
                                        ->icon('heroicon-o-document-text')
@@ -150,9 +149,9 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                 }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -169,6 +168,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
             'index' => Pages\ListStudentTerminations::route('/'),
             'create' => Pages\CreateStudentTermination::route('/create'),
             'edit' => Pages\EditStudentTermination::route('/{record}/edit'),
+            'view' => Pages\ViewStudentTermination::route('/{record}'),
         ];
     }
 }

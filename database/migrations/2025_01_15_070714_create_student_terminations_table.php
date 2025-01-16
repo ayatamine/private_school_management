@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreign('student_id')->references('id')->on('students');
             $table->string(column: 'termination_reason')->nullable();
             $table->date(column: 'termination_date')->nullable();
-            $table->date(column: 'termination_document')->nullable();
+            $table->string(column: 'termination_document')->nullable();
             $table->unsignedBigInteger('terminated_by')->nullable();
             $table->foreign('terminated_by')->references('id')->on('users');
             $table->unsignedBigInteger('terminated_semester_id')->nullable();

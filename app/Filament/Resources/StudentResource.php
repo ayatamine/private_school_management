@@ -374,7 +374,7 @@ class StudentResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->query(
-                Student::query()->whereNull('termination_reason')->where('status','approved')
+                Student::query()->whereDoesntHave('termination')->where('status','approved')
                 )
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))

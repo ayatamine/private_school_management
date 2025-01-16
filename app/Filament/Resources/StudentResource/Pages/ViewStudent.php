@@ -83,9 +83,9 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                                 return;
                             }
                             $data['terminated_by'] = Auth::id();
-                            $data['semester_id'] = null;
-                            $data['is_approved'] = false;
-                            $this->record->update($data);
+                            $data['terminated_semester_id'] = $this->record->semester_id;
+                            $this->record->update(['semester_id'=>null]);
+                            $this->record->termination()->create($data);
                             DB::commit();
                             Notification::make()
                                                 ->title(trans('main.student_termination_success'))
