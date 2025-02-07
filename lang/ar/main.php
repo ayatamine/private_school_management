@@ -211,7 +211,7 @@ return [
     'restore_student_transportation_description'=>'',
     'status'=>'الحالة',
     'transportation_active'=>'ساري المفعول',
-    'transportation_inactive'=>'منتهي القيد',
+    'transportation_inactive'=>'منتهي ',
     'student_name'=>'اسم الطالب',
     'is_designation_active'=>'تفعيل المسمى الوظيفي',
     'study_degree'=>'المستوى التعليمي',
@@ -396,4 +396,5 @@ return [
      'days'=>'',
      'human_resource_settings'=>'اعدادات الموارد البشرية',
      'settings'=>'الاعدادات',
+     'st_registration_number'=>'رقم قيد الطالب',
      ];

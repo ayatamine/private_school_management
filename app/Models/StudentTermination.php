@@ -45,4 +45,8 @@ class StudentTermination extends Model
     {
         return $this->belongsTo(Semester::class,'terminated_semester_id','id');
     }
+    public function terminatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'terminated_by','id');
+    }
 }

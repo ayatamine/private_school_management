@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Expense;
+use App\Models\Transport;
 use App\Models\Invoice;
 use App\Models\Student;
 use App\Models\Employee;
@@ -91,6 +92,36 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $data = ['student' => $record,'settings'=>SchoolSetting::first()];
                 $view = "all_fees";
                 $file_name = "فاتورة_الرسوم_$record->username.pdf";
+            break;
+        case 'employees':
+            //remove the super admin
+                $employees = Employee::whereNot('user_id',User::whereHas('roles', function($query) {
+                    $query->where('name', 'super_admin')->orWhere('id',1);
+                })->first()?->id)->latest()->get();
+                $data = ['employees' => $employees,'settings'=>SchoolSetting::first()];
+                $view = "employees";
+                $file_name = "قائمة العاملين.pdf";
+            break;
+        case 'students_transportation':
+                $url =url()->previous();
+                $parsedUrl = parse_url($url);
+                if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
+                $transport_fee_id = $queryParams['tableFilters']['transport_fee_id']['value'] ?? null;
+                $termination_date = $queryParams['tableFilters']['termination_date']['value'] ?? null;
+
+                $students_transportation = Transport::with('student')->with('transportFee')->with('vehicle')
+                ->when(
+                    $transport_fee_id, 
+                    fn ($query) => $query->whereTransportFeeId($transport_fee_id),
+                )
+                ->when(
+                    $termination_date == 1, 
+                    fn ($query) => $query->whereTerminationDate(null) ,
+                )
+                ->get();
+                $data = ['students_transportation' => $students_transportation,'settings'=>SchoolSetting::first()];
+                $view = "students_transportation";
+                $file_name = "قائمة المواصلات.pdf";
             break;
         case 'employees':
             //remove the super admin

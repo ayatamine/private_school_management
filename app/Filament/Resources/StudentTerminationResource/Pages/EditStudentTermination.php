@@ -18,7 +18,7 @@ class EditStudentTermination extends EditRecord
     }
     protected function mutateFormDataBeforeFill(array $data): array
     {
-            $data['student_id'] = $this->record->id;
+            $data['student_id'] = $this->record->student->id;
 
         return $data;
     } 

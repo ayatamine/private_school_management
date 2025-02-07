@@ -85,13 +85,15 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                             $data['terminated_by'] = Auth::id();
                             $data['terminated_semester_id'] = $this->record->semester_id;
                             $this->record->update(['semester_id'=>null]);
-                            $this->record->termination()->create($data);
+                            //what this will return
+                            $terminated_id = $this->record->termination()->create($data);
                             DB::commit();
                             Notification::make()
                                                 ->title(trans('main.student_termination_success'))
                                                 ->icon('heroicon-o-document-text')
                                                 ->iconColor('success')
                                                 ->send();
+                            return redirect()->route('filament.admin.resources.student-terminations.view', $terminated_id);
                         }
                         catch(\Exception $ex)
                         {

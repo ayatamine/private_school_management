@@ -12,13 +12,14 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
 use App\Filament\Resources\TransportResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportResource\RelationManagers;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class TransportResource extends Resource implements HasShieldPermissions
 {
@@ -96,34 +97,49 @@ class TransportResource extends Resource implements HasShieldPermissions
         return $table
             // ->query(Transport::query()->whereNull('termination_reason'))
             ->columns([
+                Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.st_registration_number'))
+                    ->searchable('id')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->whereHas('student', function ($q) use ($search) {
+                            $q->where('first_name','like','%'.$search.'%')
+                            ->orWhere('last_name','like','%'.$search.'%');
+                        });
+                    })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('student.user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
+                    ->state(fn (Transport $transport) => $transport?->student?->semester?->academicYear?->name .' '.$transport?->student?->semester?->course?->name)  ,
                 Tables\Columns\TextColumn::make('vehicle.car_name')->label(trans_choice('main.bus_name',1))
                     ->sortable(),                
                 Tables\Columns\TextColumn::make('transportFee.name')->label(trans_choice( 'main.transport_fee',1))
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('registredBy.username')->label(trans('main.registered_by'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans( 'main.registration_date'))
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('termination_reason')->label(trans('main.status'))
-                    ->badge()
-                    ->formatStateUsing(fn (string $state) => $state == null ? trans("main.transportation_active")  : trans("main.transportation_inactive"))
-                    ->color(fn (string $state) => $state == null ? trans("success")  : trans("danger"))
-                    ,
+                ->state(function (Transport $record) {
+                    return empty($record->termination_date) 
+                        ? trans('main.transportation_active') 
+                        : trans('main.transportation_inactive');
+                }) ,
                 // Tables\Columns\TextColumn::make('updated_at')->label(trans( 'main.updated_at'))
                 //     ->date()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // SelectFilter::make('termination_reason')->label(trans('main.status'))->options([
-                //     'male' => trans('main.transportation_active'),
-                //     'female' => trans('main.transportation_inactive'),
-                // ]),
-                TernaryFilter::make('terminated_at')->label(trans('main.status'))
+                //bus name
+                SelectFilter::make('vehicle_id')->label(trans_choice('main.bus_name',1))
+                    ->relationship('vehicle', 'car_name'),
+                //transport_fees 
+                SelectFilter::make('transport_fee_id')->label(trans_choice('main.transport_fee',1))
+                    ->relationship('transportFee', 'name'),
+                //status
+                TernaryFilter::make('termination_date')->label(trans('main.status'))
                     ->nullable()
                     ->trueLabel(trans('main.transportation_active'))
                     ->falseLabel(trans('main.transportation_inactive'))
@@ -131,11 +147,16 @@ class TransportResource extends Resource implements HasShieldPermissions
                     ->queries(
                         true: fn (Builder $query) => $query->whereNull('termination_date'),
                         false: fn (Builder $query) => $query->whereNotNull('termination_date'),
-                    )->default(true),
+                    ),
             ])
+            ->deferFilters()
+            ->filtersApplyAction(
+                fn (\Filament\Tables\Actions\Action $action) => $action
+                    ->label(trans('main.apply')),
+            )
             ->actions([
-                Tables\Actions\ViewAction::make()->hidden(fn (Transport $record) => $record->termination_reason != null),
-                Tables\Actions\EditAction::make()->hidden(fn (Transport $record) => $record->termination_reason != null),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
                 // Action::make(trans('main.restore'))
                 // ->color('success')
                 // ->requiresConfirmation()
@@ -159,11 +180,11 @@ class TransportResource extends Resource implements HasShieldPermissions
                 
             ])
             ->bulkActions([
-                FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
-                ->visible( employeeHasPermission('print_transport'))
-                ->extraViewData([
-                    'table_header' => trans('main.menu').' '.trans_choice('main.student_transportation',2)
-                ])->disableXlsx(),
+                // FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')
+                // ->visible( employeeHasPermission('print_transport'))
+                // ->extraViewData([
+                //     'table_header' => trans('main.menu').' '.trans_choice('main.student_transportation',2)
+                // ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),

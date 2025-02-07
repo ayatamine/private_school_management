@@ -31,7 +31,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     }
     public static function getModelLabel():string
     {
-        return trans_choice('main.student',1);
+        return trans_choice('main.termination',1);
     }
     public static function getNavigationLabel():string
     {
@@ -72,14 +72,9 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                     ->schema([ Grid::make()
                      ->schema([
                         Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                            ->options( Student::whereDoesntHave('termination')->selectRaw("id, concat(first_name, ' ', middle_name) as full_name")->pluck('full_name', 'id'))
-                            // ->searchable()
-                            ->preload()
-                            ->required()
-                            ->hiddenOn(['edit', 'view']),
-                        Forms\Components\TextInput::make('student.username')->label(trans_choice('main.student',1))
-                            ->hiddenOn('create')
-                            ->disabled(),
+                            ->relationship('student', 'username')
+                            ->disabled()
+                            ->required(),
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
                         Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
                             ->columnSpanFull()
