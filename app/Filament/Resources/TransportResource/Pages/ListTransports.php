@@ -14,6 +14,7 @@ class ListTransports extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            print_table_resrource_list('print_transportation',route('print_pdf',['type'=>"students_transportation"])),
             Actions\CreateAction::make()
             ->visible(employeeHasPermission('create_transport_registeration_transport'))  
              ,

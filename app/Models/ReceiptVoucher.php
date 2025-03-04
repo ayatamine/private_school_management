@@ -50,7 +50,7 @@ class ReceiptVoucher extends Model
     ];
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class,'student_id','id')->where('termination_date',null)->where('status','approved');
+        return $this->belongsTo(Student::class,'student_id','id')->whereDoesntHave('termination')->where('status','approved');
     }
     // for student profile only
     public function studentAttached(): BelongsTo
