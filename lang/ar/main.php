@@ -169,7 +169,9 @@ return [
     'total_fees_to_pay_method'=>'اجمالي الرسوم بعد تاريخ الاستحقاق الى تاريخ اليوم + الرصيد الافتتاحي',
     'total_fees_rest'=>'رصيد الرسوم المستحقة',
     'current_balance'=>'الرصيد الحالي',
+    'need_to_pay_balance'=>'الرصيد المستحق',
     'total_fees_rest_method'=>'الرصيد الافتتاحي + اجمالي الرسوم - اجمالي المدفوعات',
+    'total_fees_to_pay_method'=>'الرصيد الافتتاحي + اجمالي الرسوم المستحقة - اجمالي المدفوعات',
     'payment_date'=>'تاريخ الدفع',
     'value_in_alphabetic'=>'القيمة (كتابة)',
     'approvel_status'=>'حالة القبول',
@@ -396,4 +398,7 @@ return [
      'days'=>'',
      'human_resource_settings'=>'اعدادات الموارد البشرية',
      'settings'=>'الاعدادات',
+     'total_tuition_fees'=>'اجمالي الرسوم الدراسية',
+     'total_transport_fees'=>'اجمالي رسوم المواصلات',
+     'total_other_fees'=>'اجمالي الرسوم الاخرى',
      ];

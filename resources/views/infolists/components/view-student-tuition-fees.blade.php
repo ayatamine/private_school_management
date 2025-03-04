@@ -52,6 +52,7 @@
             <tbody>
                 @php
                      $grand_total=$total= $value_after_discount=$value_after_tax=[];
+                     $academic_years=[];
                 @endphp
                 @foreach ($getState() as $k=>$fee)
                  @if(count($fee->payment_partition))
@@ -61,6 +62,10 @@
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <td scope="row" class="px-6 py-4 border">
                            {{trans_choice('main.tuition_fee',1)}} {{$fee->academicYear?->name}}
+                           {{-- push to existing academic years --}}
+                           @php
+                               if(!in_array($fee->academicYear?->name, $academic_years)) $academic_years[] = $fee->academicYear?->name;
+                           @endphp
                         </td>
                         <td class="px-6 py-4 border ">
                             {{$partition['partition_name']}}
@@ -172,7 +177,7 @@
                 @endforeach
                 {{-- total sum --}}
                 <tr>
-                    <td class="px-6 py-4 border"   @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 border"   @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total_tuition_fees')}}</td>
                     <td class="px-6 py-4 border">
                         {{number_format(array_sum($grand_total) + array_sum($total_fees_to_pay), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
@@ -183,6 +188,14 @@
                         {{number_format(array_sum($total_fees_to_pay), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
+                @php
+                    $total_summary = (object) [
+                        'academic_year' => $academic_years && count($academic_years) > 0 ? $academic_years[0] : null,
+                        'total' => number_format(array_sum($grand_total) + array_sum($total_fees_to_pay), 2, '.', ','),
+                        'total_fees_to_pay' => number_format(array_sum($total_fees_to_pay), 2, '.', ','),
+                    ];
+                    session(['total_summary' => $total_summary]);
+                @endphp 
             </tbody>
         </table>
        

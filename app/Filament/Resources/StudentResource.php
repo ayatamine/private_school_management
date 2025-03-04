@@ -565,6 +565,11 @@ class StudentResource extends Resource implements HasShieldPermissions
                         ->schema([
                                 ViewEntry::make('otherFees')->label(trans_choice('main.general_fee',2))->view('infolists.components.view-student-general-fee')
                         ]),
+                \Filament\Infolists\Components\Section::make(trans('main.account_ballance_actual'))
+                        ->id('account_ballance_actual-section')
+                        ->schema([
+                                ViewEntry::make('summary')->label(trans('main.account_ballance_actual'))->view('infolists.components.total-fees-summary')
+                        ]),
 
                 \Filament\Infolists\Components\Section::make(trans('main.payments'))
                         ->id('payments-section')
@@ -598,32 +603,59 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 ->weight(FontWeight::Bold),
                                 TextEntry::make(name: 'note')->label(trans('main.note'))->weight(FontWeight::Bold),
                                 ViewEntry::make('finance_document')->label(trans('main.document'))->view('infolists.components.view-financial-document'),
-                                TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
-                                ->color('primary')
-                                ->size(TextEntry\TextEntrySize::Large)
-                                ->weight(FontWeight::Bold)
-                                ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
-                                ->tooltip(function (TextEntry $component): ?string {
+                                // TextEntry::make('balance')->label(trans('main.account_ballance_actual'))
+                                // ->color('primary')
+                                // ->size(TextEntry\TextEntrySize::Large)
+                                // ->weight(FontWeight::Bold)
+                                // ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                // ->tooltip(function (TextEntry $component): ?string {
                                     
-                                    return trans('main.balance_calculate_method');
-                                }),
-                                TextEntry::make('total_fees_after_due_date')->label(trans('main.total_fees_to_pay'))
-                                ->color('primary')
-                                ->size(TextEntry\TextEntrySize::Large)
-                                ->weight(FontWeight::Bold)
-                                ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
-                                ->tooltip(function (TextEntry $component): ?string {
+                                //     return trans('main.balance_calculate_method');
+                                // }),
+                                // TextEntry::make('total_fees_after_due_date')->label(trans('main.total_fees_to_pay'))
+                                // ->color('primary')
+                                // ->size(TextEntry\TextEntrySize::Large)
+                                // ->weight(FontWeight::Bold)
+                                // ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                // ->tooltip(function (TextEntry $component): ?string {
                                     
-                                    return trans('main.total_fees_to_pay_method');
-                                }),
+                                //     return trans('main.total_fees_to_pay_method');
+                                // }),
                                 TextEntry::make('current_balance')->label(trans('main.current_balance'))
                                 ->color('primary')
                                 ->size(TextEntry\TextEntrySize::Large)
                                 ->weight(FontWeight::Bold)
-                                ->formatStateUsing(fn(string $state)=>number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                // ->formatStateUsing(fn(string $state)=>  number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                ->formatStateUsing(function (Student $student){
+                                    $total = $student->opening_balance ;
+                                    if(session()->get('total_summary'))
+                                    {
+                                        $total+= session()->get('total_summary')->total;
+                                        $total-=floatval($student->payments());
+                                    }
+                                    return number_format($total, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                                })
                                 ->tooltip(function (TextEntry $component): ?string {
                                     
                                     return trans('main.total_fees_rest_method');
+                                }),
+                                TextEntry::make('current_balance')->label(trans('main.need_to_pay_balance').' '.date('d-m-Y'))
+                                ->color('primary')
+                                ->size(TextEntry\TextEntrySize::Large)
+                                ->weight(FontWeight::Bold)
+                                // ->formatStateUsing(fn(string $state)=>  number_format($state, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY').""))
+                                ->formatStateUsing(function (Student $student){
+                                    $total = $student->opening_balance ;
+                                    if(session()->get('total_summary'))
+                                    {
+                                        $total+= session()->get('total_summary')->total_fees_to_pay;
+                                        $total-=floatval($student->payments());
+                                    }
+                                    return number_format($total, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY')."");
+                                })
+                                ->tooltip(function (TextEntry $component): ?string {
+                                    
+                                    return trans('main.total_fees_to_pay_method');
                                 })
 
                        

@@ -164,7 +164,7 @@
                 {{-- total sum --}}
                 <tr>
                     {{-- <td class="px-6 py-4 border" @if($getRecord()->nationality != "saudian") colspan="9" @else colspan="7" @endif>{{trans('main.total')}}</td> --}}
-                    <td class="px-6 py-4 border" @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total')}}</td>
+                    <td class="px-6 py-4 border" @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total_transport_fees')}}</td>
                     <td class="px-6 py-4 border">
                         {{number_format(array_sum($total), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
@@ -175,6 +175,12 @@
                         {{number_format(array_sum($total_fees_to_pay), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
+                @php
+                    $total_summary = session()->get('total_summary');
+                    $total_summary->total = $total_summary->total + number_format(array_sum($total), 2, '.', ',');
+                    $total_summary->total_fees_to_pay = $total_summary->total_fees_to_pay + number_format(array_sum($total_fees_to_pay), 2, '.', ',');
+                    session(['total_summary' => $total_summary]);
+                @endphp
             </tbody>
         </table>
        
