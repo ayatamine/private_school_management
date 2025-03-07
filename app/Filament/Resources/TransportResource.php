@@ -97,7 +97,7 @@ class TransportResource extends Resource implements HasShieldPermissions
         return $table
             // ->query(Transport::query()->whereNull('termination_reason'))
             ->columns([
-                Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.st_registration_number'))
+                Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.id_number'))
                     ->searchable('id')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('student.username')->label(trans_choice('main.student',1))
@@ -118,12 +118,12 @@ class TransportResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('transportFee.name')->label(trans_choice( 'main.transport_fee',1))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans( 'main.registration_date'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('termination_reason')->label(trans('main.status'))
                 ->state(function (Transport $record) {
                     return empty($record->termination_date) 
-                        ? trans('main.transportation_active') 
+                        ? trans('main.active_state') 
                         : trans('main.transportation_inactive');
                 }) ,
                 // Tables\Columns\TextColumn::make('updated_at')->label(trans( 'main.updated_at'))

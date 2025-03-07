@@ -13,7 +13,7 @@
                
                 <tr>
                     <th scope="col" class="px-6 py-3 border">
-                       {{trans('main.fee_name')}}
+                       {{trans_choice('main.academic_year',1)}}
                     </th>
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.account_ballance_actual')}}

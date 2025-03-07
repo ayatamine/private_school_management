@@ -52,7 +52,7 @@ class EditStudent extends EditRecord
        
         
         $parent = ParentModel::find($data['parent_id']);
-        $data['parent_relation']  = $parent?->relation ;
+        // $data['parent_relation']  = $parent_relation ;
         $data['parent_national_id']  = $parent?->user->national_id;
         $data['parent_email']  = $parent?->user->email;
         $data['parent_phone_number']  = $parent?->user->phone_number;
@@ -85,11 +85,11 @@ class EditStudent extends EditRecord
                 'email' =>$data['email'],
             ]);
             $parent = $this->record?->parent;
-            if($parent)
-            {
-                $parent->relation =  $data['parent_relation'] ;
-                $this->record?->parent->save();
-            }
+            // if($parent)
+            // {
+            //     $parent->relation =  $data['parent_relation'] ;
+            //     $this->record?->parent->save();
+            // }
 
             if($password =$data['password']) 
             {

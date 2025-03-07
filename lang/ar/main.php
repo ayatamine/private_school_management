@@ -207,7 +207,7 @@ return [
     'restore'=>'استرجاع',
     'student_restored_success'=>'تم ارجاع حساب الطالب بنجاح',
     'restore_student'=>'هل أنت متأكد من استرجاع حساب الطالب',
-    'restore_student_description'=>'سيتم ارجاع حساب الطالب لكن لن يكون منتسبا الى أي صف يمكنك ادراجه يدويا',
+    'restore_student_description'=>'سيتم ارجاع حساب الطالب ',
     'view'=>'عرض',
     'restore_student_transportation'=>'هل أنت متأكد من استرجاع حساب الطالب للمواصلات',
     'restore_student_transportation_description'=>'',

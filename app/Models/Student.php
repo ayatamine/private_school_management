@@ -79,6 +79,7 @@ class Student extends Model
         'note',
         'status',
         'created_at',
+        'parent_relation',
     ];
 
     /**
@@ -96,7 +97,7 @@ class Student extends Model
         'user_id' => 'integer',
         'opening_balance' => 'double',
     ];
-    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','current_balance','transport_registration_date','parent_relation'];
+    protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','current_balance','transport_registration_date'];
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
@@ -203,14 +204,7 @@ class Student extends Model
             }
         );
     }
-    public function parentRelation():Attribute
-    {
-        return Attribute::make(
-            get: function ($value) {
-                return  'yes';
-            }
-        );
-    }
+
     public function termination():HasOne
     {
         return $this->hasOne(StudentTermination::class);

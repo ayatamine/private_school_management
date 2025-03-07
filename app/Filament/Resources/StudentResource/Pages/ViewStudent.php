@@ -129,7 +129,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
         $data['email'] = $user->email;
 
         $parent = ParentModel::find($data['parent_id']);
-        $data['parent_relation']  = $parent?->parent_relation;
+        // $data['parent_relation']  = '$parent?->parent_relation';
         $data['parent_national_id']  = $parent?->parent_national_id;
         $data['parent_email']  = $parent?->parent_email;
         $data['parent_phone_number']  = $parent?->parent_phone_number;

@@ -133,7 +133,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 $set('email', $student?->user?->email );
                                 $set('gender', $student?->user?->gender );
 
-                                $set('parent_relation', $student?->parent?->relation ?? "");
+                                $set('parent_relation', $student?->parent_relation ?? "");
                                 $set('parent_national_id', $student?->parent?->user->national_id);
                                 $set('parent_email', $student?->parent?->user->email);
                                 $set('parent_phone_number', $student?->parent?->user->phone_number);
@@ -280,7 +280,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 ->afterStateUpdated(function (Set $set, $state) {
                                     $parent = ParentModel::with('user:id,national_id,email,gender,phone_number')->findOrFail($state);
                                     // dd($parent);
-                                    $set('parent_relation', $parent->relation);
+                                    // $set('parent_relation', $parent_relation);
                                     $set('parent_national_id', $parent?->user->national_id);
                                     $set('parent_email', $parent?->user->email);
                                     $set('parent_phone_number', $parent?->user->phone_number);
@@ -517,7 +517,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                         ->schema([
                                 TextEntry::make('parent.full_name')->label(trans('main.full_name'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.national_id')->label(trans('main.national_id_n'))->weight(FontWeight::Bold),
-                                TextEntry::make('parent.relation')->label(trans('main.relation'))
+                                TextEntry::make('parent_relation')->label(trans('main.relation'))
                                 ->formatStateUsing(fn($state)=>  trans('main.'.$state) )
                                 ->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
