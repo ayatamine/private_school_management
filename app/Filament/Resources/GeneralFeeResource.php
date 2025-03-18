@@ -108,14 +108,13 @@ class GeneralFeeResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('course.name')->label(trans_choice('main.academic_course',1))
                         ->sortable(),
                 Tables\Columns\TextColumn::make('payment_partition_count')->label(trans_choice('main.payment_partition_count',1))
-                        ->numeric()
                         ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

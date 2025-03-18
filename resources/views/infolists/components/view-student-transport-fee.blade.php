@@ -177,9 +177,12 @@
                 </tr>
                 @php
                     $total_summary = session()->get('total_summary');
+                    if($total_summary)
+                    {
                     $total_summary->total = $total_summary->total + number_format(array_sum($total), 2, '.', ',');
                     $total_summary->total_fees_to_pay = $total_summary->total_fees_to_pay + number_format(array_sum($total_fees_to_pay), 2, '.', ',');
                     session(['total_summary' => $total_summary]);
+                    }
                 @endphp
             </tbody>
         </table>

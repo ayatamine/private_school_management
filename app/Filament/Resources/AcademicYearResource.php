@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AcademicYearResource\Pages;
-use App\Filament\Resources\AcademicYearResource\RelationManagers;
-use App\Models\AcademicYear;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\AcademicYearResource\Pages;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Filament\Resources\AcademicYearResource\RelationManagers;
 
 class AcademicYearResource extends Resource implements HasShieldPermissions
 {
@@ -57,19 +58,23 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->label(trans('main.name'))
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('start_date')->label(trans('main.start_date'))
-                    ->required(),
-                Forms\Components\DatePicker::make('end_date')->label(trans('main.end_date'))
-                    ->required(),
-                Forms\Components\TextInput::make('description')->label(trans('main.description'))
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('is_default')->label(trans('main.is_default'))
-                    ->required(),
-                Forms\Components\Toggle::make('is_registration_active')->label(trans('main.is_registration_active'))
-                    ->required(),
+                Section::make()
+               ->columns(2)
+                 ->schema([
+                    Forms\Components\TextInput::make('name')->label(trans('main.name'))
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('start_date')->label(trans('main.start_date'))
+                        ->required(),
+                    Forms\Components\DatePicker::make('end_date')->label(trans('main.end_date'))
+                        ->required(),
+                    Forms\Components\TextInput::make('description')->label(trans('main.description'))
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('is_default')->label(trans('main.is_default'))
+                        ->required(),
+                    Forms\Components\Toggle::make('is_registration_active')->label(trans('main.is_registration_active'))
+                        ->required(),
+                 ])
             ]);
     }
 
@@ -80,10 +85,10 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('start_date')->label(trans('main.start_date'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')->label(trans('main.end_date'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')->label(trans('main.description'))->limit(50)
                     ->searchable(),
@@ -91,7 +96,7 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
                     ->boolean(),
                 Tables\Columns\ToggleColumn::make('is_registration_active')->label(trans('main.is_registration_active')),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
             ])
             ->filters([

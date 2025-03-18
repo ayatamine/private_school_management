@@ -96,7 +96,6 @@ class TransportFeeResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice('main.academic_year',1))
                         ->sortable(),
                 Tables\Columns\TextColumn::make('payment_partition_count')->label(trans_choice('main.payment_partition_count',1))
-                        ->numeric()
                         ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->date()

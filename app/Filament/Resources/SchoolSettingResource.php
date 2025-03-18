@@ -67,11 +67,9 @@ class SchoolSettingResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('website')->label(trans('main.website'))
                     ->url(),
                 Forms\Components\TextInput::make('permit_number')->label(trans('main.permit_number'))
-                    ->required()
-                    ->numeric(),
+                    ->required(),
                 Forms\Components\TextInput::make('commercial_register_number')->label(trans('main.commercial_register_number'))
-                    ->required()
-                    ->numeric(),
+                    ->required(),
                 Forms\Components\TextInput::make('added_value_tax_number')->label(trans('main.tax_number'))
                     ->required()
                     ->numeric(),

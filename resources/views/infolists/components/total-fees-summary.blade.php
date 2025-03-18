@@ -33,14 +33,14 @@
                
                     <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <td scope="row" class="px-6 py-4 border">
-                            {{$total_summary->academic_year}}
+                              {{number_format($total_summary->academic_year, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         <td class="px-6 py-4 border ">
-                            {{$total_summary->total}}
+                              {{number_format($total_summary->total, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                         <td class="px-6 py-4 border">
-                            {{$total_summary->total_fees_to_pay}}
+                             {{number_format($total_summary->total_fees_to_pay, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                     </tr> 

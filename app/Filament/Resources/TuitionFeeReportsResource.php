@@ -107,7 +107,7 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                         return $record->payments()    ;
                 }),
                 Tables\Columns\TextColumn::make('approved_at')->label(trans('main.approved_at'))
-                    ->date()
+                ->date('Y-m-d')
                     ->sortable(),
             ])
             ->filters([

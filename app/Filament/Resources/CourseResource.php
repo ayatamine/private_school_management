@@ -8,12 +8,13 @@ use App\Models\Course;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CourseResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CourseResource\RelationManagers;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class CourseResource extends Resource implements HasShieldPermissions
 {
@@ -56,6 +57,9 @@ class CourseResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
+                Section::make()
+               ->columns(2)
+                 ->schema([
                 Forms\Components\Select::make('academic_year_id')
                     ->relationship('academicYear', 'name')->label(trans_choice('main.academic_year',1))
                     ->required(),
@@ -65,6 +69,7 @@ class CourseResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('name')->label(trans('main.name'))
                     ->required()
                     ->maxLength(255),
+                 ])
                
             ]);
     }
@@ -73,18 +78,17 @@ class CourseResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice( 'main.academic_year',number: 1))
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('academicStage.name')->label(trans_choice( 'main.academic_stage',1))
-                    ->numeric()
-                    ->sortable(),
+                
+                    Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice( 'main.academic_year',number: 1))
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('academicStage.name')->label(trans_choice( 'main.academic_stage',1))
+                        ->sortable(),
 
-                Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
+                        ->date()
+                        ->sortable(),
             ])
             ->filters([
                 //

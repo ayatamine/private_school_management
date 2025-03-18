@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('phone_number');
             $table->string('email');
             $table->string('website')->nullable();
-            $table->integer('permit_number');
-            $table->integer('commercial_register_number');
+            $table->string('permit_number')->nullable();
+            $table->string('commercial_register_number')->nullable();
             $table->integer('added_value_tax_number');
             $table->string('logo');
             $table->string('stamp');

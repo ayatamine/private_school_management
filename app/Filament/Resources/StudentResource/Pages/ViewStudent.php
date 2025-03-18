@@ -189,7 +189,7 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                         $existing_discounts = DB::table('student_fee')->where('feeable_id',$arguments['fee_id'])->where('student_id',$this->record->id)->where('feeable_type',$arguments['feeable_type'])->first();
                     
                         $existing_discounts_decoded = json_decode($existing_discounts->discounts,true);
-                        if(array_key_exists($arguments['partition'],$existing_discounts_decoded))
+                        if($existing_discounts_decoded && array_key_exists($arguments['partition'],$existing_discounts_decoded))
                         {
 
                             $existing_discounts_decoded[$arguments['partition']]['discount_type'] =$concession_fee->type;

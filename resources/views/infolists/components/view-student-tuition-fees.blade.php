@@ -160,7 +160,7 @@
                                 $total[$i] = (isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0);
                                 
                                 $total_fees_to_pay[$i] =(now() > $partition['due_date'] ) ? ((isset($value_after_discount[$i]) ? $value_after_discount[$i] : $partition['value']) + (isset($value_after_tax[$i]) ? $value_after_tax[$i] : 0))  : 0;
-                                $grand_total[$k] =$total[$i];
+                                // $grand_total[$i] =$total[$i];
                             @endphp
                             {{number_format($total[$i], 2, '.', ',')}}
                         </td>
@@ -173,13 +173,17 @@
                     </tr> 
                     {{-- @endif --}}
                   @endforeach
+                  @php
+                    $grand_total[$k] = array_sum($total);
+                  @endphp
                  @endif
+                
                 @endforeach
                 {{-- total sum --}}
                 <tr>
                     <td class="px-6 py-4 border"   @if(auth()->user()->student == null  && auth()->user()->parent == null) colspan="9" @else colspan="8" @endif>{{trans('main.total_tuition_fees')}}</td>
                     <td class="px-6 py-4 border">
-                        {{number_format(array_sum($grand_total) + array_sum($total_fees_to_pay), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
+                        {{number_format(array_sum($grand_total), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY')."")}}
                     </td>
                 </tr>
                 <tr>
@@ -191,7 +195,7 @@
                 @php
                     $total_summary = (object) [
                         'academic_year' => $academic_years && count($academic_years) > 0 ? $academic_years[0] : null,
-                        'total' => number_format(array_sum($grand_total) + array_sum($total_fees_to_pay), 2, '.', ','),
+                        'total' => number_format(array_sum($grand_total) , 2, '.', ','),
                         'total_fees_to_pay' => number_format(array_sum($total_fees_to_pay), 2, '.', ','),
                     ];
                     session(['total_summary' => $total_summary]);

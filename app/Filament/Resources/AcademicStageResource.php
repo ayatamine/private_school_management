@@ -8,12 +8,13 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\AcademicStage;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AcademicStageResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\AcademicStageResource\RelationManagers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class AcademicStageResource extends Resource implements HasShieldPermissions
 {
@@ -57,9 +58,12 @@ class AcademicStageResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
+                Section::make()
+                 ->schema([
                 Forms\Components\TextInput::make('name')->label(trans(key: 'main.name'))
                     ->required()
                     ->maxLength(255),
+                 ])
             ]);
     }
 
@@ -70,7 +74,7 @@ class AcademicStageResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
-                    ->date()
+                ->date('Y-m-d')
                     ->sortable(),
             ])
             ->filters([

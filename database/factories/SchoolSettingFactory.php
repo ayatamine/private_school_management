@@ -24,7 +24,7 @@ class SchoolSettingFactory extends Factory
             'title' => $this->faker->sentence(4),
             'phone_number' => $this->faker->phoneNumber(),
             'website' => $this->faker->word(),
-            'permit_number' => $this->faker->numberBetween(-10000, 10000),
+            'permit_number' => '454554-45',
             'commercial_register_number' => $this->faker->numberBetween(-10000, 10000),
             'added_value_tax_number' => $this->faker->numberBetween(-10000, 10000),
             'logo' => $this->faker->word(),
