@@ -155,7 +155,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                     ->columnSpanFull()
                     ->schema([ Grid::make()
                      ->schema([
-                        Forms\Components\TextInput::make('id')->label(trans('main.id_number'))->default(Student::latest()->first()?->id + 1)->disabled(),
+                        Forms\Components\TextInput::make('id')->label(trans('main.id_number'))->default(Student::max('id') + 1 ?? 1)->disabled(),
                         Forms\Components\DatePicker::make('created_at')->label(trans('main.registration_date'))->default(now()),
                         Grid::make()
                         ->columns(4)

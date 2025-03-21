@@ -71,7 +71,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                 ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('id')->label(trans('main.id_number'))
-                        ->default(Expense::latest()->first()->id + 1)
+                        ->default(Expense::max('id') + 1 ?? 1)
                         ->dehydrated()
                         ->disabled(),
                     Forms\Components\Select::make('transaction_category_id')->label(trans('main.expense_name'))

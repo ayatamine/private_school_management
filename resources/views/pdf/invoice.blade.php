@@ -249,7 +249,7 @@
         </h5>
         @php
             $applied_vat =null;
-          $total_tuition_without_taxes =$total_of_tuition_taxes = $tuition_total = $tuituion_value_after_discount =[]; $vat = null;
+          $total_tuition_without_taxes =$total_of_tuition_taxes =$tuition_total = $total_of_transport_taxes_ii=$total_of_other_taxes_ii=$transport_total_ii =$other_total_ii= $tuituion_value_after_discount =[]; $vat = null;
         @endphp
         <table   style="width: 100%;border-collapse: collapse;">
             <thead >
@@ -712,7 +712,7 @@
                         $total_with_tax+=  array_sum($tuition_total_ii) ;
                     }
                     $total_with_tax+=   array_sum($transport_total_ii) + array_sum($other_total_ii);
-                    $total_with_tax=  $total_with_tax / (1 + ($vat->percentage / 100));
+                    $total_with_tax=  $total_with_tax / (1 + ($vat?->percentage / 100));
                     $total =$total_without_tax + $total_of_tax + $total_with_tax;
                 @endphp
                                 {{-- total without taxes --}}

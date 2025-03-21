@@ -71,8 +71,7 @@ class SchoolSettingResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('commercial_register_number')->label(trans('main.commercial_register_number'))
                     ->required(),
                 Forms\Components\TextInput::make('added_value_tax_number')->label(trans('main.tax_number'))
-                    ->required()
-                    ->numeric(),
+                    ->required(),
                 Forms\Components\FileUpload::make('logo')->label(trans('main.logo'))
                     ->required(),
                 Forms\Components\FileUpload::make('stamp')->label(trans('main.stamp'))
@@ -95,13 +94,10 @@ class SchoolSettingResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('website')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('permit_number')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('commercial_register_number')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('added_value_tax_number')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('logo')
                     ->searchable(),
@@ -110,11 +106,11 @@ class SchoolSettingResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('new_registration_number_start')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

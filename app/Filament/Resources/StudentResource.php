@@ -165,7 +165,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->columnSpanFull()
                     ->schema([ Grid::make()
                      ->schema([
-                        Forms\Components\TextInput::make('id')->label(trans('main.id_number'))->default(Student::latest()->first()?->id + 1)->disabled(),
+                        Forms\Components\TextInput::make('id')->label(trans('main.id_number'))->default(Student::max('id') + 1 ?? 1)->disabled(),
                         Forms\Components\DatePicker::make('created_at')->label(trans('main.registration_date'))->default(now()),
                         Grid::make()
                         ->columns(4)
@@ -258,9 +258,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 // ->unique(table:'users',ignoreRecord: true)
                                 ->maxLength(13),   
                             Forms\Components\TextInput::make('email')->label(trans('main.email')),
-                                // ->unique(table:'users',ignoreRecord: true),   
-                            Forms\Components\Select::make(name: 'gender')->label(trans('main.gender'))
-                                ->options(['male'=>trans('main.male'), 'female'=>trans('main.female')]),        
+                                // ->unique(table:'users',ignoreRecord: true),         
                             Forms\Components\TextInput::make('password')->label(trans('main.password'))
                                 ->maxLength(255),     
                         ]) 
@@ -429,8 +427,8 @@ class StudentResource extends Resource implements HasShieldPermissions
                             return $query;
                         }
                 
-                        return $query->whereHas('semester', function ($query) use ($data) {
-                            return $query->whereNull('termination_reason')->where('course_id', $data['value']);
+                        return $query->whereHas('semester', function ($q) use ($data) {
+                            return $q->where('course_id', $data['value']);
                         });
                     }),
                     //add nationality saudian or other
