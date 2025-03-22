@@ -197,17 +197,14 @@
         <hr>
         <br>
         <br>
-        
+    
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.students_list')}}</strong>
         </h5>
-        
-         <h5 class="text-uppercase">
-            @if(isset($academic_stage_id)){{ trans_choice('main.academic_stage',1)}} <span style="text-size:12px !important;margin:0 3px;">{{\App\Models\AcademicStage::find($academic_stage_id)->name}}</span>@endif
-            <br>
+        <h5 class="text-uppercase">
             @if(isset($course_id)){{ trans_choice('main.academic_course',1)}} <span style="text-size:12px !important;margin:0 3px;">{{\App\Models\Course::find($course_id)->name}}</span>@endif
             <br>
-            @if(isset($nationality)){{ trans('main.nationality')}} <span style="text-size:12px !important;margin:0 3px;">{{$nationality}}</span>@endif
+            @if(isset($status)){{ trans('main.status')}} <span style="text-size:12px !important;margin:0 3px;">{{trans('main.'.$status)}}</span>@endif
         </h5>
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">
@@ -229,6 +226,15 @@
                    
                     <th scope="col" class="px-6 py-3 border">
                         {{trans('main.course_enrolled')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.status')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.registration_date')}}
+                    </th>
+                    <th scope="col" class="px-6 py-3 border">
+                        {{trans('main.approvel_date')}}
                     </th>
                 </tr>
             </thead>
@@ -254,6 +260,15 @@
                         </td>
                         <td class="px-6 py-4  border">
                             {{$student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{trans("main.".$student?->status)}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{date('Y-m-d',strtotime($student?->created_at))}}
+                        </td>
+                        <td class="px-6 py-4  border">
+                            {{date('Y-m-d',strtotime($student?->approved_at))}}
                         </td>
                         
                     </tr> 
