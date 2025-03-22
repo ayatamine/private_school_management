@@ -112,7 +112,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->label(trans_choice('main.payment_method',1))
                     ->relationship(
                         name: 'paymentMethod',
-                        modifyQueryUsing: fn (Builder $query) => $query->latest(),
+                        modifyQueryUsing: fn (Builder $query) => $query->where('show_in_receipt_voucher', true)->latest(),
                     )
                     ->live()
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")

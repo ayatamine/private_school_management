@@ -81,6 +81,12 @@ class PaymentMethodResource extends Resource implements HasShieldPermissions
                         ->visible(fn (Get $get) => $get('add_refrence_number') == true),
                     Forms\Components\Toggle::make('is_active_for_students_and_parents')->label(trans('main.is_active_for_students_and_parents'))
                         ->columnSpanFull()      ,
+                    Forms\Components\Toggle::make('show_in_expenses')->label(trans('main.show_in_expenses'))
+                        ->columnSpanFull()      ,
+                    Forms\Components\Toggle::make('show_in_receipt_voucher')->label(trans('main.show_in_receipt_voucher'))
+                        ->columnSpanFull()      ,
+                    Forms\Components\Toggle::make('show_in_incomes')->label(trans('main.show_in_incomes'))
+                        ->columnSpanFull()      ,
                 ])
             ]);
     }

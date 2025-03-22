@@ -36,11 +36,11 @@
                             {{$total_summary->academic_year}}
                         </td>
                         <td class="px-6 py-4 border ">
-                              {{number_format($total_summary->total, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                            {{$total_summary->total}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                         <td class="px-6 py-4 border">
-                             {{number_format($total_summary->total_fees_to_pay, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                            {{$total_summary->total_fees_to_pay}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                     </tr> 

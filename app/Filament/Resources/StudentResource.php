@@ -220,16 +220,19 @@ class StudentResource extends Resource implements HasShieldPermissions
                                         'saudian'=>trans('main.saudian'),'other'=>trans('main.others')
                                     ]
                                 )
-                                ->default('saudian')
-                                ->hiddenOn('edit')
+                                ->default(fn(Student $student) => $student->nationality == 'saudian' ? 'saudian' : 'other')
+                                // ->hiddenOn('edit')
+                                ->required()
                                 ->live(),
-                            Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
+                            Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality2'))
                                 ->maxLength(255)
+                                ->default(fn(Student $student) => $student->nationality == 'saudian' ? 'saudian' : 'other')
                                 ->visible(fn (Get $get) => $get('nationality') != 'saudian')
-                                ->hiddenOn('edit'),
-                            Forms\Components\TextInput::make('nationality')->label(trans('main.nationality'))
-                                    ->maxLength(255)
-                                    ->hiddenOn('create'),
+                                // ->hiddenOn('edit')
+                                ,
+                            // Forms\Components\TextInput::make('nationality')->label(trans('main.nationality'))
+                            //         ->maxLength(255)
+                            //         ->hiddenOn('create'),
                             Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                 ->required()
                                 ->rules([
@@ -628,7 +631,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                     $total = $student->opening_balance ;
                                     if(session()->get('total_summary'))
                                     {
-                                        $total+= session()->get('total_summary')->total;
+                                        $total+= (float) str_replace(',', '', session()->get('total_summary')->total);
                                         $total-=floatval($student->payments());
                                     }
                                     return number_format($total, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY')."");
@@ -646,7 +649,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                     $total = $student->opening_balance ;
                                     if(session()->get('total_summary'))
                                     {
-                                        $total+= session()->get('total_summary')->total_fees_to_pay;
+                                        $total+= (float) str_replace(',', '', session()->get('total_summary')->total_fees_to_pay);
                                         $total-=floatval($student->payments());
                                     }
                                     return number_format($total, 2, '.', ',')." "." " .trans("main.".env('DEFAULT_CURRENCY')."");

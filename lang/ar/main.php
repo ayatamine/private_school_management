@@ -71,6 +71,7 @@ return [
     'third_name'=>'الاسم الثالث',
     'middle_name'=>'الاسم الأوسط',
     'nationality'=>'الجنسية',
+    'nationality2'=>'اسم الجنسية',
     'saudian'=>'سعودي',
     'saudi_arabia'=>'السعودية',
     'others'=>'اخرى',
@@ -402,4 +403,7 @@ return [
      'total_tuition_fees'=>'اجمالي الرسوم الدراسية',
      'total_transport_fees'=>'اجمالي رسوم المواصلات',
      'total_other_fees'=>'اجمالي الرسوم الاخرى',
+     'show_in_expenses'=>'اظهار في المصاريف',
+     'show_in_receipt_voucher'=>'اظهار في سداد الرسوم',
+     'show_in_incomes'=>'اظهار في الإيرادات',
      ];

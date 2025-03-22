@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('receipt_vouchers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('student_id');
-            $table->foreign('student_id')->references('id')->on('students');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->float('value');
             $table->string('value_in_alphabetic')->nullable();
             $table->string('document')->nullable();

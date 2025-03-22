@@ -20,7 +20,10 @@ class PaymentMethod extends Model
         'finance_account_id',
         'code',
         'is_code_required',
-        'is_active_for_students_and_parents'
+        'is_active_for_students_and_parents',
+        'show_in_expenses',
+        'show_in_receipt_voucher',
+        'show_in_incomes',
     ];
 
     /**
@@ -33,6 +36,9 @@ class PaymentMethod extends Model
         'finance_account_id' => 'integer',
         'is_code_required' => 'bool',
         'is_active_for_students_and_parents' => 'bool',
+        'show_in_expenses' => 'bool',
+        'show_in_receipt_voucher' => 'bool',
+        'show_in_incomes' => 'bool',
     ];
 
     public function financeAccount(): BelongsTo

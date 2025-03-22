@@ -172,10 +172,17 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
             break;
             case 'student_termination':
                 //remove the super admin
-                    $students = Student::whereDoesntHave('termination')->latest()->get();
+                    $students = Student::whereHas('termination')->latest()->get();
                     $data = ['students' => $students,'settings'=>SchoolSetting::first()];
                     $view = "student_termination";
                     $file_name = "قائمة الطلاب منتهي القيد.pdf";
+                break;
+            case 'students':
+                //remove the super admin
+                    $students = Student::whereDoesntHave('termination')->where('status','approved')->latest()->get();
+                    $data = ['students' => $students,'settings'=>SchoolSetting::first()];
+                    $view = "students";
+                    $file_name = "قائمة الطلاب.pdf";
                 break;
         default:
             # code...

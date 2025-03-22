@@ -208,18 +208,20 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                         'saudian'=>trans('main.saudian'),'other'=>trans('main.others')
                                     ]
                                 )
-                                ->default('saudian')
-                                ->hiddenOn('edit')
+                                ->default(fn(Student $student) => $student->nationality == 'saudian' ? 'saudian' : 'other')
+                                // ->hiddenOn('edit')
                                 ->required()
                                 ->live(),
-                            Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality'))
+                            Forms\Components\TextInput::make('nationality2')->label(trans('main.nationality2'))
                                 ->maxLength(255)
+                                ->default(fn(Student $student) => $student->nationality == 'saudian' ? 'saudian' : 'other')
                                 ->visible(fn (Get $get) => $get('nationality') != 'saudian')
-                                ->hiddenOn('edit'),
-                            Forms\Components\TextInput::make('nationality')->label(trans('main.nationality'))
-                                ->maxLength(255)
-                                ->required()
-                                ->hiddenOn('create'),
+                                // ->hiddenOn('edit')
+                                ,
+                            // Forms\Components\TextInput::make('nationality')->label(trans('main.nationality'))
+                            //     ->maxLength(255)
+                            //     ->required()
+                            //     ->hiddenOn('create'),
                             Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                 ->required()
                                 ->rules([
@@ -385,8 +387,8 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             return $query;
                         }
                 
-                        return $query->whereHas('semester', function ($query) use ($data) {
-                            return $query->whereNull('termination_reason')->where('course_id', $data['value']);
+                        return $query->whereHas('semester', function ($q) use ($data) {
+                            return $q->where('course_id', $data['value']);
                         });
                     }),
                 SelectFilter::make('status')->label(trans('main.status'))
@@ -407,9 +409,11 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                 ->form([
                     Forms\Components\Select::make(name: 'status')->label(trans('main.approvel_status'))
                     ->options(['approved'=>trans('main.approve'), 'rejected'=>trans('main.reject')])
+                    ->default(fn(Student $student)=>$student->status == "approved" ? "approved" : "pending")
                     ->live()
                     ->required(),  
                     Forms\Components\DatePicker::make(name: 'approved_at')->label(trans('main.approvel_date'))
+                    ->default(fn(Student $student)=>$student->status == "approved" ? $student->approved_at : null)
                     ->required()
                     ->hidden(fn(Get $get)=>$get('status') == "rejected"),  
                 ])
@@ -494,7 +498,8 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->send();
                     }
                 })
-                ->hidden(fn (Student $student) =>$student->status == "approved"),
+                // ->hidden(fn (Student $student) =>$student->status == "approved")
+                ,
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
@@ -518,10 +523,27 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                 ->url(fn (Student $record): string => route('filament.admin.resources.newest-students.edit', $record)),
                             Action::make(trans('main.delete'))
                                 ->color('danger')
+                                ->hidden(fn(Student $student)=>$student->status == "approved")
                                 ->requiresConfirmation()
                                 ->action(function(Student $student){
-                                     $student->delete();
-                                     return redirect()->route('filament.admin.resources.newest-students.index');
+                                    try{
+                                        DB::beginTransaction();
+                                          $student->user?->delete();
+                                          $student->receiptVoucher()->delete();
+                                          $student->invoices()->delete();
+                                          $student->delete();
+                                          DB::commit();
+                                          return redirect()->route('filament.admin.resources.newest-students.index');
+                                    }
+                                    catch(Exception $ex)
+                                    {
+                                        DB::rollBack();
+                                        Notification::make()
+                                            ->title($ex->getMessage())
+                                            ->icon('heroicon-o-document-text')
+                                            ->iconColor('danger')
+                                            ->send();
+                                    }
                                 })
                         ])
                         ->columns(3)

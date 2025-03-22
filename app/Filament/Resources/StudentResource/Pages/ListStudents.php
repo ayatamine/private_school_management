@@ -14,6 +14,7 @@ class ListStudents extends ListRecords
     {
         return [
             // Actions\CreateAction::make(),
+            print_table_resrource_list('print_student',route('print_pdf',['type'=>"students"]))
         ];
     }
 }

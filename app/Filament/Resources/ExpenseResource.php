@@ -88,7 +88,7 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                         // ->relationship('paymentMethod', 'name')
                         ->relationship(
                             name: 'paymentMethod',
-                            modifyQueryUsing: fn (Builder $query) => $query->latest(),
+                            modifyQueryUsing: fn (Builder $query) => $query->where('show_in_expenses', true)->latest(),
                         )
                         ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                         ->required(),
