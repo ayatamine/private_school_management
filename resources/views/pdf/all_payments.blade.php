@@ -162,26 +162,7 @@
         {{-- <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.school_info')}}</strong>
         </h5> --}}
-        <table class=" mt-5" style="width: 100%">
-            <tbody>
-                <tr>
-                    @if($settings->logo)
-                    <td class="border-0 pl-0" style="border: none" colspan="2" >
-                        <img style="margin:auto;text-align:center" src="{{ url("storage/$settings->logo") }}" alt="logo" height="100">
-                    </td>
-                    @endif
-                    <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
-                        <span style="">{{ $settings->title }}</span> <br>
-                       {{ trans('main.permit_number_2') }} : <span style="">{{ $settings->permit_number }}</span> 
-                       {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-                       {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-                        <span style="">{{ $settings->address }}</span> <br>
-                       {{ $settings->email }} {{ trans('main.phone_number') }} : <span style="">{{ $settings->phone_number }}</span> 
-                   </td>
-                    
-                </tr>
-            </tbody>
-        </table>
+        <x-school-header/>
         <hr>
         {{-- receipt info --}}
         {{-- <h5 class="text-uppercase cool-gray">

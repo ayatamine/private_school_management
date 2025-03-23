@@ -27,7 +27,7 @@
                 font-family: 'DejaVu Sans', 'Roboto', 'Montserrat', 'Open Sans', sans-serif;
                 line-height: 1.5;
                 color: #212529;
-                text-align: left;
+                /* text-align: left; */
                 background-color: #fff;
                 font-size: 16px;
                 margin: 36pt;
@@ -46,7 +46,7 @@
             }
 
             strong {
-                font-weight: bolder;
+                font-weight: bolder;color: black;
             }
 
             img {
@@ -162,36 +162,18 @@
         {{-- <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans('main.school_info')}}</strong>
         </h5> --}}
-        <table class=" mt-5" style="width: 100%">
-            <tbody>
-                <tr>
-                    @if($settings->logo)
-                    <td class="border-0 pl-0" style="border: none" colspan="2" >
-                        <img style="margin:auto;text-align:center" src="{{ url(asset("storage/$settings->logo")) }}"  alt="logo" height="90">
-                    </td>
-                    @endif
-                    <td class="border-0 pl-0" colspan="2" style="text-align: left;font-size:14px;border:none">
-                         <span style="">{{ $settings->title }}</span> <br>
-                        {{ trans('main.permit_number_2') }} : <span style="">{{ $settings->permit_number }}</span> 
-                        {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-                        {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-                         <span style="">{{ $settings->address }}</span> <br>
-                        {{ $settings->email }} {{ trans('main.phone_number') }} : <span style="">{{ $settings->phone_number }}</span> 
-                    </td>
-                    
-                </tr>
-            </tbody>
-        </table>
+        <x-school-header/>
         <hr>
         {{-- invoice info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.invoice_info')}}</strong>
+        <h5 class="text-uppercase cool-gray text-center">
+            <strong style="direction: rtl;font-size:22px;color:black;">{{ trans('main.invoice_info')}}</strong>
         </h5>
         <table class=" mt-5" style="width: 100%">
             <tbody>
                 <tr>
                     <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        <span style="margin-left:0.5rem">{{ trans('main.invoice_name_first') }} </span> <span style="">{{ $invoice->name }}</span> 
+                        {{-- <span style="margin-left:0.5rem">{{ trans('main.invoice_name_first') }} </span>  --}}
+                        <span style="">{{ $invoice->name }}</span> 
                         {{-- {{ trans('main.name') }} : <span style="margin-left:4rem">{{ $invoice?->student->username }}</span> 
                         {{ trans('main.nationality') }} : <span style="margin-left:4rem">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</span>
                         {{ trans('main.registration_number') }} : <span style="margin-left:4rem">{{ $invoice?->student->registration_number }}</span> --}}
@@ -200,16 +182,17 @@
                     </td>
                     
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.invoice_number') }} : <span style="margin-left:2rem">{{ $invoice->number }}</span> {{ trans('main.release_date') }} : <span style="">{{ date('Y-m-d',strtotime($invoice->created_at)) }}</span><br><br>
+                        {{ trans('main.invoice_number') }} : <span style="margin-left:2rem">{{$invoice?->student?->registration_number .''.\Carbon\Carbon::parse($invoice?->student?->approved_at)->format('Y')}}</span> 
+                        {{ trans('main.release_date') }} : <span style="">{{ \Carbon\Carbon::parse($invoice?->student?->approved_at)->format('d-m-Y') }}</span><br><br>
                          {{-- {{ trans_choice('main.academic_year',1) }} : <span style="">{{ $invoice->academicYear?->name }}</span> <br> <br> --}}
                     </td>
                 </tr>
                 <tr>
                     <td class="border-0 pl-0" colspan="4" style="border: none" >
-                        {{ trans('main.name') }} : <span style="margin-left:4rem">{{ $invoice?->student->username }}</span> 
-                        {{ trans('main.nationality') }} : <span style="margin-left:4rem">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</span>
-                        {{ trans('main.registration_number') }} : <span style="margin-left:4rem">{{ $invoice?->student->registration_number }}</span>
-                        {{ trans_choice('main.academic_course',1) }} : <span style="margin-left:4rem">{{ $invoice->student?->semester?->course?->name }}</span> <br> <br>
+                        {{ trans('main.student_name') }} : <strong style="margin-left:30px;font-size:18px">{{ $invoice?->student->username }}</strong> 
+                        {{ trans('main.nationality') }} : <strong style="margin-left:6rem;font-size:18px">{{  $invoice?->student->nationality =="saudian" ? trans('main.saudian') : $invoice?->student->nationality }}</strong>
+                        {{ trans('main.registration_number') }} : <strong style="margin-left:6rem;font-size:18px">{{ $invoice?->student->registration_number }}</strong>
+                        {{ trans_choice('main.academic_course',1) }} : <strong style="margin-left:6rem;font-size:18px">{{ $invoice->student?->semester?->course?->name }}</strong> <br> <br>
                         <br><br>
                        
                     </td>
@@ -244,6 +227,9 @@
             </tbody>
         </table>
         <hr> --}}
+
+        {{-- start of tuition fees --}}
+        @if(isset($invoice->student->tuitionFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.tuition_fee',2)}}</strong>
         </h5>
@@ -338,7 +324,7 @@
                                 $total_transport_without_taxes[$i]=$tuituion_value_after_discount[$i];
                             @endphp
                             
-                            {{number_format($tuituion_value_after_discount[$i], 2, '.', ',')}}
+                            {{$tuituion_value_after_discount[$i] ? number_format($tuituion_value_after_discount[$i], 2, '.', ',') : number_format($partition['value'], 2, '.', ',')}}
                         </td>
                          @else 
     
@@ -361,7 +347,7 @@
                         @endphp
                         
                         <td >
-                            {{isset($vat?->percentage) ? $vat?->percentage : 0}} %
+                            {{isset($vat?->percentage) ? $vat?->percentage."%" : 0}} 
                         </td>
                         <td >
                             {{-- here you can check if the orginal value or tuituion_value_after_discount[$i] is with vat or not  --}}
@@ -396,6 +382,10 @@
                
             </tbody>
         </table>
+        @endif
+
+        {{-- start of transport fees --}}
+        @if(isset($invoice->student->transportFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.transport_fee',2)}}</strong>
         </h5>
@@ -487,7 +477,7 @@
                                 $total_transport_without_taxes[$i]=$transport_value_after_discount[$i];
                             @endphp
                             
-                            {{number_format($transport_value_after_discount[$i], 2, '.', ',')}}
+                            {{$transport_value_after_discount[$i] ? number_format($transport_value_after_discount[$i], 2, '.', ',') : number_format($partition['value'], 2, '.', ',')}}
                         </td>
                          @else 
     
@@ -510,7 +500,7 @@
                             $applied_vat = $vat;
                         @endphp
                         <td >
-                            {{isset($vat?->percentage) ? $vat?->percentage : 0}} %
+                            {{isset($vat?->percentage) ? $vat?->percentage."%" : 0}} 
                         </td>
                         <td >
                             {{-- here you can check if the orginal value or transport_value_after_discount[$i] is with vat or not  --}}
@@ -544,8 +534,9 @@
                  
             </tbody>
         </table>
-        
-        
+        @endif
+        {{-- start other fees --}}
+        @if(isset($invoice->student->otherFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.general_fee',2)}}</strong>
         </h5>
@@ -640,7 +631,7 @@
                             $total_other_without_taxes[$i]=$value_after_discount[$i];
                             @endphp
                             
-                            {{number_format($value_after_discount[$i], 2, '.', ',')}}
+                            {{$value_after_discount[$i] ? number_format($value_after_discount[$i], 2, '.', ',') : number_format($partition['value'], 2, '.', ',')}}
                         </td>
                          @else 
                            
@@ -699,7 +690,10 @@
                 
             </tbody>
         </table>
+        @endif
         <br>
+
+        <br><br>
 
         <table style="width: 100%;border-collapse: collapse;">
             <tbody>

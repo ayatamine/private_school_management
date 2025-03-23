@@ -174,7 +174,10 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                 ->where('academic_stage_id', $get('academic_stage_id'))
                                 ->pluck('name', 'id'))
                                 ->required()
-                                ->live(),
+                                ->live()
+                                ->afterStateUpdated(function (Forms\Set $set,) {
+                                    $set('semester_id', null);
+                                }),
                             Forms\Components\Select::make('semester_id')->label(trans_choice('main.semester',1))
                                 ->required()
                                 ->options(fn (Get $get): Collection => Semester::query()
@@ -208,7 +211,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                                         'saudian'=>trans('main.saudian'),'other'=>trans('main.others')
                                     ]
                                 )
-                                ->default(fn(Student $student) => $student->nationality == 'saudian' ? 'saudian' : 'other')
+                                ->default(fn(Student $student) => $student->nationality  ?? 'saudian' )
                                 // ->hiddenOn('edit')
                                 ->required()
                                 ->live(),

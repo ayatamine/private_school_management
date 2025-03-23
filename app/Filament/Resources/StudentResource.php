@@ -220,7 +220,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                         'saudian'=>trans('main.saudian'),'other'=>trans('main.others')
                                     ]
                                 )
-                                ->default(fn(Student $student) => $student->nationality == 'saudian' ? 'saudian' : 'other')
+                                ->default(fn(Student $student) => $student->nationality ?? 'saudian' )
                                 // ->hiddenOn('edit')
                                 ->required()
                                 ->live(),

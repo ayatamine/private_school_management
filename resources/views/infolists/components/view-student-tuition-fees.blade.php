@@ -134,7 +134,7 @@
                         @endphp
                         
                         <td class="px-6 py-4 border">
-                            {{$vat?->percentage ?? 0}} %
+                            {{$vat?->percentage ."%" ?? 0}} 
                         </td>
                         <td class="px-6 py-4 border">
                             {{-- here you can check if the orginal value or value_after_discount[$i] is with vat or not  --}}
@@ -145,7 +145,7 @@
                         </td>
                         @else 
                         <td class="px-6 py-4 border">
-                            0%
+                            0
                         </td>
                         <td class="px-6 py-4 border">
                             {{-- here you can check if the orginal value or value_after_discount[$i] is with vat or not  --}}

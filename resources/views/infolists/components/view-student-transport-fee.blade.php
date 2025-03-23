@@ -113,7 +113,7 @@
                          @else 
     
                          <td class="px-6 py-4 border" >
-                            0%
+                            0
                          </td>
                          <td class="px-6 py-4 border" >
                             {{number_format($partition['value'], 2, '.', ',')}}
@@ -132,7 +132,7 @@
                         @endphp
                        
                         <td class="px-6 py-4 border">
-                            {{isset($vat?->percentage) ? $vat?->percentage : 0}} %
+                            {{isset($vat?->percentage) ? $vat?->percentage."%" : 0}} 
                         </td>
                         <td class="px-6 py-4 border">
                             {{-- here you can check if the orginal value or value_after_discount is with vat or not  --}}
