@@ -79,7 +79,9 @@ class IncomeResource extends Resource implements HasShieldPermissions
                     Forms\Components\Select::make('payment_method_id')->label(trans_choice('main.payment_method',1))
                         ->relationship(
                             name: 'paymentMethod',
-                            modifyQueryUsing: fn (Builder $query) => $query->where('show_in_incomes', true)->latest(),
+                            modifyQueryUsing: fn (Builder $query) => $query->where('show_in_incomes', true)->whereHas('financeAccount',function($query){
+                                return $query->where('is_active', true);
+                            })->latest(),
                         )
                         ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                         ->required(),

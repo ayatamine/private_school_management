@@ -81,14 +81,18 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->visibleOn('view')
                     ->maxLength(255),
                     Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                    ->relationship('student', 'username')
+                    ->relationship(
+                        name: 'student',
+                        modifyQueryUsing: fn(Builder $query) => $query->latest(),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->registration_number} - {$record->first_name} {$record->last_name} - {$record->user->national_id} - {$record->semester?->course?->name}")
                     ->preload()
                     ->searchable()
-                    ->getSearchResultsUsing(fn (string $search): array => Student::where('username', 'like', "%{$search}%")
-                                                            ->orWhereHas('user',function($query) use ($search){
-                                                                 $query->where('national_id', 'like', "%{$search}%");
-                                                            })
-                                                            ->pluck('username', 'id')->toArray())
+                    // ->getSearchResultsUsing(fn (string $search): array => Student::where('username', 'like', "%{$search}%")
+                    //                                         ->orWhereHas('user',function($query) use ($search){
+                    //                                              $query->where('national_id', 'like', "%{$search}%");
+                    //                                         })
+                    //                                         ->pluck('username', 'id')->toArray())
                     ->required()
                     ->default(request()['student']),
                 
@@ -112,8 +116,12 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->label(trans_choice('main.payment_method',1))
                     ->relationship(
                         name: 'paymentMethod',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('show_in_receipt_voucher', true)->latest(),
-                    )
+                        modifyQueryUsing: function (Builder $query) {
+                            return $query->where('show_in_receipt_voucher', true)->whereHas('financeAccount',function($query){
+                                return $query->where('is_active', true);
+                            });
+                        }
+                        )
                     ->live()
                     ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                     ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.payment_method_id" />')))

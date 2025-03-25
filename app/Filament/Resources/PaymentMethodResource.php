@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PaymentMethodResource\Pages;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\PaymentMethodResource\RelationManagers;
+use App\Models\FinanceAccount;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class PaymentMethodResource extends Resource implements HasShieldPermissions
@@ -62,7 +63,11 @@ class PaymentMethodResource extends Resource implements HasShieldPermissions
                 ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('finance_account_id')->label(trans('main.finance_account_name'))
-                    ->relationship('financeAccount', 'name')
+                    ->relationship(
+                        name: 'financeAccount',
+                        modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->latest(),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (FinanceAccount $record) => "{$record->name}")
                     ->required(),
                     Forms\Components\TextInput::make('name')->label(trans('main.payment_method_name'))
                         ->required()
