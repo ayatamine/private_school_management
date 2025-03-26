@@ -239,6 +239,51 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 $view = "students";
                 $file_name = "قائمة الطلاب.pdf";
                 break;
+            case 'tuition_fees_reports':
+                //remove the super admin
+                $url =url()->previous();
+                $parsedUrl = parse_url($url);
+                if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
+               
+                // Extract the date values
+                $academic_year_id = $queryParams['tableFilters']['academic_year_id']['value'] ?? null;
+                $academic_stage_id = $queryParams['tableFilters']['academic_stage_id']['value'] ?? null;
+                $semester_id = $queryParams['tableFilters']['semester_id']['value'] ?? null;
+                $course_id = $queryParams['tableFilters']['course_id']['value'] ?? null;
+                $nationality = $queryParams['tableFilters']['nationality']['value'] ?? null;
+                
+                $students = Student::whereDoesntHave('termination')
+                ->where('status','approved')
+                ->when($academic_year_id, function($query) use ($academic_year_id){
+                    return $query->whereHas('tuitionFees', function ($q) use ($academic_year_id) {
+                        return $q->where('academic_year_id', $academic_year_id);
+                    });
+                })
+                ->when($academic_stage_id, function($query) use ($academic_stage_id){
+                    $courses = Course::whereHas('academicStage', function ($query) use ($academic_stage_id) {
+                        return $query->where('academic_stage_id', $academic_stage_id);
+                    })->pluck('id');
+                    return $query->whereHas('semester', function ($query) use ($courses) {
+                        return $query->whereIn('course_id', $courses);
+                    });
+                    return $query->whereAcademicStageId($academic_stage_id);
+                })
+                ->when($course_id, function($query) use ($course_id){
+                    return $query->whereHas('semester', function ($q) use ($course_id) {
+                        return $q->where('course_id', $course_id);
+                    });
+                })
+                ->when($semester_id, function($query) use ($semester_id){
+                    return $query->where('semester_id', $semester_id);
+                })
+                ->when($nationality, fn ($query) => $nationality == 'saudian' ? $query->where('nationality', 'saudian') : $query->where('nationality', '!=', 'saudian'))
+                ->latest()
+                ->get();
+                $data = ['students' => $students,'settings'=>SchoolSetting::first(),
+                'academic_stage_id'=>$academic_stage_id,'course_id'=>$course_id,'nationality'=>$nationality];
+                $view = "students";
+                $file_name = "قائمة الطلاب.pdf";
+                break;
         default:
             # code...
             break;

@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Student;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
 use App\Models\AcademicStage;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -44,6 +45,8 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
     // }
     public static function getModelLabel():string
     {
+
+        
         return trans_choice('main.tuition_fee_reports',1);
     }
     public static function getNavigationLabel():string
@@ -52,8 +55,17 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
     }
 
     public static function getPluralModelLabel():string
-    {
-        return trans_choice('main.tuition_fee_reports',2);
+    {    $url =url()->previous();
+        $parsedUrl = parse_url($url);
+        if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
+        $academic_year_id = $queryParams['tableFilters']['academic_year_id']['value'] ?? null;
+    
+        $academic_year = "";
+        if($academic_year_id){
+            $academic_year = AcademicYear::find($academic_year_id)?->name;
+            $academic_year = "- ".trans_choice('main.academic_year',1) ."". $academic_year;
+        }
+        return trans_choice('main.tuition_fee_reports',2) ."" . $academic_year;
     }
 
     public static function canCreate():bool
@@ -82,7 +94,9 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::where('status','approved'))
+            ->query(function(Builder $query) {
+                return Student::whereDoesntHave('termination')->where('status','approved');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable()
@@ -94,21 +108,22 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                     ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name),  
                 Tables\Columns\TextColumn::make('total_paid_fees')->label(trans('main.totalPayment'))
                     ->getStateUsing(function(Student $record) {
-                        return $record->payments()    ;
+                        return number_format($record->payments()    ,2,',',',');
                 }),
                 Tables\Columns\TextColumn::make('current_balance')->label(trans('main.current_balance'))
                     ->getStateUsing(function(Student $record) {
-                        return $record->payments()    ;
+                        // dd($record->currentBalance,$record->totalFeesAfterDueDate,$record->totalFeesRest);
+                        return number_format($record->currentBalance    ,2,',',',');
                 }),
                 Tables\Columns\TextColumn::make('need_to_pay_balance')->label(trans('main.need_to_pay_balance'))
                     ->getStateUsing(function(Student $record) {
-                        return $record->payments()    ;
+                        return number_format($record->totalFeesRest    ,2,',',',');
                 }),
-                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                ->summarize(
-                    Sum::make()->query(fn ($query) => $query)->numeric(
-                                2,',',',')
-               )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
+            //     Tables\Columns\TextColumn::make('current_balance')->label(trans('main.current_balance'))
+            //     ->summarize(
+            //         Sum::make()->query(fn ($query) => $query)->numeric(
+            //             2,',',',')
+            //    )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
             ])
             ->filters([
                 SelectFilter::make('academic_year_id')->label(trans_choice('main.academic_year',1))
@@ -178,8 +193,13 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                 //         );
                 // })
             ])
+            ->deferFilters()
+            ->filtersApplyAction(
+                fn (\Filament\Tables\Actions\Action $action) => $action
+                    ->label(trans('main.apply')),
+            )
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()->url(fn(Student $record) => route('filament.admin.resources.students.view', $record->id)),
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')

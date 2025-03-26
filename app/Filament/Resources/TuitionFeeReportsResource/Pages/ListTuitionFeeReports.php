@@ -14,6 +14,7 @@ class ListTuitionFeeReports extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            print_table_resrource_list('print_tuition_fees_reports',route('print_pdf',['type'=>"tuition_fees_reports"]))
         ];
     }
 }
