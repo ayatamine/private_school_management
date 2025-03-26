@@ -165,18 +165,19 @@
         <x-school-header/>
         <hr>
         {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.receipt_voucher_info')}}</strong>
+        <h5 class="text-uppercase cool-gray" style="text-align: center;margin:auto">
+            <strong style="direction: rtl;font-size:18px">{{ trans('main.receipt_voucher_info')}}</strong>
         </h5>
         <table class=" mt-5" style="width: 100%">
             <tbody>
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student?->registration_number ??  $receipt?->studentAttached?->registration_number }}</span> <br><br>                       
+                        {{ trans('main.student_name') }} : <span style="">{{ $receipt?->student?->username ??  $receipt?->studentAttached?->username }}</span> <br><br>                       
                     </td>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.name') }} : <span style="">{{ $receipt?->student?->username ??  $receipt?->studentAttached?->username }}</span> <br><br>                       
+                        {{ trans('main.registration_number') }} : <span style="">{{ $receipt?->student?->registration_number ??  $receipt?->studentAttached?->registration_number }}</span> <br><br>                       
                     </td>
+                    
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2"> 
                         {{ trans('main.national_id_n') }} : <span style="">{{ $receipt?->student?->user?->national_id ??  $receipt?->studentAttached?->user?->national_id}}</span> <br><br>
@@ -188,15 +189,22 @@
                         {{ trans('main.receipt_number') }} : <span style="">{{ $receipt->id }}</span> <br><br>
                     </td>
                     <td class="border-0 pl-0" colspan="2" style="border: none" >
-                        {{ trans('main.date') }} : <span style="">{{ date('Y-m-d',strtotime($receipt->created_at)) }}</span> <br>
+                        {{ trans('main.date') }} : <span style="">{{ date('Y-m-d',strtotime($receipt->payment_date)) }}</span> <br>
+                    </td>
+                    <td class="border-0 pl-0" colspan="2" style="border: none" >
+                        {{ trans('main.reference_number') }} : <span style="">{{ $receipt->refrence_number }}</span> <br>
                     </td>
                 </tr>
                 <tr>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.value') }} : <span style="">{{ number_format($receipt->value, 2, '.', ',') }}</span> <br><br>                       
+                        {{ trans('main.value') }} : <span style="">{{ number_format($receipt->value, 2, '.', ',') }}{{trans("main.".env('DEFAULT_CURRENCY')."")}}</span> <br><br>                       
                     </td>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
-                        {{ trans('main.value_in_alphabetic') }} : <span style="">{{ $receipt->value_in_alphabetic  }}</span> <br>
+                        @php
+                            $numberToWord = new \App\Helpers\NumberToWord();
+                            $value_in_alphabetic = $numberToWord->convert($receipt->value);
+                        @endphp
+                        {{ trans('main.value_in_alphabetic') }} : <span style="">{{ $value_in_alphabetic  }}</span> <br>
                     </td>
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2">

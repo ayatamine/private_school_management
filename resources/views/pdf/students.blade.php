@@ -179,8 +179,8 @@
         <br>
         <br>
         
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.students_list')}}</strong>
+        <h5 class="text-uppercase " style="text-align: center">
+            <strong style="direction: rtl;font-size:18px">{{ trans('main.students_list')}}</strong>
         </h5>
         
          <h5 class="text-uppercase">

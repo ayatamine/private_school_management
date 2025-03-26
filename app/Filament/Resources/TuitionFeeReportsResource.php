@@ -4,24 +4,27 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Course;
 use App\Models\Student;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicStage;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use App\Models\TuitionFeeReports;
+use Filament\Tables\Filters\Filter;
 use Filament\Support\Enums\FontWeight;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TuitionFeeReportsResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\TuitionFeeReportsResource\RelationManagers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Filters\Filter;
 
 class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
 {
@@ -81,47 +84,83 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
         return $table
             ->query(Student::where('status','approved'))
             ->columns([
-                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.registration_number'))
+                Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('username')->label(trans('main.username'))
+                Tables\Columns\TextColumn::make('username')->label(trans('main.student_name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('semester.name')->label(trans_choice('main.semester',1))
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('parent.full_name')->label(trans_choice('main.parent',1))
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.phone_number')->label(trans('main.phone_number'))
-                    ->searchable(),
-               
-                Tables\Columns\TextColumn::make('total_fees')->label(trans('main.total_fees'))
-                    ->getStateUsing(function(Student $record) {
-                        return $record->calculatePaymentPartitions('App\Models\TuitionFee',"tuitionFees");
-                    }),
-                Tables\Columns\TextColumn::make('total_fees_discounts')->label(trans('main.total_fees_discounts'))
-                    ->getStateUsing(function(Student $record) {
-                        return $record->calculateFeesDiscounts('App\Models\TuitionFee',"tuitionFees");
-                    }),
-                Tables\Columns\TextColumn::make('total_paid_fees')->label(trans('main.total_paid_fees'))
+                Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
+                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name),  
+                Tables\Columns\TextColumn::make('total_paid_fees')->label(trans('main.totalPayment'))
                     ->getStateUsing(function(Student $record) {
                         return $record->payments()    ;
                 }),
-                Tables\Columns\TextColumn::make('approved_at')->label(trans('main.approved_at'))
-                ->date('Y-m-d')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('current_balance')->label(trans('main.current_balance'))
+                    ->getStateUsing(function(Student $record) {
+                        return $record->payments()    ;
+                }),
+                Tables\Columns\TextColumn::make('need_to_pay_balance')->label(trans('main.need_to_pay_balance'))
+                    ->getStateUsing(function(Student $record) {
+                        return $record->payments()    ;
+                }),
+                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+                ->summarize(
+                    Sum::make()->query(fn ($query) => $query)->numeric(
+                                2,',',',')
+               )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
             ])
             ->filters([
                 SelectFilter::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                     ->relationship('semester.academicYear', 'name')->searchable()
                     ->preload(),
+                SelectFilter::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
+                    ->options(AcademicStage::pluck('name','id'))
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                        //semester->course->academic_stage
+                        //select courses where academic_stage_id = $data['value']
+                       $courses = Course::whereHas('academicStage', function ($query) use ($data) {
+                            return $query->where('academic_stage_id', $data['value']);
+                        })->pluck('id');
+                        return $query->whereHas('semester', function ($query) use ($data,$courses) {
+                            return $query->whereIn('course_id', $courses);
+                        });
+                    }),
                 SelectFilter::make('semester_id')->label(trans_choice('main.semester',1))
                     ->relationship('semester', 'name')->searchable()
                     ->preload(),
+                SelectFilter::make('course_id')->label(trans('main.course_enrolled'))
+                    ->options(Course::pluck('name','id'))
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
                 
-                SelectFilter::make('gender')->label(trans('main.gender'))->options([
-                    'male' => trans('main.male'),
-                    'female' => trans('main.female'),
-                ]),
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                
+                        return $query->whereHas('semester', function ($q) use ($data) {
+                            return $q->where('course_id', $data['value']);
+                        });
+                    }),
+                //add nationality saudian or other
+                SelectFilter::make('nationality')->label(trans('main.nationality'))
+                ->options([
+                    'saudian'=>trans('main.saudian'),
+                    'other'=>trans('main.other')
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+            
+                    if ($data['value'] == null) {
+                        return $query;
+                    }
+            
+                    return $data['value'] == 'saudian' ? $query->where('nationality', 'saudian') : $query->where('nationality', '!=', 'saudian');
+                }),
                 // Filter::make('created_at')
                 // ->form([
                 //     TextInput::make('from')->numeric()->label(trans('main.fees_from')),

@@ -205,8 +205,8 @@
         </table>
         <hr>
         {{-- receipt info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.payments_list')}} {{date('d-m-Y')}}</strong>
+        <h5 class="text-uppercase cool-gray" style="text-align: center;margin:auto">
+            <strong style="direction: rtl;font-size:18px">{{ trans('main.payments_list')}} {{date('d-m-Y')}}</strong>
         </h5>
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">

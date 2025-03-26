@@ -85,7 +85,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                         name: 'student',
                         modifyQueryUsing: fn(Builder $query) => $query->latest(),
                     )
-                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->registration_number} - {$record->first_name} {$record->last_name} - {$record->user->national_id} - {$record->semester?->course?->name}")
+                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->registration_number} - {$record->first_name} {$record->last_name} - {$record->user->national_id} - {$record?->semester?->course?->name}")
                     ->preload()
                     ->searchable()
                     // ->getSearchResultsUsing(fn (string $search): array => Student::where('username', 'like', "%{$search}%")

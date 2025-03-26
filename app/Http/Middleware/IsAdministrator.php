@@ -22,8 +22,6 @@ class IsAdministrator
                 Filament::auth()->logout();
                 return redirect()->route('filament.student.auth.login');
             }
-            Filament::auth()->logout();
-            // return redirect()->route('filament.admin.auth.login');
         }
 
         return $next($request);

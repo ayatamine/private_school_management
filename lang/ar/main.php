@@ -202,7 +202,7 @@ return [
     'total_with_tax'=>'اجمالي المبلغ الخاضع للضريبة',
     'print_receipt_voucher'=>'طباعة السند',
     'change_receipt_status'=>'تعديل حالة الطلب',
-    'receipt_voucher_info'=>'سند دفع',
+    'receipt_voucher_info'=>'سند قبض',
     'no_operation_found'=>'لايوجد أي عملية',
     'not_registered_yet'=>'لم يتم الاشتراك بعد',
     'student_termination_success'=>'تم انهاء قيد الطالب بنجاح',
