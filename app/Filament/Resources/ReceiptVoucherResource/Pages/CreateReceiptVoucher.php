@@ -3,12 +3,13 @@
 namespace App\Filament\Resources\ReceiptVoucherResource\Pages;
 
 use Auth;
+use Exception;
 use Filament\Actions;
+use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\ReceiptVoucherResource;
-use App\Models\PaymentMethod;
-use Exception;
 
 class CreateReceiptVoucher extends CreateRecord
 {
@@ -19,5 +20,9 @@ class CreateReceiptVoucher extends CreateRecord
         $data['registered_by'] =Auth::id();
         $data['status'] ='paid';
         return $data;
+    }
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
     }
 }

@@ -11,11 +11,11 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use App\Helpers\NumberToWord;
 use App\Models\PaymentMethod;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
+use NumberToWords\NumberToWords;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Filters\Filter;
@@ -100,8 +100,10 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->required()
                     ->numeric()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $numberToWord = new NumberToWord();
-                        $set('value_in_alphabetic',$numberToWord->convert($state));
+                        $numberToWords = new NumberToWords();
+                            // build a new number transformer using the RFC 3066 language identifier
+                            $numberTransformer = $numberToWords->getNumberTransformer('ar');
+                            $set('value_in_alphabetic',$numberTransformer->toWords($state));
                     })
                     ->live(onBlur: true)
                     ->hint(new HtmlString(Blade::render('<x-filament::loading-indicator class="h-5 w-5" wire:loading wire:target="data.value" />'))),
@@ -152,7 +154,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
-        ->query(ReceiptVoucher::whereNull('added_by'))
+        ->query(ReceiptVoucher::whereNull('added_by')->latest())
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label(trans('main.receipt_number'))
                     ->sortable(),
@@ -243,7 +245,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->label(trans('main.apply')),
             )
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 // Action::make('status')
                 //     ->color('primary')

@@ -201,10 +201,12 @@
                     </td>
                     <td class="border-0 pl-0" style="border: none"  colspan="2">
                         @php
-                            $numberToWord = new \App\Helpers\NumberToWord();
-                            $value_in_alphabetic = $numberToWord->convert($receipt->value);
+                            $numberToWords = new \NumberToWords\NumberToWords();
+                            // build a new number transformer using the RFC 3066 language identifier
+                            $numberTransformer = $numberToWords->getNumberTransformer('ar');
+                            $value_in_alphabetic = $numberTransformer->toWords($receipt->value);
                         @endphp
-                        {{ trans('main.value_in_alphabetic') }} : <span style="">{{ $value_in_alphabetic  }}</span> <br>
+                        {{ trans('main.value_in_alphabetic') }} : <span style="">{{ $value_in_alphabetic  }}{{trans("main.".env('DEFAULT_CURRENCY')."")}}</span> <br>
                     </td>
                     
                     <td class="border-0 pl-0"  style="border: none"  colspan="2">

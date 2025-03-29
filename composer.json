@@ -16,6 +16,7 @@
         "filament/filament": "3.2",
         "guzzlehttp/guzzle": "^7.2",
         "khaled.alshamaa/ar-php": "^6.3",
+        "kwn/number-to-words": "^2.11",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
@@ -51,7 +52,6 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "app/Helpers/NumberToWord.php",
             "app/Helpers/Globals.php"
         ]
     },

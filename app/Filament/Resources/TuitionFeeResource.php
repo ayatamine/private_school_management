@@ -71,13 +71,28 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
                         ->live()
                         ->required(),
                     Forms\Components\Select::make('course_id')->label(trans_choice('main.academic_course',1))
-                        ->options(fn (Get $get): Collection => Course::query()
-                        ->where('academic_year_id', $get('academic_year_id'))
-                        ->whereDoesntHave('tuitionFee')
-                        ->pluck('name', 'id'))
+                        ->options(function (Get $get, TuitionFee $record): Collection {
+                            $query = Course::query()
+                                ->where('academic_year_id', $get('academic_year_id'));
+                                
+                            // If editing, include the current course even if it has a tuition fee
+                            if ($record->exists) {
+                                $query->where(function($q) use ($record) {
+                                    $q->whereDoesntHave('tuitionFee')
+                                    ->orWhere('id', $record->course_id);
+                                });
+                            } else {
+                                $query->whereDoesntHave('tuitionFee');
+                            }
+                            
+                            return $query->pluck('name', 'id');
+                        })
                         ->rules([
-                            fn (TuitionFee $fee,Get $get ): Closure => function (string $attribute, $value, Closure $fail) use($fee,$get) {
-                                if (TuitionFee::whereCourseId($value)->whereAcademicYearId($get('academic_year_id'))->whereNot('id',$fee->id)->first()) {
+                            fn (TuitionFee $fee, Get $get): Closure => function (string $attribute, $value, Closure $fail) use($fee, $get) {
+                                if (TuitionFee::whereCourseId($value)
+                                    ->whereAcademicYearId($get('academic_year_id'))
+                                    ->whereNot('id', $fee->id)
+                                    ->first()) {
                                     $fail(trans('main.cannot_add_same_course_for_current_year'));
                                 }
                             },

@@ -21,4 +21,8 @@ class EditReceiptVoucher extends EditRecord
         $data['payment_method'] =$data['payment_method_id'] ? null : trans('main.transfer');
         return $data;
     }
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
 }

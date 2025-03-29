@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use MPDF;
-use NumberToWord;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Student;
@@ -11,17 +10,19 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Helpers\NumberToWord;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
 use Filament\Resources\Resource;
+use NumberToWords\NumberToWords;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FeePaymentRequestResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ReceiptVoucherResource\RelationManagers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class FeePaymentRequestResource extends Resource implements HasShieldPermissions
 {
@@ -90,8 +91,14 @@ class FeePaymentRequestResource extends Resource implements HasShieldPermissions
                     ->numeric()
                     ->live()
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $numberToWord = new NumberToWord();
-                        $set('value_in_alphabetic',$numberToWord->convert($state));
+                        try{
+                            $numberToWords = new NumberToWords();
+                            // build a new number transformer using the RFC 3066 language identifier
+                            $numberTransformer = $numberToWords->getNumberTransformer('ar');
+                            $set('value_in_alphabetic',$numberTransformer->toWords($state));
+                        }catch(\Exception $e){
+                            dd($e->getMessage());
+                        }
                     })
                     ->live(onBlur: true),
                 // Forms\Components\TextInput::make('payment_method')

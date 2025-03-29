@@ -342,7 +342,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Student::query()->whereDoesntHave('termination'))
+            ->query(Student::query()->whereDoesntHave('termination')->latest())
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable('id')
@@ -403,104 +403,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                     ->label(trans('main.apply')),
             )
             ->actions([
-                Tables\Actions\Action::make('registeration_action')
-                // ->visible(fn(Student $record)=>$record->is_banned == null)
-                ->label(trans('main.registeration_action'))
-                ->visible(employeeHasPermission('approve_registeration_newest::student'))
-                ->icon('heroicon-o-check')
-                ->color('primary')
-                ->form([
-                    Forms\Components\Select::make(name: 'status')->label(trans('main.approvel_status'))
-                    ->options(['approved'=>trans('main.approve'), 'rejected'=>trans('main.reject')])
-                    ->default(fn(Student $student)=>$student->status == "approved" ? "approved" : "pending")
-                    ->live()
-                    ->required(),  
-                    Forms\Components\DatePicker::make(name: 'approved_at')->label(trans('main.approvel_date'))
-                    ->default(fn(Student $student)=>$student->status == "approved" ? $student->approved_at : null)
-                    ->required()
-                    ->hidden(fn(Get $get)=>$get('status') == "rejected"),  
-                ])
-                ->action(function(Student $Student,array $data){
-                    
-                    try{
-                        DB::beginTransaction();
-                        $Student->update($data);
-                        if($data['status'] == "approved")
-                        {
-                            // add tuiton fees
-                            $tuitionFee = TuitionFee::whereCourseId($Student?->semester?->course_id)->first();
-                            if(!$Student?->semester)
-                            {
-                                Notification::make()
-                                    ->title(trans('main.student_not_yet_attached_to_course'))
-                                    ->icon('heroicon-o-document-text')
-                                    ->iconColor('danger')
-                                    ->send();
-                                return redirect()->route('filament.admin.resources.newest-students.edit',['record'=>$Student?->id]);
-                            }
-                            if($tuitionFee)
-                            {
-                                $Student->tuitionFees()->sync($tuitionFee->id);
-                            }
-                            // add other fees
-                            // add other fees
-                            $generalFees = GeneralFee::whereCourseId($Student?->semester?->course_id)->get();
-                            if($generalFees)
-                            {
-                                foreach($generalFees as $fee)
-                                {
-                                    $Student->otherFees()->sync($fee->id);
-                                    $discounts = $fee->payment_partition;
-                                    $discounts[0]['discount_type'] = "percentage";
-                                    $discounts[0]['discount_value'] = 0;
-                                    DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$fee->id,GeneralFee::class,$Student->id]);
-
-                                }
-                                
-                            }
-                            // add concession fees
-                        
-                            $discounts = $tuitionFee->payment_partition;
-                           
-                            $discounts[0]['discount_type'] = "percentage";
-                            $discounts[0]['discount_value'] = 0;
-                            
-                            if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$Student->id]);
-                            
-                          
-                            //create invoice for student
-                            $academic_year_id = $Student->semester?->academicYear?->id;
-                            $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
-                            if(!$invoice)
-                            {
-                                $invoice =Invoice::create([
-                                    'number'=>$Student->semester?->academicYear?->name."".$Student->registration_number,
-                                    'name' => trans('main.fees_invoice')." ".$Student->semester?->academicYear?->name,
-                                    'student_id'=>$Student->id,
-                                    'academic_year_id'=>$academic_year_id,
-                                ]);
-                                $Student->invoices()->save($invoice);
-                            }
-                        }
-                            Notification::make()
-                                ->title(trans('main.student_status_changed_successfully'))
-                                ->icon('heroicon-o-document-text')
-                                ->iconColor('success')
-                                ->send();
-                            DB::commit();
-                        
-                    }
-                    catch(Exception $ex)
-                    {
-                        DB::rollBack();
-                        dd($ex);
-                        Notification::make()
-                            ->title($ex)
-                            ->icon('heroicon-o-document-text')
-                            ->iconColor('danger')
-                            ->send();
-                    }
-                })
+                approve_reject_student('approve_registeration_newest::student')
                 // ->hidden(fn (Student $student) =>$student->status == "approved")
                 ,
                 Tables\Actions\ViewAction::make(),
@@ -512,7 +415,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                     'table_header' => trans('main.menu').' '.trans_choice('main.income',2)
                 ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -524,30 +427,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         ->headerActions([
                             Action::make(trans('main.edit'))
                                 ->url(fn (Student $record): string => route('filament.admin.resources.newest-students.edit', $record)),
-                            Action::make(trans('main.delete'))
-                                ->color('danger')
-                                ->hidden(fn(Student $student)=>$student->status == "approved")
-                                ->requiresConfirmation()
-                                ->action(function(Student $student){
-                                    try{
-                                        DB::beginTransaction();
-                                          $student->user?->delete();
-                                          $student->receiptVoucher()->delete();
-                                          $student->invoices()->delete();
-                                          $student->delete();
-                                          DB::commit();
-                                          return redirect()->route('filament.admin.resources.newest-students.index');
-                                    }
-                                    catch(Exception $ex)
-                                    {
-                                        DB::rollBack();
-                                        Notification::make()
-                                            ->title($ex->getMessage())
-                                            ->icon('heroicon-o-document-text')
-                                            ->iconColor('danger')
-                                            ->send();
-                                    }
-                                })
+                            approve_reject_student('approve_registeration_newest::student',false)
                         ])
                         ->columns(3)
                         ->id('main-section')

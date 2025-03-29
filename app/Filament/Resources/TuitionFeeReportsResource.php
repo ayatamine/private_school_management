@@ -104,11 +104,11 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                     ->getStateUsing(function(Student $record) {
                         return $record->payments()    ;
                 }),
-                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                ->summarize(
-                    Sum::make()->query(fn ($query) => $query)->numeric(
-                                2,',',',')
-               )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
+            //     Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+            //     ->summarize(
+            //         Sum::make()->query(fn ($query) => $query)->numeric(
+            //                     2,',',',')
+            //    )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
             ])
             ->filters([
                 SelectFilter::make('academic_year_id')->label(trans_choice('main.academic_year',1))
