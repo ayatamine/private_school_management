@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\File;
 use Filament\Tables;
@@ -13,9 +14,10 @@ use App\Models\TuitionFee;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Textarea;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
+use App\Models\Transport;
+use App\Models\ValueAddedTax;
 
 if(!function_exists('employeeHasPermission'))
 {
@@ -207,5 +209,263 @@ if(!function_exists('approve_reject_student'))
                 ->iconColor('danger')
                 ->send();
         }
+    }
+   
+
+    function calculateTuitionFees($record)
+    {
+        $grand_total = $total = $value_after_discount = $value_after_tax = $total_fees_to_pay = [];
+        $academic_years = [];
+        
+        if ($record->tuitionFees != null && count($record->tuitionFees)) {
+            foreach ($record->tuitionFees as $k => $fee) {
+                if (count($fee->payment_partition)) {
+                    foreach ($fee->payment_partition as $i => $partition) {
+                        // Track academic years
+                        if (!in_array($fee->academicYear?->name, $academic_years)) {
+                            $academic_years[] = $fee->academicYear?->name;
+                        }
+
+                        // Adjust value based on approval/termination dates
+                        $partitionValue = $partition['value'];
+                        if ($record->approved_at && ($partition['due_date_end_at'] < Carbon::createFromTimestamp($record->approved_at)->format('Y-m-d'))) {
+                            $partitionValue = 0;
+                        }
+                        if ($record->termination_date && $record->termination_date < $partition['due_date']) {
+                            $partitionValue = 0;
+                        }
+
+                        // Get discounts
+                        $discounts = DB::table('student_fee')
+                            ->where('student_id', $record->id)
+                            ->where('feeable_id', $fee->id)
+                            ->where('feeable_type', 'App\Models\TuitionFee')
+                            ->value('discounts');
+                        $decodedDiscounts = json_decode($discounts, true);
+
+                        // Calculate discount
+                        $valueAfterDiscount = $partitionValue;
+                        if (isset($decodedDiscounts[$i]) && array_key_exists('discount_value', $decodedDiscounts[$i])) {
+                            if ($decodedDiscounts[$i]['discount_type'] == 'percentage') {
+                                $valueAfterDiscount = $partitionValue * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                            } else {
+                                $valueAfterDiscount = $partitionValue - $decodedDiscounts[$i]['discount_value'];
+                            }
+                        }
+                        $value_after_discount[$i] = $valueAfterDiscount;
+
+                        // Calculate tax
+                        $taxValue = 0;
+                        if ($record->nationality != "saudian") {
+                            $vat = ValueAddedTax::whereDate('applies_at', "<=", date('Y-m-d', strtotime($partition['due_date_end_at'])))
+                                ->first();
+                            if ($vat == null) {
+                                $vat = ValueAddedTax::first();
+                            }
+                            $taxValue = ($vat?->percentage ? $vat?->percentage : 0) / 100 * $valueAfterDiscount;
+                        }
+                        $value_after_tax[$i] = $taxValue;
+
+                        // Calculate totals
+                        $total[$i] = $valueAfterDiscount + $taxValue;
+                        $total_fees_to_pay[$i] = (now() > $partition['due_date']) ? $total[$i] : 0;
+                    }
+                    $grand_total[$k] = array_sum($total);
+                }
+            }
+
+            return [
+                'academic_years' => $academic_years,
+                'grand_total' => array_sum($grand_total),
+                'total_fees_to_pay' => array_sum($total_fees_to_pay),
+                'summary' => (object) [
+                    'academic_year' => count($academic_years) > 0 ? $academic_years[0] : null,
+                    'total' => number_format(array_sum($grand_total), 2, '.', ','),
+                    'total_fees_to_pay' => number_format(array_sum($total_fees_to_pay), 2, '.', ','),
+                ]
+            ];
+        }
+
+        return null;
+    }
+    function calculateTransportFees($record)
+    {
+        $total = $value_after_discount = $value_after_tax = $total_fees_to_pay = [];
+        
+        if ($record->transportFees != null && count($record->transportFees)) {
+            foreach ($record->transportFees as $fee) {
+                if (count($fee->payment_partition)) {
+                    foreach ($fee->payment_partition as $i => $partition) {
+                        // Skip if transport terminated before due date
+                        $transport = $record->transport;
+                        if ($transport && ($transport->termination_date != null && $transport->termination_date <= $partition['due_date_end_at'])) {
+                            continue;
+                        }
+
+                        // Adjust value based on dates
+                        $partitionValue = $partition['value'];
+                        if (Transport::whereStudentId($record->id)?->first()?->created_at >= $partition['due_date_end_at']) {
+                            $partitionValue = 0;
+                        }
+                        if ($record->termination_date && $record->termination_date <= $partition['due_date']) {
+                            $partitionValue = 0;
+                        }
+
+                        // Get discounts
+                        $discounts = DB::table('student_fee')
+                            ->where('student_id', $record->id)
+                            ->where('feeable_id', $fee->id)
+                            ->where('feeable_type', 'App\Models\TransportFee')
+                            ->value('discounts');
+                        $decodedDiscounts = json_decode($discounts, true);
+
+                        // Calculate discount
+                        $valueAfterDiscount = $partitionValue;
+                        if (isset($decodedDiscounts[$i]) && array_key_exists('discount_value', $decodedDiscounts[$i])) {
+                            if ($decodedDiscounts[$i]['discount_type'] == 'percentage') {
+                                $valueAfterDiscount = $partitionValue * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                            } else {
+                                $valueAfterDiscount = $partitionValue - $decodedDiscounts[$i]['discount_value'];
+                            }
+                        }
+                        $value_after_discount[$i] = $valueAfterDiscount;
+
+                        // Calculate tax
+                        $vat = ValueAddedTax::whereDate('applies_at', "<=", date('Y-m-d', strtotime($partition['due_date_end_at'])))
+                            ->first() ?? ValueAddedTax::first();
+                        
+                        $taxValue = ($vat?->percentage ? $vat?->percentage : 0) / 100 * $valueAfterDiscount;
+                        $value_after_tax[$i] = $taxValue;
+
+                        // Calculate totals
+                        $total[$i] = $valueAfterDiscount + $taxValue;
+                        $total_fees_to_pay[$i] = (now() > $partition['due_date']) ? $total[$i] : 0;
+                    }
+                }
+            }
+
+            return [
+                'total' => array_sum($total),
+                'total_fees_to_pay' => array_sum($total_fees_to_pay),
+                'formatted' => [
+                    'total' => number_format(array_sum($total), 2, '.', ','),
+                    'total_fees_to_pay' => number_format(array_sum($total_fees_to_pay), 2, '.', ','),
+                ]
+            ];
+        }
+
+        return null;
+    }
+    function calculateGeneralFees($record)
+    {
+        $grand_total = $total = $value_after_discount = $value_after_tax = $total_fees_to_pay = [];
+        
+        if ($record->otherFees != null && count($record->otherFees)) {
+            foreach ($record->otherFees as $k => $fee) {
+                if (count($fee->payment_partition)) {
+                    foreach ($fee->payment_partition as $i => $partition) {
+                        // Skip if student terminated before due date
+                        if ($record->termination_date && $record->termination_date <= $partition['due_date_end_at']) {
+                            continue;
+                        }
+
+                        // Adjust value based on approval/termination dates
+                        $partitionValue = $partition['value'];
+                        if ($record->approved_at && ($partition['due_date_end_at'] <= Carbon::createFromTimestamp($record->approved_at)->format('Y-m-d'))) {
+                            $partitionValue = 0;
+                        }
+                        if ($record->termination_date && $record->termination_date <= $partition['due_date']) {
+                            $partitionValue = 0;
+                        }
+
+                        // Get discounts
+                        $discounts = DB::table('student_fee')
+                            ->where('student_id', $record->id)
+                            ->where('feeable_id', $fee->id)
+                            ->where('feeable_type', 'App\Models\GeneralFee')
+                            ->value('discounts');
+                        $decodedDiscounts = json_decode($discounts, true);
+
+                        // Calculate discount
+                        $valueAfterDiscount = $partitionValue;
+                        if (isset($decodedDiscounts[$i]) && array_key_exists('discount_value', $decodedDiscounts[$i])) {
+                            if ($decodedDiscounts[$i]['discount_type'] == 'percentage') {
+                                $valueAfterDiscount = $partitionValue * (1 - ($decodedDiscounts[$i]['discount_value'] / 100));
+                            } else {
+                                $valueAfterDiscount = $partitionValue - $decodedDiscounts[$i]['discount_value'];
+                            }
+                        }
+                        $value_after_discount[$i] = $valueAfterDiscount;
+
+                        // Calculate tax
+                        $vat = ValueAddedTax::whereDate('applies_at', "<=", date('Y-m-d', strtotime($partition['due_date_end_at'])))
+                            ->first() ?? ValueAddedTax::first();
+                        
+                        $taxValue = ($vat?->percentage ? $vat?->percentage : 0) / 100 * $valueAfterDiscount;
+                        $value_after_tax[$i] = $taxValue;
+
+                        // Calculate totals
+                        $total[$i] = $valueAfterDiscount + $taxValue;
+                        $total_fees_to_pay[$i] = (now() > $partition['due_date']) ? $total[$i] : 0;
+                    }
+                    $grand_total[$k] = array_sum($total);
+                }
+            }
+
+            return [
+                'grand_total' => array_sum($grand_total),
+                'total_fees_to_pay' => array_sum($total_fees_to_pay),
+                'formatted' => [
+                    'grand_total' => number_format(array_sum($grand_total), 2, '.', ','),
+                    'total_fees_to_pay' => number_format(array_sum($total_fees_to_pay), 2, '.', ','),
+                ]
+            ];
+        }
+
+        return null;
+    }
+
+    function calculateAllFees($student)
+    {
+        // Calculate each fee type
+        $tuitionFees = calculateTuitionFees($student);
+        $transportFees = calculateTransportFees($student);
+        $generalFees = calculateGeneralFees($student);
+    
+        // Calculate grand totals
+        $totalTuition = $tuitionFees['grand_total'] ?? 0;
+        $totalTransport = $transportFees['total'] ?? 0;
+        $totalGeneral = $generalFees['grand_total'] ?? 0;
+        
+        $totalFeesToPayTuition = $tuitionFees['total_fees_to_pay'] ?? 0;
+        $totalFeesToPayTransport = $transportFees['total_fees_to_pay'] ?? 0;
+        $totalFeesToPayGeneral = $generalFees['total_fees_to_pay'] ?? 0;
+    
+        $grandTotal = $totalTuition + $totalTransport + $totalGeneral;
+        $totalFeesToPay = $totalFeesToPayTuition + $totalFeesToPayTransport + $totalFeesToPayGeneral;
+        
+        return [
+            'tuition' => $tuitionFees,
+            'transport' => $transportFees,
+            'general' => $generalFees,
+            'totals' => [
+                'grand_total' => $grandTotal,
+                'total_fees_to_pay' => $totalFeesToPay,
+                'formatted' => [
+                    'grand_total' => number_format($grandTotal, 2, '.', ','),
+                    'total_fees_to_pay' => number_format($totalFeesToPay, 2, '.', ','),
+                ]
+            ],
+            'breakdown' => [
+                'tuition' => $totalTuition,
+                'transport' => $totalTransport,
+                'general' => $totalGeneral,
+                'formatted' => [
+                    'tuition' => number_format($totalTuition, 2, '.', ','),
+                    'transport' => number_format($totalTransport, 2, '.', ','),
+                    'general' => number_format($totalGeneral, 2, '.', ','),
+                ]
+            ]
+        ];
     }
 }

@@ -105,25 +105,29 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
-                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name),  
+                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name), 
+                Tables\Columns\TextColumn::make('total_fees')->label(trans('main.total_fees'))
+                    ->getStateUsing(function(Student $record) {
+                        return calculateAllFees($record)['totals']['grand_total'];
+                }), 
                 Tables\Columns\TextColumn::make('total_paid_fees')->label(trans('main.totalPayment'))
                     ->getStateUsing(function(Student $record) {
                         return number_format($record->payments()    ,2,',',',');
                 }),
+                
                 Tables\Columns\TextColumn::make('current_balance')->label(trans('main.current_balance'))
                     ->getStateUsing(function(Student $record) {
-                        // dd($record->currentBalance,$record->totalFeesAfterDueDate,$record->totalFeesRest);
-                        return number_format($record->currentBalance    ,2,',',',');
+                        return number_format($record->opening_balance + calculateAllFees($record)['totals']['grand_total'] -$record->payments()     ,2,',',',');
                 }),
                 Tables\Columns\TextColumn::make('need_to_pay_balance')->label(trans('main.need_to_pay_balance'))
                     ->getStateUsing(function(Student $record) {
-                        return number_format($record->totalFeesRest    ,2,',',',');
+                        return number_format($record->opening_balance + calculateAllFees($record)['totals']['total_fees_to_pay'] -$record->payments()     ,2,',',',');
                 }),
-                Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
-                ->summarize(
-                    Sum::make()->query(fn ($query) => $query)->numeric(
-                                2,',',',')
-               )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
+            //     Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
+            //     ->summarize(
+            //         Sum::make()->query(fn ($query) => $query)->numeric(
+            //                     2,',',',')
+            //    )->suffix(' '.trans('main.'.env('DEFAULT_CURRENCY')))
             ])
             ->filters([
                 SelectFilter::make('academic_year_id')->label(trans_choice('main.academic_year',1))
