@@ -10,3 +10,6 @@
 .dark .fi-sidebar-nav{
     background-color: #09090b;
 }
+.fi-wi-stats-overview-stat .text-3xl{
+    font-size: 1.2rem !important;
+}

@@ -279,10 +279,10 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 ->when($nationality, fn ($query) => $nationality == 'saudian' ? $query->where('nationality', 'saudian') : $query->where('nationality', '!=', 'saudian'))
                 ->latest()
                 ->get();
-                $data = ['students' => $students,'settings'=>SchoolSetting::first(),
+                $data = ['students' => $students,'settings'=>SchoolSetting::first(),'academic_year_id'=>$academic_year_id,
                 'academic_stage_id'=>$academic_stage_id,'course_id'=>$course_id,'nationality'=>$nationality];
-                $view = "students";
-                $file_name = "قائمة الطلاب.pdf";
+                $view = "tuition_fees_reports";
+                $file_name = "تقرير الرسوم الدراسية.pdf";
                 break;
         default:
             # code...

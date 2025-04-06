@@ -468,4 +468,11 @@ if(!function_exists('approve_reject_student'))
             ]
         ];
     }
+    function reverse_number_format($formatted_number, $decimal_separator = ',', $thousands_separator = ',') {
+        $number = str_replace($thousands_separator, '', $formatted_number);
+        
+        $number = str_replace($decimal_separator, '.', $number);
+        
+        return (float)$number;
+    }
 }

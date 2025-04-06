@@ -108,20 +108,20 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                     ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name), 
                 Tables\Columns\TextColumn::make('total_fees')->label(trans('main.total_fees'))
                     ->getStateUsing(function(Student $record) {
-                        return calculateAllFees($record)['totals']['grand_total'];
+                        return number_format(calculateAllFees($record)['totals']['grand_total'],2,',',',')." ".trans('main.'.env('DEFAULT_CURRENCY'));
                 }), 
                 Tables\Columns\TextColumn::make('total_paid_fees')->label(trans('main.totalPayment'))
                     ->getStateUsing(function(Student $record) {
-                        return number_format($record->payments()    ,2,',',',');
+                        return number_format($record->payments()    ,2,',',',')." ".trans('main.'.env('DEFAULT_CURRENCY'));
                 }),
                 
                 Tables\Columns\TextColumn::make('current_balance')->label(trans('main.current_balance'))
                     ->getStateUsing(function(Student $record) {
-                        return number_format($record->opening_balance + calculateAllFees($record)['totals']['grand_total'] -$record->payments()     ,2,',',',');
+                        return number_format($record->opening_balance + calculateAllFees($record)['totals']['grand_total'] -$record->payments()     ,2,',',',') ." ".trans('main.'.env('DEFAULT_CURRENCY'));
                 }),
                 Tables\Columns\TextColumn::make('need_to_pay_balance')->label(trans('main.need_to_pay_balance'))
                     ->getStateUsing(function(Student $record) {
-                        return number_format($record->opening_balance + calculateAllFees($record)['totals']['total_fees_to_pay'] -$record->payments()     ,2,',',',');
+                        return number_format($record->opening_balance + calculateAllFees($record)['totals']['total_fees_to_pay'] -$record->payments()     ,2,',',',') ." ".trans('main.'.env('DEFAULT_CURRENCY'));
                 }),
             //     Tables\Columns\TextColumn::make('value')->label(trans('main.value'))
             //     ->summarize(
