@@ -3,14 +3,13 @@
         <tr>
             
             <td class="border-0 pl-0" colspan="2" style="text-align: right;font-size:14px;border:none">
-                <strong style="font-size: 18px"> {{ $settings->title }}</strong> <br>
-               {{ trans('main.permit_number_2') }} : <span style="margin:0 5px">{{ $settings->permit_number }}</span> 
-               {{ trans('main.commercial_register_number_2') }} : <span style="">{{ $settings->commercial_register_number }}</span> <br>
-               {{ trans('main.tax_number_2') }} : <span style="">{{ $settings->added_value_tax_number }}</span> <br>
-                <span style="">{{ $settings->address }}</span> <br>
-               
-               {{ trans('main.email') }} : <span style="margin:0 5px">{{ $settings->email }}</span> 
-               {{ trans('main.phone_number') }} : <span style="margin:0 5px">{{ $settings->phone_number }}</span> 
+                <strong style="font-size: 18px;font-weight:bold"> {{ $settings->title }}</strong> <br>
+               {{ trans('main.permit_number_2') }} : <span style="margin:0 5px;font-weight:bold">{{ $settings->permit_number }}</span> 
+               {{ trans('main.commercial_register_number_2') }} : <span style="font-weight:bold">{{ $settings->commercial_register_number }}</span> <br>
+               {{ trans('main.tax_number_2') }} : <span style="font-weight:bold">{{ $settings->added_value_tax_number }}</span> <br>
+                <span >{{ $settings->address }}</span> <br>
+               {{ trans('main.email') }} : <span style="margin:0 5px;font-weight:bold">{{ $settings->email }}</span> 
+               {{ trans('main.phone_number') }} : <span style="margin:0 5px;font-weight:bold">{{ $settings->phone_number }}</span> 
            </td>
            @if($settings->logo)
            <td class="border-0 pl-0" style="border: none;text-align:left" colspan="2" >

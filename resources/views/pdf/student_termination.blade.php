@@ -8,23 +8,23 @@
 
             @font-face
             {
-                font-family: 'noto kufi arabic';
+                font-family: 'cairo';
                 font-style: normal;
                 font-weight: normal;
-                src: local('noto kufi arabic'), local('noto kufi arabic'), url("{{asset('fonts/NotoKufiArabic-VariableFont_wght.ttf')}}"), format('truetype')
+                src: local('Cairo-Regular'), local('Cairo-Regular'), url("{{asset('fonts/Cairo-Regular.ttf')}}"), format('truetype')
             }
             * {
-                font-family: DejaVu Sans !important; direction: rtl;text-align:right;
+                font-family: 'cairo' !important; direction: rtl;text-align:right;
             }
             html {
-                font-family:  DejaVu Sans, sans-serif;
+                font-family:  'cairo', sans-serif;
                 line-height: 1.15;
                 margin: 0;
                 direction: rtl
             }
 
             body {
-                font-family: 'DejaVu Sans', 'Roboto', 'Montserrat', 'Open Sans', sans-serif;
+                font-family: 'cairo';
                 line-height: 1.5;
                 color: #212529;
                 text-align: left;
@@ -179,8 +179,8 @@
         <br>
         <br>
     
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.students_list')}}</strong>
+        <h5 class="text-uppercase" style="text-align: center;margin:auto;font-family: 'cairo';">
+            <strong style="direction: rtl;font-size:18px;font-weight:bold">{{ trans('main.students_list')}}</strong>
         </h5>
         <table class="w-ful" style="width: 100%" id="payment_list">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b">

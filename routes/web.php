@@ -1,5 +1,6 @@
 <?php
 
+use Mpdf\Mpdf;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Expense;
@@ -9,8 +10,10 @@ use App\Models\Employee;
 use App\Models\Transport;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
+use Mpdf\Config\FontVariables;
+use Mpdf\Config\ConfigVariables;
 use Illuminate\Support\Facades\Route;
-use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as MPDF;
+// use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as MPDF;
 
 /*
 |--------------------------------------------------------------------------
@@ -289,11 +292,59 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
             break;
     }
     
-    $pdf = MPDF::loadView("pdf.$view", $data);
-    $pdf->simpleTables = true;
+    // $pdf = MPDF::loadView("pdf.$view", $data);
+    // $pdf->simpleTables = true;
 
-    $pdf->download($file_name);
-    header("Refresh:0");
+    // $pdf->download($file_name);
+    // header("Refresh:0");
+       // Default font configuration
+
+    
+       
+  
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'direction' => 'rtl', // Right-to-left
+            'fontDir' => [
+                public_path('fonts/'), // Your font directory
+                ...(new ConfigVariables())->getDefaults()['fontDir']
+            ],
+            'fontdata' => [
+                'amiri' => [ // Using Amiri font
+                    'R' => 'Amiri-Regular.ttf',
+                    'B' => 'Amiri-Bold.ttf',
+                    'useOTL' => 0x00, // Disable OTL features
+                    'useKashida' => 0, // Disable Kashida
+                    'direction' => 'rtl',
+                ],
+                'cairo' => [ // Using Amiri font
+                    'R' => 'Cairo-Regular.ttf',
+                    'B' => 'Cairo-Semibold.ttf',
+                    'useOTL' => 0xFF, // Disable OTL features
+                    'useKashida' => 75, // Disable Kashida
+                    'direction' => 'rtl', // Disable Kashida
+                ],
+                ...(new FontVariables())->getDefaults()['fontdata']
+            ],
+            'default_font' => 'cairo',
+            'tempDir' => storage_path('tmp/'),
+        ]);
+       // Load your view
+       $html = view("pdf.$view", $data)->render();
+       
+       // Add RTL direction to body if not already in your view
+       $html = str_replace('<body>', '<body style="direction: rtl; text-align: right;">', $html);
+       
+       $mpdf->WriteHTML($html);
+       
+       // Download the PDF
+       $mpdf->Output($file_name, 'D');
+       
+       // Maintain your refresh functionality
+       header("Refresh:0");
+       exit;
 })
 ->middleware(['auth'])
 ->name('print_pdf');

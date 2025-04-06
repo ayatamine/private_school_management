@@ -8,23 +8,23 @@
 
             @font-face
             {
-                font-family: 'noto kufi arabic';
+                font-family: 'cairo';
                 font-style: normal;
                 font-weight: normal;
-                src: local('noto kufi arabic'), local('noto kufi arabic'), url("{{asset('fonts/NotoKufiArabic-VariableFont_wght.ttf')}}"), format('truetype')
+                src: local('Cairo-Regular'), local('Cairo-Regular'), url("{{asset('fonts/Cairo-Regular.ttf')}}"), format('truetype')
             }
             * {
-                font-family: DejaVu Sans !important; direction: rtl;text-align:right;
+                font-family: 'cairo' !important; direction: rtl;text-align:right;
             }
             html {
-                font-family:  DejaVu Sans, sans-serif;
+                font-family:  'cairo', sans-serif;
                 line-height: 1.15;
                 margin: 0;
                 direction: rtl
             }
 
             body {
-                font-family: 'DejaVu Sans', 'Roboto', 'Montserrat', 'Open Sans', sans-serif;
+                font-family: 'cairo';
                 line-height: 1.5;
                 color: #212529;
                 text-align: left;
@@ -187,8 +187,8 @@
         </table>
         <hr> --}}
         {{-- invoice info --}}
-        <h5 class="text-uppercase cool-gray">
-            <strong style="text-align: right;direction: rtl">{{ trans('main.student_info')}}</strong>
+        <h5 class="text-uppercase cool-gray" style="text-align: center;margin:auto;font-family: 'cairo';">
+            <strong style="direction: rtl;font-size:18px;font-weight:bold">{{ trans('main.student_info')}}</strong>
         </h5>
         <table class=" mt-5"  style="width: 100%">
             <tbody>

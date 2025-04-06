@@ -22,6 +22,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
+        "mpdf/mpdf": "^8.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "solution-forest/filament-simplelightbox": "*",
         "spatie/laravel-permission": "^6.9"
