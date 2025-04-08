@@ -8,15 +8,16 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\PaymentMethod;
+use App\Models\FinanceAccount;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PaymentMethodResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\PaymentMethodResource\RelationManagers;
-use App\Models\FinanceAccount;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class PaymentMethodResource extends Resource implements HasShieldPermissions
 {
@@ -65,7 +66,7 @@ class PaymentMethodResource extends Resource implements HasShieldPermissions
                     Forms\Components\Select::make('finance_account_id')->label(trans('main.finance_account_name'))
                     ->relationship(
                         name: 'financeAccount',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true)->latest(),
+                        modifyQueryUsing: fn (Builder $query,?Model $record) => $query->where('is_active', true)->orWhere('id', $record?->finance_account_id)->latest(),
                     )
                     ->getOptionLabelFromRecordUsing(fn (FinanceAccount $record) => "{$record->name}")
                     ->required(),
@@ -101,7 +102,6 @@ class PaymentMethodResource extends Resource implements HasShieldPermissions
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('financeAccount.name')->label(trans('main.finance_account_name'))
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')->label(trans('main.payment_method_name'))
                     ->searchable(),
@@ -122,9 +122,7 @@ class PaymentMethodResource extends Resource implements HasShieldPermissions
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')

@@ -14,6 +14,7 @@ use App\Models\TransactionCategory;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Filters\Indicator;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
@@ -88,10 +89,16 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                         // ->relationship('paymentMethod', 'name')
                         ->relationship(
                             name: 'paymentMethod',
-                            modifyQueryUsing: function (Builder $query){
-                                return $query->where('show_in_expenses', true)->whereHas('financeAccount',function($q){
-                                    return $q->where('is_active', true);
-                                })->latest();
+                            modifyQueryUsing: function (Builder $query,?Model $record) {
+                                $selectedId = $record->payment_method_id ?? null; // Get selected ID from current record
+                                return $query
+                                    ->where(function ($q) use ($selectedId) {
+                                        $q->where('show_in_expenses', true)
+                                          ->whereHas('financeAccount', fn ($q) => $q->where('is_active', true))
+                                          ->orWhere('id', $selectedId); // Always include the selected item
+                                    })
+                                    ->with('financeAccount')
+                                    ->latest();
                             },
                         )
                         ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
@@ -189,7 +196,13 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                     ->relationship('transactionCategory', titleAttribute: 'name')
                     ->preload(),
                 SelectFilter::make('payment_method_id')->label(trans_choice('main.payment_method',1))
-                    ->relationship('paymentMethod', 'name')
+                    ->relationship(
+                        'paymentMethod','name',
+                         fn(Builder $query): Builder => $query->where('show_in_expenses', true)->whereHas('financeAccount',function($q){
+                                return $q->where('is_active', true);
+                            })->latest(),
+                    )
+                    ->getOptionLabelFromRecordUsing(fn (PaymentMethod $record) => "{$record->name} -- {$record->financeAccount->name}")
                     ->preload(),
                 TernaryFilter::make('is_tax_included')->label(trans('main.is_tax_included'))
                     ->attribute('is_tax_included'),
@@ -237,24 +250,8 @@ class ExpenseResource extends Resource implements HasShieldPermissions
                     ->label(trans('main.apply')),
             )
             ->actions([
-                Tables\Actions\Action::make('cancel')
-                ->label(fn(Expense $record )=> $record->is_cancelled == true ?  trans('main.activate') :  trans('main.cancel')  )
-                ->color(fn(Expense $record )=> $record->is_cancelled == true ? "success" : "danger"  )
-                ->requiresConfirmation()  
-                ->form([
-                    Forms\Components\TextInput::make('cancel_reason')
-                    ->visible(fn(Expense $record )=> $record->is_cancelled == false)
-                    ->label(trans('main.cancel_reason')),
-                ])              
-                ->action(function(Expense $expense,array $data): void {
-                   
-                     $expense->is_cancelled = !$expense->is_cancelled;
-                     $expense->cancel_reason = isset($data['cancel_reason']) ? $data['cancel_reason'] : null;
-                     $expense->save();
-                }),
-                Tables\Actions\EditAction::make(),
+               
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 // FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')

@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,7 +83,7 @@ class TransportResource extends Resource implements HasShieldPermissions
                     ->required()
                     ->disabled(request()->is('admin/transports/*/edit')),
                 Forms\Components\Select::make('vehicle_id')->label(trans('main.bus_name'))
-                    ->relationship('vehicle', 'car_name')
+                    ->relationship('vehicle', 'car_name', modifyQueryUsing: fn (Builder $query,?Model $record) => $query->where('is_active', true)->orWhere('id', $record?->vehicle_id))
                     ->required(),
                 Forms\Components\Select::make('transport_fee_id')->label(trans_choice('main.transport_fee',1))
                     ->relationship('transportFee', 'name')
@@ -131,6 +132,7 @@ class TransportResource extends Resource implements HasShieldPermissions
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(fn ($record) => null)
             ->filters([
                 //bus name
                 SelectFilter::make('vehicle_id')->label(trans_choice('main.bus_name',1))

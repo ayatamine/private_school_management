@@ -41,6 +41,8 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->font('Noto Kufi Arabic', provider: GoogleFontProvider::class)
+            ->profile()
+            ->passwordReset()
             ->brandLogo(asset('images/brandlogo.png'))
             ->favicon(asset('images/brandlogo.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

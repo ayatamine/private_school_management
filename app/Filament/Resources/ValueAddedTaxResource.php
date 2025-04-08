@@ -103,6 +103,7 @@ class ValueAddedTaxResource extends Resource implements HasShieldPermissions
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(fn ($record) => null)
             ->filters([
                 //
             ])

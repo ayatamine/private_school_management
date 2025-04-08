@@ -6,6 +6,7 @@ use Closure;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Course;
+use App\Models\Student;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\TuitionFee;
@@ -18,8 +19,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TuitionFeeResource\Pages;
 use App\Filament\Resources\TuitionFeeResource\RelationManagers;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class TuitionFeeResource extends Resource implements HasShieldPermissions
 {
@@ -152,7 +153,13 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
                 ->successRedirectUrl(fn (TuitionFee $replica): string => route('filament.admin.resources.tuition-fees.edit', [
                     'record' => $replica,
                 ])),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                ->visible(function(TuitionFee $record): bool {
+                    $students = Student::whereHas('semester', function($query) use ($record) {
+                        $query->where('course_id', $record->course_id);
+                    })->get();
+                    return $students->isEmpty();
+                }),
             ])
             ->bulkActions([
                 
@@ -161,7 +168,7 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
                     'table_header' => trans('main.menu').' '.trans_choice('main.tuition_fee',2)
                 ])->disableXlsx(),
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

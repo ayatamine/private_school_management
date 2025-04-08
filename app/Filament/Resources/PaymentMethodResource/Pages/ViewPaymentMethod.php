@@ -13,6 +13,9 @@ class ViewPaymentMethod extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Actions\DeleteAction::make()->visible(function($record){
+                return $record->expenses()->count() == 0 && $record->incomes()->count() == 0;
+            }),
         ];
     }
     protected function mutateFormDataBeforeFill(array $data): array

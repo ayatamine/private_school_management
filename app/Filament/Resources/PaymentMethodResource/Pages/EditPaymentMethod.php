@@ -13,7 +13,9 @@ class EditPaymentMethod extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->visible(function($record){
+                return $record->expenses()->count() == 0 && $record->incomes()->count() == 0;
+            }),
         ];
     }
     protected function mutateFormDataBeforeFill(array $data): array

@@ -238,7 +238,7 @@
                             {{$expense->transactionCategory->name}}
                         </td>
                         <td class="px-6 py-4   border">
-                            {{number_format($expense->value, 2, '.', ',')}}
+                            {{$expense->value}} {{trans('main.'.env('DEFAULT_CURRENCY'))}}
                         </td>
 
                         <td class="px-6 py-4   border">

@@ -13,7 +13,9 @@ class EditFinanceAccount extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->visible(function($record){
+                return $record->paymentMethods()->count() == 0 ;
+            }),
         ];
     }
 }

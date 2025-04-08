@@ -41,7 +41,14 @@ class Login extends BaseAuth
         $data = $this->form->getState();
      
         if (! Filament::auth()->attempt($this->getCredentialsFromFormData($data), $data['remember'] ?? false)) {
-            $this->throwFailureValidationException();
+            // $this->throwFailureValidationException();
+            Notification::make()
+                ->title('بيانات تسجيل الدخول غير صحيحة')
+                ->danger()
+                ->persistent()
+                ->send();
+
+            return null;
         }
 
         $user = Filament::auth()->user();
@@ -56,7 +63,7 @@ class Login extends BaseAuth
             ->title(trans('main.account_cannot_login'))
             ->danger()
             ->send();
-            $this->throwFailureValidationException();
+            return null;
         }
 
         session()->regenerate();

@@ -46,4 +46,9 @@ class CreateExpense extends CreateRecord
             return $this->halt();
         }
     }
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
 }
+

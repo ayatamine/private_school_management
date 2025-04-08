@@ -23,6 +23,9 @@ class Vehicle extends Model
         'insurance_expire_at',
         'periodic_inspection_expire_at',
         'documents',
+        'type',
+        'model',
+        'is_active',
     ];
 
     /**
@@ -36,5 +39,6 @@ class Vehicle extends Model
         'insurance_expire_at' => 'date',
         'periodic_inspection_expire_at' => 'date',
         'documents' => 'array',
+        'is_active' => 'boolean',
     ];
 }

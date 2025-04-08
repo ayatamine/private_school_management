@@ -61,7 +61,13 @@ class VehicleResource extends Resource implements HasShieldPermissions
                 Section::make('')
                 ->columns(2)
                 ->schema([
-                Forms\Components\TextInput::make('car_name')->label(trans('main.car_name'))
+                Forms\Components\TextInput::make('car_name')->label(trans('main.driver_name'))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('type')->label(trans('main.type'))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('model')->label(trans('main.model'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('plate_number')->label(trans('main.plate_number'))
@@ -79,7 +85,10 @@ class VehicleResource extends Resource implements HasShieldPermissions
                 Forms\Components\DatePicker::make('periodic_inspection_expire_at')->label(trans('main.periodic_inspection_expire_at'))
                     ->required(),
                 Forms\Components\FileUpload::make('documents')->label(trans('main.documents'))->multiple()->columnSpanFull()->preserveFilenames()->directory('vehicles'),
-                ])
+                Forms\Components\Toggle::make('is_active')->label(trans('main.activate'))
+                    ->default(true)
+                    ->required(),
+            ])
             ]);
     }
 
@@ -87,7 +96,13 @@ class VehicleResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('car_name')->label(trans('main.car_name'))
+                Tables\Columns\TextColumn::make('car_name')->label(trans('main.driver_name'))
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type')->label(trans('main.type'))
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('model')->label(trans('main.model'))
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('plate_number')->label(trans('main.plate_number'))
@@ -103,17 +118,17 @@ class VehicleResource extends Resource implements HasShieldPermissions
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('insurance_expire_at')->label(trans('main.insurance_expire_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('periodic_inspection_expire_at')->label(trans('main.periodic_inspection_expire_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans(key: 'main.updated_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
