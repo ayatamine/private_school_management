@@ -116,6 +116,7 @@ class UserResource extends Resource implements HasShieldPermissions
                     ->date()
                     ->sortable(),
             ])
+            ->recordUrl(fn ($record) => null)
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])

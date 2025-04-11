@@ -22,4 +22,8 @@ class EditTransportFee extends EditRecord
         $data['payment_partition_count'] = count($data['payment_partition']);
         return $data;
     }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getPages()::index();
+    }
 }

@@ -54,13 +54,13 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
             Action::make('termination1')
             ->color('primary')
             ->label(trans_choice('main.termination',1))
-            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && employeeHasPermission('create_student_termination_student::termination'))
+            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && !employeeHasPermission('create_student_termination_student::termination'))
             ->modalContent(new HtmlString("<p class='font-semibold text-red-500'>".trans('main.student_termination_balance_error')."</p>"))
             ->modalSubmitAction(false),
             Action::make('termination')
                     ->color('primary')
                     ->label(trans_choice('main.termination',1))
-                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0)   && employeeHasPermission('create_student_termination_student::termination'))
+                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0)   || employeeHasPermission('create_student_termination_student::termination'))
                     ->form([
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
                         Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))
@@ -70,10 +70,11 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                             ->columnSpanFull()
                             ->directory('termination_documents'),
                     ])
+                    ->requiresConfirmation()
                     ->action(function(array $arguments,array $data) {
                         try{
                             DB::beginTransaction();
-                            if($this->record->total_fees_rest != 0 && employeeHasPermission('terminate_student_private_student::termination'))
+                            if($this->record->total_fees_rest != 0 && !employeeHasPermission('terminate_student_private_student::termination') )
                             {
                                 Notification::make()
                                     ->title(trans('main.student_termination_balance_error'))
@@ -82,18 +83,18 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                                     ->send();
                                 return;
                             }
-                            $data['terminated_by'] = Auth::id();
-                            $data['terminated_semester_id'] = $this->record->semester_id;
-                            $this->record->update(['semester_id'=>null]);
-                            //what this will return
-                            $terminated_id = $this->record->termination()->create($data);
-                            DB::commit();
+                            // $data['terminated_by'] = Auth::id();
+                            // $data['terminated_semester_id'] = $this->record->semester_id;
+                            // $this->record->update(['semester_id'=>null]);
+                            // //what this will return
+                            // $terminated_id = $this->record->termination()->create($data);
+                            // DB::commit();
                             Notification::make()
                                                 ->title(trans('main.student_termination_success'))
                                                 ->icon('heroicon-o-document-text')
                                                 ->iconColor('success')
                                                 ->send();
-                            return redirect()->route('filament.admin.resources.student-terminations.view', $terminated_id);
+                            // return redirect()->route('filament.admin.resources.student-terminations.view', $terminated_id);
                         }
                         catch(\Exception $ex)
                         {

@@ -192,6 +192,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                     ->sortable(),
                
             ])
+            ->recordUrl(null)
             ->filters([
                 SelectFilter::make('payment_method')
                 ->relationship('paymentMethod', 'name')

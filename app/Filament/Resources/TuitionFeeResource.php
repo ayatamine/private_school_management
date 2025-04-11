@@ -142,6 +142,7 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
                         ->toggleable(isToggledHiddenByDefault: true),
                 
             ])
+            ->recordUrl(fn ($record) => null)
             ->filters([
                 //
             ])
