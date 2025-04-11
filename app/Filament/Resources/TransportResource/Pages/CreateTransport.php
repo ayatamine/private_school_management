@@ -18,6 +18,17 @@ class CreateTransport extends CreateRecord
       
             return $data;
     }
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    {  
+        foreach($data['transport_fees'] as $fee_id)
+        {
+            // $transport_fee = TransportFee::findOrFail($fee_id);
+            $data['transport_fee_id'] = $fee_id;
+          
+            $transport = parent::handleRecordCreation($data);
+        }
+        return $this->halt();
+    }
     protected function getRedirectUrl(): string
     {
         return static::getResource()::getUrl('index');

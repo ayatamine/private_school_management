@@ -99,8 +99,9 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                 Forms\Components\TextInput::make('value')->label(trans('main.value'))
                     ->required()
                     ->numeric()
+                    // ->inputMode('decimal')
                     ->afterStateUpdated(function (Set $set, ?string $state) {
-                        $numberToWords = new NumberToWords();
+                        $numberToWords = new \NumberToWords\NumberToWords();
                             // build a new number transformer using the RFC 3066 language identifier
                             $numberTransformer = $numberToWords->getNumberTransformer('ar');
                             $set('value_in_alphabetic',$numberTransformer->toWords($state));

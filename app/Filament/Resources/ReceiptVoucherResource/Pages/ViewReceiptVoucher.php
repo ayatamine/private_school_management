@@ -25,7 +25,7 @@ class ViewReceiptVoucher extends ViewRecord
     }
     public function mutateFormDataBeforeFill(array $data): array
     {
-        $data['value'] =number_format($data['value'], 2, '.', ',');
+        // $data['value'] =number_format($data['value'], 2, '.', ',');
         return $data;
     }
 }

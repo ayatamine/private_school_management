@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\TransportFee;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Student;
@@ -74,8 +75,9 @@ class TransportResource extends Resource implements HasShieldPermissions
                 ->columns(2)
                 ->schema([
                 Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                    ->relationship('student', 'first_name',
-                        modifyQueryUsing: fn (Builder $query) => $query->doesntHave('transport')
+                    ->relationship(
+                        name: 'student',
+                        modifyQueryUsing: fn(Builder $query) => $query->latest(),
                     )
                     ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->first_name} {$record->middle_name} #{$record->registration_number}")
                     ->searchable(['registration_number','first_name', 'middle_name'])
@@ -85,8 +87,10 @@ class TransportResource extends Resource implements HasShieldPermissions
                 Forms\Components\Select::make('vehicle_id')->label(trans('main.bus_name'))
                     ->relationship('vehicle', 'car_name', modifyQueryUsing: fn (Builder $query,?Model $record) => $query->where('is_active', true)->orWhere('id', $record?->vehicle_id))
                     ->required(),
-                Forms\Components\Select::make('transport_fee_id')->label(trans_choice('main.transport_fee',1))
-                    ->relationship('transportFee', 'name')
+                Forms\Components\Select::make('transport_fees')->label(trans_choice('main.transport_fee',1))
+                    ->options(TransportFee::all()->pluck('name', 'id')->toArray())
+                    ->preload()
+                    ->multiple()
                     ->required(),
                 Forms\Components\DatePicker::make('created_at')->label(trans( 'main.registration_date'))
             ])
