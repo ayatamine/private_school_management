@@ -123,6 +123,7 @@ class VehicleResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('periodic_inspection_expire_at')->label(trans('main.periodic_inspection_expire_at'))
                     ->date('Y-m-d')
                     ->sortable(),
+                Tables\Columns\ToggleColumn::make('is_active')->label(trans('main.activate')),
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.created_at'))
                     ->date('Y-m-d')
                     ->sortable()

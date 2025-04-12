@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\TransportFee;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Student;
+use App\Models\Vehicle;
 use Filament\Forms\Form;
 use App\Models\Transport;
 use Filament\Tables\Table;
+use App\Models\TransportFee;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
@@ -86,11 +87,12 @@ class TransportResource extends Resource implements HasShieldPermissions
                     ->disabled(request()->is('admin/transports/*/edit')),
                 Forms\Components\Select::make('vehicle_id')->label(trans('main.bus_name'))
                     ->relationship('vehicle', 'car_name', modifyQueryUsing: fn (Builder $query,?Model $record) => $query->where('is_active', true)->orWhere('id', $record?->vehicle_id))
+                    ->getOptionLabelFromRecordUsing(fn (Vehicle $record) => "{$record->plate_number} - {$record->car_name}")
                     ->required(),
-                Forms\Components\Select::make('transport_fees')->label(trans_choice('main.transport_fee',1))
-                    ->options(TransportFee::all()->pluck('name', 'id')->toArray())
-                    ->preload()
-                    ->multiple()
+                Forms\Components\Select::make('transport_fee_id')->label(trans_choice('main.transport_fee',1))
+                    // ->options(TransportFee::all()->pluck('name', 'id')->toArray())
+                    ->relationship('transportFee', 'name')                    ->preload()
+                    // ->multiple()
                     ->required(),
                 Forms\Components\DatePicker::make('created_at')->label(trans( 'main.registration_date'))
             ])

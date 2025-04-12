@@ -72,7 +72,12 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                     ->schema([ Grid::make()
                      ->schema([
                         Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
-                            ->relationship('student', 'username')
+                            ->relationship(
+                                name: 'student',
+                                modifyQueryUsing: fn(Builder $query) => $query->latest(),
+                            )
+                            ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->first_name} {$record->middle_name} #{$record->registration_number}")
+                            ->preload()
                             ->disabled()
                             ->required(),
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),

@@ -179,8 +179,8 @@
                     $total_summary = session()->get('total_summary');
                     if($total_summary)
                     {
-                    $total_summary->total = $total_summary->total + number_format(array_sum($total), 2, '.', ',');
-                    $total_summary->total_fees_to_pay = $total_summary->total_fees_to_pay + number_format(array_sum($total_fees_to_pay), 2, '.', ',');
+                    $total_summary->total = floatval($total_summary->total) + array_sum($total);
+                    $total_summary->total_fees_to_pay = floatval($total_summary->total_fees_to_pay) + array_sum($total_fees_to_pay);
                     session(['total_summary' => $total_summary]);
                     }
                 @endphp

@@ -91,7 +91,7 @@ class ValueAddedTaxResource extends Resource implements HasShieldPermissions
                     ->formatStateUsing(fn (string $state) => trans("% $state"))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('applies_at')->label(trans('main.applies_at'))
-                    ->date()
+                    ->date('Y-m-d')
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('is_saudi_student_exepmted')->label(trans('main.is_saudi_excluded')),
                 Tables\Columns\TextColumn::make('created_at')
@@ -122,7 +122,9 @@ class ValueAddedTaxResource extends Resource implements HasShieldPermissions
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()->visible(function ($record) {
+                    return $record->applies_at > now();
+                }),
             ])
             ->bulkActions([
                 FilamentExportBulkAction::make('export')->label(trans('main.print'))->color('info')

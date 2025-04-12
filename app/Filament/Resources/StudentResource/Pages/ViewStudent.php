@@ -83,12 +83,12 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
                                     ->send();
                                 return;
                             }
-                            // $data['terminated_by'] = Auth::id();
-                            // $data['terminated_semester_id'] = $this->record->semester_id;
-                            // $this->record->update(['semester_id'=>null]);
-                            // //what this will return
-                            // $terminated_id = $this->record->termination()->create($data);
-                            // DB::commit();
+                            $data['terminated_by'] = Auth::id();
+                            $data['terminated_semester_id'] = $this->record->semester_id;
+                            $this->record->update(['semester_id'=>null]);
+                            //what this will return
+                            $terminated_id = $this->record->termination()->create($data);
+                            DB::commit();
                             Notification::make()
                                                 ->title(trans('main.student_termination_success'))
                                                 ->icon('heroicon-o-document-text')

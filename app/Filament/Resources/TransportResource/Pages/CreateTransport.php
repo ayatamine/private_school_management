@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\TransportResource\Pages;
 
 use Filament\Actions;
+use App\Models\Transport;
+use App\Models\TransportFee;
 use Illuminate\Support\Facades\Auth;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\TransportResource;
-use App\Models\TransportFee;
 
 class CreateTransport extends CreateRecord
 {
@@ -18,17 +19,17 @@ class CreateTransport extends CreateRecord
       
             return $data;
     }
-    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
-    {  
-        foreach($data['transport_fees'] as $fee_id)
-        {
-            // $transport_fee = TransportFee::findOrFail($fee_id);
-            $data['transport_fee_id'] = $fee_id;
+    // protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    // {  
+    //     foreach($data['transport_fees'] as $fee_id)
+    //     {
+    //         // $transport_fee = TransportFee::findOrFail($fee_id);
+    //         $data['transport_fee_id'] = $fee_id;
           
-            $transport = parent::handleRecordCreation($data);
-        }
-        return $this->halt();
-    }
+    //         $transport = Transport::create($data);
+    //     }
+    //     return $this->halt();
+    // }
     protected function getRedirectUrl(): string
     {
         return static::getResource()::getUrl('index');

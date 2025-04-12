@@ -82,7 +82,7 @@
                         </td>
                         
                         <td class="px-6 py-4 border" >
-                            {{number_format($payment->value, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                            {{number_format(floatval($payment->value), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         
                     </tr> 
@@ -132,7 +132,7 @@
                         </td>
                         
                         <td class="px-6 py-4 border" >
-                            {{number_format($income->value, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                            {{number_format(floatval($income->value), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         <td class="px-6 py-4  border">
                             {{\Carbon\Carbon::createFromDate($income->created_at)->isoFormat('Y-M-DD')}}
@@ -190,7 +190,7 @@
                         </td>
                         
                         <td class="px-6 py-4 border" >
-                            {{number_format($expense->value, 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
+                            {{number_format(floatval($expense->value), 2, '.', ',')}} {{trans("main.".env('DEFAULT_CURRENCY'))}}
                         </td>
                         <td class="px-6 py-4  border">
                             {{\Carbon\Carbon::createFromDate($expense->created_at)->isoFormat('Y-M-DD')}}

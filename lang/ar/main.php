@@ -143,7 +143,7 @@ return [
     'activate_concession_fee'=>'تفعيل الخصم',
     'percentage'=>'نسبة مئوية',
     'a_value'=>'قيمة',
-    'bus_name'=>'اسم الباص',
+    'bus_name'=>'اسم السائق',
     'bus_fees'=>'رسوم الباص',
     'registered_by'=>'مسجل البيانات',
     'terminated_by'=>'مسجل البيانات',
