@@ -116,6 +116,11 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                 Tables\Columns\TextColumn::make('termination_date')->label(trans('main.termination_date'))
                     ->date('Y-m-d')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
+                    ->badge()
+                    ->color('danger')
+                    ->state(trans('main.unactive_state'))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('termination_reason')->label(trans('main.termination_reason'))
                     ->searchable()
                     ->limit(50)
@@ -129,6 +134,7 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
                 // ->icon('icon-eye')
                 // ->color('info')
                 // ->url(fn(Student $record)=> StudentResource::getUrl('view',[$record])),
+                approve_reject_student_termination(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Action::make(trans('main.restore'))

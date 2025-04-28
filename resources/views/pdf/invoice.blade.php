@@ -332,7 +332,7 @@
                             0
                          </td>
                          <td  >
-                            0
+                            {{number_format($partition['value'], 2, '.', ',')}}
                          </td>
                          @endif
                         @if($invoice->student->nationality != "saudian")
@@ -385,7 +385,7 @@
         @endif
 
         {{-- start of transport fees --}}
-        @if(isset($invoice->student->transportFees))
+        @if(isset($invoice->student->transportFees) && count($invoice->student->transportFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.transport_fee',2)}}</strong>
         </h5>
@@ -536,7 +536,7 @@
         </table>
         @endif
         {{-- start other fees --}}
-        @if(isset($invoice->student->otherFees))
+        @if(isset($invoice->student->otherFees) && count($invoice->student->otherFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.general_fee',2)}}</strong>
         </h5>

@@ -321,7 +321,7 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 ],
                 'cairo' => [ // Using Amiri font
                     'R' => 'Cairo-Regular.ttf',
-                    'B' => 'Cairo-Semibold.ttf',
+                    'B' => 'Cairo-SemiBold.ttf',
                     'useOTL' => 0xFF, // Disable OTL features
                     'useKashida' => 75, // Disable Kashida
                     'direction' => 'rtl', // Disable Kashida

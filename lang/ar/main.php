@@ -395,6 +395,7 @@ return [
      'total_payments'=>'اجمالي المدفوعات',
      'national_id_n'=>'رقم الهوية',
      'active_state'=>'نشط',
+     'unactive_state'=>'غير نشط',
      'finished_state'=>'منتهي',
      'no_employees'=>'لايوجد اي عاملين',
      'job_name_l'=>'المسمى الوظيفي',
@@ -410,4 +411,5 @@ return [
      'show_in_incomes'=>'إيرادات',
      'type'=>'النوع',
      'model'=>'الموديل',
+     'termination_approval_date'=>'تاريخ القبول',
      ];

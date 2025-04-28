@@ -51,16 +51,16 @@ class ViewStudent extends ViewRecord  implements  HasActions,HasForms
 
             }),
             //if balance is ok
-            Action::make('termination1')
-            ->color('primary')
-            ->label(trans_choice('main.termination',1))
-            ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && !employeeHasPermission('create_student_termination_student::termination'))
-            ->modalContent(new HtmlString("<p class='font-semibold text-red-500'>".trans('main.student_termination_balance_error')."</p>"))
-            ->modalSubmitAction(false),
+            // Action::make('termination1')
+            // ->color('primary')
+            // ->label(trans_choice('main.termination',1))
+            // ->visible($this->record->termination_date == null && ($this->record->total_fees_rest !=0)  && !employeeHasPermission('create_student_termination_student::termination'))
+            // ->modalContent(new HtmlString("<p class='font-semibold text-red-500'>".trans('main.student_termination_balance_error')."</p>"))
+            // ->modalSubmitAction(false),
             Action::make('termination')
                     ->color('primary')
                     ->label(trans_choice('main.termination',1))
-                    ->visible($this->record->termination_date == null && ($this->record->total_fees_rest ==0)   || employeeHasPermission('create_student_termination_student::termination'))
+                    ->visible($this->record->termination_date == null || employeeHasPermission('create_student_termination_student::termination'))
                     ->form([
                         Forms\Components\DatePicker::make('termination_date')->label(trans('main.termination_date'))->required(),
                         Forms\Components\Textarea::make('termination_reason')->label(trans('main.termination_reason'))

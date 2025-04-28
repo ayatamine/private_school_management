@@ -195,8 +195,8 @@
                 @php
                     $total_summary = (object) [
                         'academic_year' => $academic_years && count($academic_years) > 0 ? $academic_years[0] : null,
-                        'total' => number_format(array_sum($grand_total) , 2, '.', ','),
-                        'total_fees_to_pay' => number_format(array_sum($total_fees_to_pay), 2, '.', ','),
+                        'total' => array_sum($grand_total) ,
+                        'total_fees_to_pay' => array_sum($total_fees_to_pay),
                     ];
                     session(['total_summary' => $total_summary]);
                 @endphp 

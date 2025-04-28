@@ -10,6 +10,7 @@ use App\Models\Student;
 use Filament\Forms\Get;
 use App\Models\Employee;
 use App\Models\GeneralFee;
+use App\Models\StudentTermination;
 use App\Models\TuitionFee;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\DB;
@@ -129,6 +130,9 @@ if(!function_exists('approve_reject_student'))
         ->form($form)
         ->action(fn(Student $Student, array $data)=>approve_reject_action($Student, $data));
     }
+}
+if(!function_exists('approve_reject_action'))
+{
     function approve_reject_action(Student $Student,array $data){
             
         try{
@@ -210,8 +214,10 @@ if(!function_exists('approve_reject_student'))
                 ->send();
         }
     }
-   
+}
 
+if(!function_exists('calculateTuitionFees'))
+{
     function calculateTuitionFees($record)
     {
         $grand_total = $total = $value_after_discount = $value_after_tax = $total_fees_to_pay = [];
@@ -288,6 +294,9 @@ if(!function_exists('approve_reject_student'))
 
         return null;
     }
+}
+if(!function_exists('calculateTransportFees'))
+{
     function calculateTransportFees($record)
     {
         $total = $value_after_discount = $value_after_tax = $total_fees_to_pay = [];
@@ -356,6 +365,9 @@ if(!function_exists('approve_reject_student'))
 
         return null;
     }
+}
+if(!function_exists('calculateGeneralFees'))
+{
     function calculateGeneralFees($record)
     {
         $grand_total = $total = $value_after_discount = $value_after_tax = $total_fees_to_pay = [];
@@ -424,7 +436,9 @@ if(!function_exists('approve_reject_student'))
 
         return null;
     }
-
+}
+if(!function_exists('calculateAllFees'))
+{
     function calculateAllFees($student)
     {
         // Calculate each fee type
@@ -468,11 +482,132 @@ if(!function_exists('approve_reject_student'))
             ]
         ];
     }
+
+}
+if(!function_exists('reverse_number_format'))
+{
     function reverse_number_format($formatted_number, $decimal_separator = ',', $thousands_separator = ',') {
         $number = str_replace($thousands_separator, '', $formatted_number);
         
         $number = str_replace($decimal_separator, '.', $number);
         
         return (float)$number;
+    }
+}
+if(!function_exists('approve_reject_student_termination'))
+{
+    
+    function approve_reject_student_termination($is_table_action=true):Tables\Actions\Action | \Filament\Infolists\Components\Actions\Action
+    {
+        $form =[
+            Forms\Components\DatePicker::make(name: 'termination_approval_date')->label(trans('main.termination_approval_date'))
+            ->default(fn(StudentTermination $studentTermination)=>$studentTermination->termination_approval_date)
+            ->required()
+            ->hidden(fn(Get $get)=>$get('status') == "rejected"),  
+        ];
+        if($is_table_action) 
+        {
+            return    Tables\Actions\Action::make('registeration_action') 
+                        ->label(trans('main.registeration_action'))
+                        ->visible(fn(StudentTermination $studentTermination)=>$studentTermination->termination_approval_date == null)
+                        ->icon('heroicon-o-check')
+                        ->color('primary')
+                        ->form($form)
+                        ->requiresConfirmation()
+                        ->closeModalByClickingAway(false)
+                        ->action(fn(StudentTermination $StudentTermination, array $data)=>complete_termination_process($StudentTermination, $data));
+        }
+
+        return   \Filament\Infolists\Components\Actions\Action::make('registeration_action')
+        ->label(trans('main.registeration_action'))
+        ->visible(employeeHasPermission('approve_registeration_newest::student'))
+        ->icon('heroicon-o-check')
+        ->color('primary')
+        ->form($form)
+        ->action(fn(StudentTermination $StudentTermination, array $data)=>complete_termination_process($StudentTermination, $data));
+    }
+}
+if(!function_exists('complete_termination_process'))
+{
+    function complete_termination_process(StudentTermination $StudentTermination,array $data){
+            dd('sdfsd');
+        try{
+            DB::beginTransaction();
+            $StudentTermination->update($data);
+            if($data['status'] == "approved")
+            {
+                // add tuiton fees
+                $tuitionFee = TuitionFee::whereCourseId($Student?->semester?->course_id)->first();
+                if(!$Student?->semester)
+                {
+                    Notification::make()
+                        ->title(trans('main.student_not_yet_attached_to_course'))
+                        ->icon('heroicon-o-document-text')
+                        ->iconColor('danger')
+                        ->send();
+                    return redirect()->route('filament.admin.resources.newest-students.edit',['record'=>$Student?->id]);
+                }
+                if($tuitionFee)
+                {
+                    $Student->tuitionFees()->sync($tuitionFee->id);
+                }
+                // add other fees
+                // add other fees
+                $generalFees = GeneralFee::whereCourseId($Student?->semester?->course_id)->get();
+                if($generalFees)
+                {
+                    foreach($generalFees as $fee)
+                    {
+                        $Student->otherFees()->sync($fee->id);
+                        $discounts = $fee->payment_partition;
+                        $discounts[0]['discount_type'] = "percentage";
+                        $discounts[0]['discount_value'] = 0;
+                        DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$fee->id,GeneralFee::class,$Student->id]);
+
+                    }
+                    
+                }
+                // add concession fees
+            
+                $discounts = $tuitionFee->payment_partition;
+               
+                $discounts[0]['discount_type'] = "percentage";
+                $discounts[0]['discount_value'] = 0;
+                
+                if($tuitionFee) DB::update('update student_fee set discounts = ? where feeable_id = ? AND feeable_type = ? AND student_id = ?',[json_encode($discounts),$tuitionFee->id,TuitionFee::class,$Student->id]);
+                
+              
+                //create invoice for student
+                $academic_year_id = $Student->semester?->academicYear?->id;
+                $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
+                if(!$invoice)
+                {
+                    $invoice =Invoice::create([
+                        'number'=>$Student->semester?->academicYear?->name."".$Student->registration_number,
+                        'name' => trans('main.fees_invoice')." ".$Student->semester?->academicYear?->name,
+                        'student_id'=>$Student->id,
+                        'academic_year_id'=>$academic_year_id,
+                    ]);
+                    $Student->invoices()->save($invoice);
+                }
+            }
+                Notification::make()
+                    ->title(trans('main.student_status_changed_successfully'))
+                    ->icon('heroicon-o-document-text')
+                    ->iconColor('success')
+                    ->send();
+                DB::commit();
+            
+        }
+        catch(Exception $ex)
+        {
+            DB::rollBack();
+            dd($ex);
+            Notification::make()
+                ->title($ex)
+                ->icon('heroicon-o-document-text')
+                ->iconColor('danger')
+                ->send();
+        }
     }
 }

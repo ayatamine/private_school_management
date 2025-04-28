@@ -359,6 +359,7 @@
               
             </tbody>
         </table>
+        @if(isset($student->transportFees) && count($student->transportFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.transport_fee',2)}}</strong>
         </h5>
@@ -511,6 +512,10 @@
                
             </tbody>
         </table>
+        @endif
+
+        {{-- general fees --}}
+        @if(isset($student->otherFees) && count($student->otherFees))
         <h5 class="text-uppercase cool-gray">
             <strong style="text-align: right;direction: rtl">{{ trans_choice('main.general_fee',2)}}</strong>
         </h5>
@@ -663,6 +668,7 @@
                
             </tbody>
         </table>
+        @endif
         <br>
         <table style="width: 100%;border-collapse: collapse;">
             <tbody>

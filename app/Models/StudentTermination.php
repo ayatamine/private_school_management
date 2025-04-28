@@ -23,6 +23,7 @@ class StudentTermination extends Model
         'termination_document',
         'terminated_by',
         'terminated_semester_id',
+        'termination_approval_date',
     ];
 
     /**
@@ -36,6 +37,7 @@ class StudentTermination extends Model
         'terminated_by' => 'integer',
         'terminated_semester_id' => 'integer',
         'termination_date' => 'date',
+        'termination_approval_date' => 'date',
     ];
     public function student(): BelongsTo
     {
