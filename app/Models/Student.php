@@ -13,6 +13,7 @@ use App\Traits\HasPayments;
 use App\Models\TransportFee;
 use App\Models\ReceiptVoucher;
 use App\Models\StudentTermination;
+use App\Models\StudentSemester;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -66,9 +67,7 @@ class Student extends Model
         'birth_date',
         'nationality',
         'email',
-        'semester_id',
         'parent_id',
-        // 'is_approved',
         'approved_at',
         'registered_by',
         'registration_number',
@@ -90,7 +89,6 @@ class Student extends Model
     protected $casts = [
         'id' => 'integer',
         'birth_date' => 'date',
-        'semester_id' => 'integer',
         'parent_id' => 'integer',
         'approved_at' => 'timestamp',
         'registered_by' => 'integer',
@@ -98,11 +96,6 @@ class Student extends Model
         'opening_balance' => 'double',
     ];
     protected $appends=['username','balance','total_fees_after_due_date','total_fees_rest','current_balance','transport_registration_date'];
-    public function semester(): BelongsTo
-    {
-        return $this->belongsTo(Semester::class);
-    }
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(ParentModel::class,'parent_id','id');
@@ -208,5 +201,45 @@ class Student extends Model
     public function termination():HasOne
     {
         return $this->hasOne(StudentTermination::class);
+    }
+
+    public function semesters()
+    {
+        return $this->hasMany(StudentSemester::class)->with('semester','academicYear')
+        ->orderBy('enrollment_date','asc');
+    }
+
+    public function currentSemester()
+    {
+        return $this->hasOne(StudentSemester::class)
+            ->where('is_current', true)
+            ->with('semester');
+    }
+
+    public function promoteToNextSemester($newSemesterId, $notes = null)
+    {
+        // Get current semester
+        $currentSemester = $this->currentSemester;
+        
+        if (!$currentSemester) {
+            throw new \Exception('Student has no current semester');
+        }
+
+        // Mark current semester as completed
+        $currentSemester->update([
+            'is_current' => false,
+            'completion_date' => now(),
+            'is_promoted' => true,
+            'promotion_notes' => $notes
+        ]);
+
+        // Create new semester entry
+        return StudentSemester::create([
+            'student_id' => $this->id,
+            'semester_id' => $newSemesterId,
+            'academic_year_id' => Semester::find($newSemesterId)->academic_year_id,
+            'enrollment_date' => now(),
+            'is_current' => true
+        ]);
     }
 }

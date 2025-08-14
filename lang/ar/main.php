@@ -412,4 +412,7 @@ return [
      'type'=>'النوع',
      'model'=>'الموديل',
      'termination_approval_date'=>'تاريخ القبول',
+     'show_fees'=>'عرض الرسوم',
+     'print_fees'=>'طباعة الرسوم',
+     'is_upgrade_active'=>'تفعيل الترفيع',
      ];

@@ -13,7 +13,7 @@
         "barryvdh/laravel-dompdf": "^2.2",
         "bezhansalleh/filament-shield": "^3.2",
         "carlos-meneses/laravel-mpdf": "^2.1",
-        "filament/filament": "3.2",
+        "filament/filament": "^3.4",
         "guzzlehttp/guzzle": "^7.2",
         "khaled.alshamaa/ar-php": "^6.3",
         "kwn/number-to-words": "^2.11",

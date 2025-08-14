@@ -525,52 +525,53 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                 ]),
                 \Filament\Infolists\Components\Section::make(trans('main.academic_data'))
-                        ->columns(6)
                         ->id('parent-sectidon')
                         ->schema([
-                            TextEntry::make('registration_number')->label(trans('main.id_ne'))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
-                            TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold),
-                ]),
-                \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
-                        ->id('tuition_fee-section')
-                        ->schema([
+                            ViewEntry::make('semesters')->label(trans_choice('main.academic_data',2))->view('infolists.components.view-student-academic-data')
 
-                                ViewEntry::make('tuitionFees')->label(trans_choice('main.tuition_fee',2))->view('infolists.components.view-student-tuition-fees')
-                                // ->registerActions([
-                                //     Action::make('editPartitions')
-                                //         ->label(trans('main.edit_partitions'))
-                                //         ->form([
-                                //             Forms\Components\Select::make('name')
-                                //                 ->required(),
-                                //         ])
-                                //         ->action(function (array $data, Student $record) {
-                                //             $record->status()->create($data);
-                                //         }),
-                                // ]),
-                        ]),
-                \Filament\Infolists\Components\Section::make(trans_choice('main.transport_fee',2))
-                        ->id('transport_fee-section')
-                        ->schema([
-                            TextEntry::make('transport_registration_date')
-                            ->label(trans('main.transport_registeration_date'))
-                            ->formatStateUsing(fn($state)=> $state!='' ? $state : trans('main.not_registered_yet') )
-                            ->date('Y-m-d')->weight(FontWeight::Bold),
-                                ViewEntry::make('transportFees')->label(trans_choice('main.transport_fee',2))->view('infolists.components.view-student-transport-fee')
-                        ]),
-                \Filament\Infolists\Components\Section::make(trans_choice('main.general_fee',2))
-                        ->id('general_fee-section')
-                        ->schema([
-                                ViewEntry::make('otherFees')->label(trans_choice('main.general_fee',2))->view('infolists.components.view-student-general-fee')
-                        ]),
-                \Filament\Infolists\Components\Section::make(trans('main.account_ballance_actual'))
-                        ->id('account_ballance_actual-section')
-                        ->schema([
-                                ViewEntry::make('summary')->label(trans('main.account_ballance_actual'))->view('infolists.components.total-fees-summary')
-                        ]),
+                            // TextEntry::make('registration_number')->label(trans('main.id_ne'))->weight(FontWeight::Bold),
+                            // TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
+                            // TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
+                            // TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
+                            // TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
+                            // TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold),
+                ]),
+                // \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
+                //         ->id('tuition_fee-section')
+                //         ->schema([
+
+                //                 ViewEntry::make('tuitionFees')->label(trans_choice('main.tuition_fee',2))->view('infolists.components.view-student-tuition-fees')
+                //                 // ->registerActions([
+                //                 //     Action::make('editPartitions')
+                //                 //         ->label(trans('main.edit_partitions'))
+                //                 //         ->form([
+                //                 //             Forms\Components\Select::make('name')
+                //                 //                 ->required(),
+                //                 //         ])
+                //                 //         ->action(function (array $data, Student $record) {
+                //                 //             $record->status()->create($data);
+                //                 //         }),
+                //                 // ]),
+                //         ]),
+                // \Filament\Infolists\Components\Section::make(trans_choice('main.transport_fee',2))
+                //         ->id('transport_fee-section')
+                //         ->schema([
+                //             TextEntry::make('transport_registration_date')
+                //             ->label(trans('main.transport_registeration_date'))
+                //             ->formatStateUsing(fn($state)=> $state!='' ? $state : trans('main.not_registered_yet') )
+                //             ->date('Y-m-d')->weight(FontWeight::Bold),
+                //                 ViewEntry::make('transportFees')->label(trans_choice('main.transport_fee',2))->view('infolists.components.view-student-transport-fee')
+                //         ]),
+                // \Filament\Infolists\Components\Section::make(trans_choice('main.general_fee',2))
+                //         ->id('general_fee-section')
+                //         ->schema([
+                //                 ViewEntry::make('otherFees')->label(trans_choice('main.general_fee',2))->view('infolists.components.view-student-general-fee')
+                //         ]),
+                // \Filament\Infolists\Components\Section::make(trans('main.account_ballance_actual'))
+                //         ->id('account_ballance_actual-section')
+                //         ->schema([
+                //                 ViewEntry::make('summary')->label(trans('main.account_ballance_actual'))->view('infolists.components.total-fees-summary')
+                //         ]),
 
                 \Filament\Infolists\Components\Section::make(trans('main.payments'))
                         ->id('payments-section')

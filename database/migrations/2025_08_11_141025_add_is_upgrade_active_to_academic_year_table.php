@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payment_methods', function (Blueprint $table) {
-            // $table->boolean('add_refrence_number')->default(false);
+        Schema::table('academic_years', function (Blueprint $table) {
+            
+            $table->boolean('is_upgrade_active')->default(false);
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payment_methods', function (Blueprint $table) {
-            $table->dropColumn('add_refrence_number');
+        Schema::table('academic_years', function (Blueprint $table) {
+            $table->dropColumn('is_upgrade_active');
         });
     }
 };

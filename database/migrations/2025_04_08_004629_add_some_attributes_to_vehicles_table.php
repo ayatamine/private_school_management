@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->string('type')->nullable();
-            $table->string('model')->nullable();
-            $table->boolean('is_active')->default(true);
+            // $table->string('type')->nullable();
+            // $table->string('model')->nullable();
+            // $table->boolean('is_active')->default(true);
         });
     }
 

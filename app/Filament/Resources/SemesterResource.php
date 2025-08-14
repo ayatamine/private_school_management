@@ -67,7 +67,7 @@ class SemesterResource extends Resource implements HasShieldPermissions
                 ->schema([
                 Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                     ->relationship('academicYear', 'name')
-                    ->default(AcademicYear::whereIsDefault(true)->first()->id)
+                    ->default(AcademicYear::whereIsDefault(true)->first()?->id)
                     ->required()
                     // ->live()
                     // ->afterStateUpdated(function (Set $set, $state) {
@@ -101,6 +101,9 @@ class SemesterResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) =>
+                $query->whereHas('academicYear', fn ($q) => $q->where('is_default', true))
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice('main.academic_year',1))
                     ->sortable(),

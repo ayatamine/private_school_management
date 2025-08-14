@@ -6,10 +6,11 @@ use Filament\Panel;
 use App\Models\Student;
 use App\Models\Employee;
 use App\Models\ParentModel;
+use Illuminate\Notifications\Notifiable;
+
 use Filament\Models\Contracts\HasName;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Notifications\Notification;
-use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Spatie\Permission\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,7 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends  Authenticatable implements FilamentUser, HasName
 {
-    use HasFactory, HasRoles,SoftDeletes, HasPermissions, Notifiable;
+    use HasFactory, HasRoles,SoftDeletes, HasPermissions,Notifiable;
 
     /**
      * The attributes that are mass assignable.

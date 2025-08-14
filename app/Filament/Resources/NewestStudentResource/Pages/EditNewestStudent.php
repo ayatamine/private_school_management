@@ -4,8 +4,11 @@ namespace App\Filament\Resources\NewestStudentResource\Pages;
 
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Student;
 use App\Models\Semester;
 use App\Models\ParentModel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\NewestStudentResource;
 
@@ -29,15 +32,17 @@ class EditNewestStudent extends EditRecord
         $data['email'] = $user->email;
 
         $data['birth_date'] = date('Y-m-d' ,strtotime($data['birth_date']));
-
-        if( $data['semester_id'])
+        //get last registration semester
+        $data['semester_id'] = $this->record->semesters()->orderBy('id', 'desc')->first()->semester_id;
+       
+        if( $data['semester_id'] && $data['semester_id'] != "")
         {
             $data['academic_year_id'] = Semester::find($data['semester_id'])->academic_year_id;
             $data['academic_stage_id'] = Semester::find($data['semester_id'])->course->academic_stage_id;
             $data['course_id'] = Semester::find($data['semester_id'])->course_id;
 
         }
-       
+
         
         $parent = ParentModel::find($data['parent_id']);
         $data['parent_relation']  = $parent?->relation ;
@@ -80,6 +85,81 @@ class EditNewestStudent extends EditRecord
 
         return $data;
 
+    }
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {     
+        
+            
+            try{
+                DB::beginTransaction();
+                $Student = $record;
+               
+                unset($data['national_id']);
+                $Student->user->update([
+                    'gender' =>$data['gender'],
+                    'phone_number' =>$data['phone_number'],
+                    'email' =>$data['email'],
+                    'password' => isset($data['password']) ? bcrypt($data['password']) :bcrypt('123456')
+                ]);
+                foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
+                    unset($data[$value]);
+                }
+                $Student->semesters()->create([
+                    'semester_id' => $data['semester_id'],
+                    'enrollment_date' => now(),
+                ]);
+                $Student->update([
+                    "created_at" =>$data['created_at'],
+                    // "academic_year_id" =>$data['academic_year_id'],
+                    // "semester_id" =>$data['semester_id'],
+                    "parent_id" =>$data['parent_id'],
+                    // "opening_balance" =>$data['opening_balance'],
+                    // "finance_document" =>$data['finance_document'],
+                    // "note" =>$data['note'],
+                ]);
+                DB::commit();
+                DB::beginTransaction();
+                //add tuiton fees
+                // $tuitionFee = TuitionFee::whereCourseId($Student?->semester()?->course_id)->first();
+                // if($tuitionFee)
+                // {
+                //     $Student->tuitionFees()->sync($tuitionFee->id);
+                // }
+                //  //create invoice for student
+                // $academic_year_id = $data['academic_year_id'];
+                // $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
+                // if(!$invoice)
+                // {
+                //     $invoice =Invoice::create([
+                //         'number'=>$Student->semester?->academicYear?->name."".$Student->registration_number,
+                //         'name' => trans('main.fees_invoice')." ".$Student->course?->academicYear?->name,
+                //         'student_id'=>$Student->id,
+                //         'academic_year_id'=>$academic_year_id,
+                //     ]);
+                //     $Student->invoices()->save($invoice);
+                // }
+
+                $data = $Student->toArray();
+                Notification::make()
+                            ->title(trans('main.student_registered_successfully'))
+                            ->icon('heroicon-o-document-text')
+                            ->iconColor('success')
+                            ->send();
+                DB::commit();
+            }
+            catch(\Exception $ex)
+            {
+                DB::rollBack();
+                        Notification::make()
+                            ->title($ex->getMessage())
+                            ->icon('heroicon-o-document-text')
+                            ->iconColor('danger')
+                            ->send();
+            }
+            $this->halt();
+            return [];
+        
+        
     }
     protected function getRedirectUrl(): string
     {

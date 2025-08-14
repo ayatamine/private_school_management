@@ -22,6 +22,7 @@ class CreateNewestStudent extends CreateRecord
     {     
         if($data['new_student'] == true)
         {
+            
             try{
                 DB::beginTransaction();
                 $user = User::create([
@@ -36,6 +37,12 @@ class CreateNewestStudent extends CreateRecord
                 $data['nationality'] = $data['nationality'] =="saudian" ? $data['nationality'] : $data['nationality2'];
 
                 $student = Student::create($data);
+                //register student to semester
+              
+                $student->semesters()->create([
+                    'semester_id' => $data['semester_id'],
+                    'enrollment_date' => now(),
+                ]);
             }
             catch(\Exception $ex)
             {
@@ -62,8 +69,9 @@ class CreateNewestStudent extends CreateRecord
             try{
                 DB::beginTransaction();
                 $Student = Student::findOrFail(intval($data['registration_number']));
+               
+                unset($data['national_id']);
                 $Student->user->update([
-                    'national_id' =>$data['national_id'],
                     'gender' =>$data['gender'],
                     'phone_number' =>$data['phone_number'],
                     'email' =>$data['email'],
@@ -72,10 +80,14 @@ class CreateNewestStudent extends CreateRecord
                 foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
                     unset($data[$value]);
                 }
+                $Student->semesters()->create([
+                    'semester_id' => $data['semester_id'],
+                    'enrollment_date' => now(),
+                ]);
                 $Student->update([
                     "created_at" =>$data['created_at'],
-                    "academic_year_id" =>$data['academic_year_id'],
-                    "semester_id" =>$data['semester_id'],
+                    // "academic_year_id" =>$data['academic_year_id'],
+                    // "semester_id" =>$data['semester_id'],
                     "parent_id" =>$data['parent_id'],
                     // "opening_balance" =>$data['opening_balance'],
                     // "finance_document" =>$data['finance_document'],

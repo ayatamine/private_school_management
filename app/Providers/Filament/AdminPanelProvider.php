@@ -2,23 +2,24 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\EmployeeResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\Login;
-use App\Filament\Resources\FinanceAccountAdResource;
 use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Blade;
 use Filament\Navigation\NavigationItem;
 use Filament\Http\Middleware\Authenticate;
+use App\Filament\Resources\EmployeeResource;
+use App\Filament\Resources\TransferResource;
 use Filament\FontProviders\GoogleFontProvider;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Resources\NewestStudentResource;
 use App\Filament\Resources\SchoolSettingResource;
 use App\Filament\Resources\FinanceAccountResource;
-use App\Filament\Resources\TransferResource;
+use App\Filament\Resources\FinanceAccountAdResource;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -26,6 +27,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\RenderHooks\PanelsRenderHook;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -47,7 +49,16 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('images/brandlogo.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->renderHook(
+                'panels.topbar.end',
+                fn (): string => Blade::render('@livewire(\'change-default-academic-year\')'),
+            )
             ->navigationItems([
+                NavigationItem::make('current_academic_year')
+                ->label(trans('main.current_academic_year'))
+                ->icon('heroicon-o-calendar')
+                ->url(fn (): string => '#')
+                ->visible(false),
                 NavigationItem::make('my_profile')
                     ->label(trans('main.my_profile'))
                     ->icon('icon-employees')

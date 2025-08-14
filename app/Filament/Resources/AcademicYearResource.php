@@ -74,6 +74,8 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
                         ->required(),
                     Forms\Components\Toggle::make('is_registration_active')->label(trans('main.is_registration_active'))
                         ->required(),
+                    Forms\Components\Toggle::make('is_upgrade_active')->label(trans('main.is_upgrade_active'))
+                        ->required(),
                  ])
             ]);
     }
@@ -95,6 +97,7 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
                 Tables\Columns\IconColumn::make('is_default')->label(trans('main.is_default'))
                     ->boolean(),
                 Tables\Columns\ToggleColumn::make('is_registration_active')->label(trans('main.is_registration_active')),
+                Tables\Columns\ToggleColumn::make('is_upgrade_active')->label(trans('main.is_upgrade_active')),
                 Tables\Columns\TextColumn::make('updated_at')->label(trans('main.updated_at'))
                     ->date('Y-m-d')
                     ->sortable(),

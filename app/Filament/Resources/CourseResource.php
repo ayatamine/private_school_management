@@ -77,6 +77,9 @@ class CourseResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) =>
+                $query->whereRelation('academicYear', 'is_default', true)
+            )
             ->columns([
                 
                     Tables\Columns\TextColumn::make('name')->label(trans('main.name'))

@@ -160,9 +160,20 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         Grid::make()
                         ->columns(4)
                         ->schema([
-                            Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
-                            ->options(AcademicYear::where('is_registration_active',true)->pluck('name', 'id'))
-                            ->default(AcademicYear::where('is_registration_active',true)->where('is_default',true)?->first()?->name)
+                            Forms\Components\Select::make('academic_year_id')
+                            ->label(trans_choice('main.academic_year', 1))
+                            ->options(AcademicYear::where('is_registration_active', true)->pluck('name', 'id'))
+                            ->default(function () {
+                                // If editing existing record, use its academic_year_id
+                                if ($this->record && $this->record->academic_year_id) {
+                                    return $this->record->academic_year_id;
+                                }
+                                
+                                // Otherwise use the default active academic year
+                                return AcademicYear::where('is_registration_active', true)
+                                    ->where('is_default', true)
+                                    ->first()?->id;
+                            })
                             ->required()
                             ->live(),
                             Forms\Components\Select::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
@@ -227,21 +238,23 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             //     ->hiddenOn('create'),
                             Forms\Components\TextInput::make('national_id')->label(trans('main.national_id'))
                                 ->required()
-                                ->rules([
-                                    fn (Student $student): Closure => function (string $attribute, $value, Closure $fail) use ($student) {
-                                    
-                                        if($student?->id)
-                                        {
-                                            if (User::whereNationalId($value)->whereNot('id',$student->user_id)->first() ) {
-                                                $fail(trans('main.national_id_used_before'));
+                                ->rules(
+                                    fn (\Filament\Forms\Get $get, ?\App\Models\Student $record): array => [
+                                        function (string $attribute, $value, Closure $fail) use ($get, $record) {
+                                            if ($record?->id) {
+                                                // Editing existing student: allow same user's national_id, block others
+                                                if (\App\Models\User::whereNationalId($value)->whereKeyNot($record->user_id)->exists()) {
+                                                    $fail(trans('main.national_id_used_before'));
+                                                }
+                                            } else {
+                                                // Creating: if registration_number is empty (new user), national_id must be unique
+                                                if (\App\Models\User::whereNationalId($value)->exists() && !$get('registration_number')) {
+                                                    $fail(trans('main.national_id_used_before'));
+                                                }
                                             }
-                                        }else{
-                                            if (User::whereNationalId($value)->first() ) {
-                                                $fail(trans('main.national_id_used_before'));
-                                            }
-                                        }
-                                    },
-                                ])->maxLength(10),
+                                        },
+                                    ]
+                                )->maxLength(10),
                         ]),
                        
                         Grid::make()
@@ -342,6 +355,12 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+            // ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) =>
+                
+            //     $query->whereHas('semesters', fn ($q) =>
+            //         $q->whereIn('semester_id', Semester::whereHas('academicYear', fn ($qa) => $qa->where('is_default', true))->pluck('id'))
+            //     )
+            // )
             ->query(Student::query()->whereDoesntHave('termination')->latest())
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
