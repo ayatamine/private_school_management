@@ -162,7 +162,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         ->schema([
                             Forms\Components\Select::make('academic_year_id')
                             ->label(trans_choice('main.academic_year', 1))
-                            ->options(AcademicYear::where('is_registration_active', true)->pluck('name', 'id'))
+                            ->options(fn(Get $get): Collection => $get('new_student') == true ? AcademicYear::where('is_registration_active',true)->pluck('name', 'id') : AcademicYear::pluck('name', 'id'))
                             ->default(function () {
                                 // If editing existing record, use its academic_year_id
                                 if ($this->record && $this->record->academic_year_id) {
@@ -361,7 +361,16 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
             //         $q->whereIn('semester_id', Semester::whereHas('academicYear', fn ($qa) => $qa->where('is_default', true))->pluck('id'))
             //     )
             // )
-            ->query(Student::query()->whereDoesntHave('termination')->latest())
+            ->query(Student::query()
+            ->whereDoesntHave('termination')
+            ->where(function($query){
+                $default_academic_year_id = \App\Models\AcademicYear::where('is_global_default', true)->first()->id ?? \App\Models\AcademicYear::where('is_default', true)->first()->id;
+                $semesters = Semester::where('academic_year_id', $default_academic_year_id)->pluck('id')->toArray() ;
+                return $query->whereHas('semesters', function ($query) use ($semesters) {
+                    return $query->whereIn('semester_id', $semesters);
+                });
+            })
+            ->latest())
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable('id')
@@ -457,7 +466,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                             ->size(TextEntrySize::Large)
                             ->color('danger'),
                             TextEntry::make('created_at')->label(trans('main.registration_date'))->date('Y-m-d')->weight(FontWeight::Bold),
-                            TextEntry::make('approved_at')->label(trans('main.approvel_date'))->date('Y-m-d')->weight(FontWeight::Bold),
+                            TextEntry::make('approved_at')->label(trans('main.approvel_date'))->date('Y-m-d')->weight(FontWeight::Bold)->state(fn (Student $student) =>$student?->semesters()->orderBy('id', 'desc')->first()->enrollment_date ?? $student->approved_at),
                             TextEntry::make('name')->label(trans('main.name'))
                             ->columnSpanFull()
                             ->weight(FontWeight::Bold)
@@ -489,12 +498,14 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                         ->columns(6)
                         ->id('parent-secdtion')
                         ->schema([
+                            
+
                             TextEntry::make('registration_number')->label(trans('main.id_ne'))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
-                            TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
-                            TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold),
+                            TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold)->state(fn (Student $student) => Semester::find($student?->semesters()->orderBy('id', 'desc')->first()->semester_id)->academicYear->name),
+                            TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold)->state(fn (Student $student) =>Semester::find($student?->semesters()->orderBy('id', 'desc')->first()->semester_id)->course->academicStage->name),
+                            TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold)->state(fn (Student $student) =>Semester::find($student?->semesters()->orderBy('id', 'desc')->first()->semester_id)->course->name),
+                            TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold)->state(fn (Student $student) =>Semester::find($student?->semesters()->orderBy('id', 'desc')->first()->semester_id)->name),
+                            TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold)->state(fn (Student $student) =>$student?->semesters()->orderBy('id', 'desc')->first()->enrollment_date ?? $student->approved_at),
                         ]),
                 \Filament\Infolists\Components\Section::make(trans('main.financial_infos'))
                         ->columns(3)

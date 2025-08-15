@@ -9,6 +9,7 @@ use App\Models\Semester;
 use App\Models\ParentModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\NewestStudentResource;
 
@@ -24,7 +25,7 @@ class EditNewestStudent extends EditRecord
     }
     protected function mutateFormDataBeforeFill(array $data): array
     {   
-  
+       
         $user = User::findOrFail($data['user_id']);
         $data['national_id'] = $user->national_id;
         $data['gender'] = $user->gender;
@@ -104,48 +105,36 @@ class EditNewestStudent extends EditRecord
                 foreach (['national_id','gender','phone_number','email','password'] as $key => $value) {
                     unset($data[$value]);
                 }
-                $Student->semesters()->create([
-                    'semester_id' => $data['semester_id'],
-                    'enrollment_date' => now(),
-                ]);
+                $semester  = $record->semesters()->orderBy('id', 'desc')->first();
+                if($semester)
+                {
+                    $semester->update([
+                        'semester_id' => $data['semester_id'],
+                        'enrollment_date' => now(),
+                        'is_current' => true,
+                    ]);
+                }
+                else
+                {
+                    DB::table('student_semesters')->insert([
+                        'student_id' => $Student->id,
+                        'semester_id' => $data['semester_id'],
+                        'enrollment_date' => now(),
+                        'is_current' => true,
+                    ]);
+                }
                 $Student->update([
-                    "created_at" =>$data['created_at'],
-                    // "academic_year_id" =>$data['academic_year_id'],
-                    // "semester_id" =>$data['semester_id'],
                     "parent_id" =>$data['parent_id'],
-                    // "opening_balance" =>$data['opening_balance'],
-                    // "finance_document" =>$data['finance_document'],
-                    // "note" =>$data['note'],
                 ]);
                 DB::commit();
-                DB::beginTransaction();
-                //add tuiton fees
-                // $tuitionFee = TuitionFee::whereCourseId($Student?->semester()?->course_id)->first();
-                // if($tuitionFee)
-                // {
-                //     $Student->tuitionFees()->sync($tuitionFee->id);
-                // }
-                //  //create invoice for student
-                // $academic_year_id = $data['academic_year_id'];
-                // $invoice  = Invoice::whereStudentId($Student->id)->whereAcademicYearId($academic_year_id)->first();
-                // if(!$invoice)
-                // {
-                //     $invoice =Invoice::create([
-                //         'number'=>$Student->semester?->academicYear?->name."".$Student->registration_number,
-                //         'name' => trans('main.fees_invoice')." ".$Student->course?->academicYear?->name,
-                //         'student_id'=>$Student->id,
-                //         'academic_year_id'=>$academic_year_id,
-                //     ]);
-                //     $Student->invoices()->save($invoice);
-                // }
+              
 
                 $data = $Student->toArray();
                 Notification::make()
-                            ->title(trans('main.student_registered_successfully'))
+                            ->title(trans('main.student_updated_successfully'))
                             ->icon('heroicon-o-document-text')
                             ->iconColor('success')
                             ->send();
-                DB::commit();
             }
             catch(\Exception $ex)
             {

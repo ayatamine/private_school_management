@@ -52,6 +52,9 @@ class ChangeDefaultAcademicYear extends Component
 
     public function render()
     {
-        return view('livewire.change-default-academic-year');
+        return view('livewire.change-default-academic-year')->with([
+            'academicYears' => $this->academicYears,
+            'selectedAcademicYearId' => $this->selectedAcademicYearId,
+        ]);
     }
 }

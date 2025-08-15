@@ -215,6 +215,12 @@ class Student extends Model
             ->where('is_current', true)
             ->with('semester');
     }
+    public function promotedSemester()
+    {
+        return $this->hasOne(StudentSemester::class)
+            ->where('is_promoted', true)
+            ->with('semester');
+    }
 
     public function promoteToNextSemester($newSemesterId, $notes = null)
     {
@@ -239,7 +245,9 @@ class Student extends Model
             'semester_id' => $newSemesterId,
             'academic_year_id' => Semester::find($newSemesterId)->academic_year_id,
             'enrollment_date' => now(),
-            'is_current' => true
+            'is_current' => false,
+            'is_promoted' => true,
+            'promotion_notes' => $notes
         ]);
     }
 }

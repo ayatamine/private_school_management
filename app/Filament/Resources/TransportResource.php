@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Student;
 use App\Models\Vehicle;
+use App\Models\Semester;
 use Filament\Forms\Form;
 use App\Models\Transport;
 use Filament\Tables\Table;
@@ -102,7 +103,18 @@ class TransportResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
-            // ->query(Transport::query()->whereNull('termination_reason'))
+            ->query(Transport::query()//->whereNull('termination_reason')
+                //show only the default academic year where has semesters , take semester_id and get academic year
+                ->where(function($query){
+                  $default_academic_year_id = \App\Models\AcademicYear::where('is_global_default', true)->first()->id ?? \App\Models\AcademicYear::where('is_default', true)->first()->id;
+                  $semesters = Semester::where('academic_year_id', $default_academic_year_id)->pluck('id')->toArray() ;
+                  return $query->whereHas('student', function ($query) use ($semesters) {
+                      return $query->whereHas('semesters', function ($query) use ($semesters) {
+                          return $query->whereIn('semester_id', $semesters);
+                      });
+                  });
+                })
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.id_number'))
                     ->searchable('id')

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use MPDF;
 use Closure;
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -32,14 +33,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
-use App\Filament\Resources\StudentResource\Pages;
 use Filament\Infolists\Components\Actions\Action;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\UpgradeStudentResource\Pages;
 use Filament\Infolists\Components\TextEntry\TextEntrySize;
-use App\Filament\Resources\StudentResource\RelationManagers;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
-class StudentResource extends Resource implements HasShieldPermissions
+class UpgradeStudentResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Student::class;
 
@@ -51,16 +51,20 @@ class StudentResource extends Resource implements HasShieldPermissions
     }
     public static function getModelLabel():string
     {
-        return trans_choice('main.student',1);
+        return trans('main.upgrade_students');
     }
     public static function getNavigationLabel():string
     {
-        return trans('main.students_list');
+        return trans('main.upgrade_students');
     }
 
     public static function getPluralModelLabel():string
     {
         return trans_choice('main.student',2);
+    }
+    public static function getnavigationParentItem():string
+    {
+        return trans('main.students_list');
     }
     public static function getPermissionPrefixes(): array
     {
@@ -87,6 +91,10 @@ class StudentResource extends Resource implements HasShieldPermissions
     public static function shouldRegisterNavigation(): bool
     {
         return employeeHasPermission('view_any_student');
+    }
+    public static function canCreate(): bool
+    {
+        return false;
     }
     public static function form(Form $form): Form
     {
@@ -377,14 +385,18 @@ class StudentResource extends Resource implements HasShieldPermissions
             ->query(
                 Student::query()->whereDoesntHave('termination')
                 ->where('status','approved') 
+                ->whereHas('semesters', function ($query) {
+                    return $query->where('is_promoted', true);
+                })
                 //show only the default academic year where has semesters , take semester_id and get academic year
-                ->where(function($query){
-                  $default_academic_year_id = \App\Models\AcademicYear::where('is_global_default', true)->first()->id ?? \App\Models\AcademicYear::where('is_default', true)->first()->id;
-                  $semesters = Semester::where('academic_year_id', $default_academic_year_id)->pluck('id')->toArray() ;
-                  return $query->whereHas('semesters', function ($query) use ($semesters) {
-                      return $query->whereIn('semester_id', $semesters);
-                  });
-                }))
+                // ->where(function($query){
+                //   $default_academic_year_id = \App\Models\AcademicYear::where('is_global_default', true)->first()->id ?? \App\Models\AcademicYear::where('is_default', true)->first()->id;
+                //   $semesters = Semester::where('academic_year_id', $default_academic_year_id)->pluck('id')->toArray() ;
+                //   return $query->whereHas('semesters', function ($query) use ($semesters) {
+                //       return $query->whereIn('semester_id', $semesters);
+                //   });
+                // })
+                )
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
                     ->searchable('id')
@@ -396,20 +408,15 @@ class StudentResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('user.national_id')->label(trans('main.national_id'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nationality')->label(trans('main.nationality'))
-                    ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
-                    ->state(fn (Student $student) => $student?->currentSemester?->academicYear?->name .' '.$student?->currentSemester?->course?->name)                    ,
-                Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                            'pending'=>'primary',
-                            'approved'=>'success',
-                            'rejected'=>'danger',
-                    })
-                    ->formatStateUsing(fn (string $state) =>trans("main.$state"))
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('currentSemester')->label(trans('main.currentSemester'))
+                    ->state(fn (Student $student) =>$student?->currentSemester ? $student?->currentSemester?->academicYear?->name .' '.$student?->currentSemester?->course?->name : Semester::find($student?->semester_id)->name)                    ,
+                Tables\Columns\TextColumn::make('promotedSemester')->label(trans('main.promotedSemester'))
+                    ->state(fn (Student $student) =>$student?->promotedSemester?->academicYear?->name .' '.$student?->promotedSemester?->course?->name)                    ,
+                Tables\Columns\TextColumn::make('created_at')->label(trans('main.promotion_date'))
+                    ->state(fn (Student $student) =>Carbon::parse($student?->promotedSemester?->created_at)->format('Y-m-d'))                    ,
+                Tables\Columns\TextColumn::make('status')->label(trans('main.status'))->badge()->color('success')
+                    ->state(fn (Student $student) => trans('main.upgraded'))                    ,
+                
             ])
             ->filters([
                 SelectFilter::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
@@ -442,20 +449,6 @@ class StudentResource extends Resource implements HasShieldPermissions
                             return $q->where('course_id', $data['value']);
                         });
                     }),
-                    //add nationality saudian or other
-                    SelectFilter::make('nationality')->label(trans('main.nationality'))
-                    ->options([
-                        'saudian'=>trans('main.saudian'),
-                        'other'=>trans('main.other')
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                
-                        if ($data['value'] == null) {
-                            return $query;
-                        }
-                
-                        return $data['value'] == 'saudian' ? $query->where('nationality', 'saudian') : $query->where('nationality', '!=', 'saudian');
-                    }),
             ])
             ->deferFilters()
             ->filtersApplyAction(
@@ -478,10 +471,7 @@ class StudentResource extends Resource implements HasShieldPermissions
         return $infolist
             ->schema([
                 \Filament\Infolists\Components\Section::make(trans('main.student_info'))
-                        ->headerActions([
-                            Action::make(trans('main.edit'))
-                                ->url(fn (Student $record): string => route('filament.admin.resources.students.edit', $record))
-                        ])
+                        
                         ->columns(2)
                         ->id('main-section')
                         ->schema([
@@ -685,10 +675,10 @@ class StudentResource extends Resource implements HasShieldPermissions
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStudents::route('/'),
-            'create' => Pages\CreateStudent::route('/create'),
-            'edit' => Pages\EditStudent::route('/{record}/edit'),
-            'view' => Pages\ViewStudent::route('/{record}'),
+            'index' => Pages\ListUpgradeStudents::route('/'),
+            'create' => Pages\CreateUpgradeStudent::route('/create'),
+            'edit' => Pages\EditUpgradeStudent::route('/{record}/edit'),
+            'view' => Pages\ViewUpgradeStudent::route('/{record}'),
         ];
     }
 }

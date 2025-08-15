@@ -2,22 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use MPDF;
-use Barryvdh\DomPDF\Facade\Pdf;
-use ArPHP\I18N\Arabic;
 use Filament\Forms;
 use Filament\Tables;
+use ArPHP\I18N\Arabic;
 use App\Models\Invoice;
+use App\Models\Student;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\SchoolSetting;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\InvoiceResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\InvoiceResource\RelationManagers;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class InvoiceResource extends Resource implements HasShieldPermissions
 {
@@ -62,16 +63,21 @@ class InvoiceResource extends Resource implements HasShieldPermissions
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year_id',1))
+                Forms\Components\Select::make('academic_year_id')->label(trans_choice('main.academic_year',1))
                     ->relationship('academicYear', 'name')
                     ->required(),
-                Forms\Components\Select::make('student_id')->label(trans('main.student'))
+                Forms\Components\Select::make('student_id')->label(trans_choice('main.student',1))
                     ->relationship('student', 'username')
+                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->first_name} {$record->middle_name} #{$record->registration_number}")
+                    ->searchable(['registration_number','first_name', 'middle_name'])
+                    ->preload()
                     ->required(),
                 Forms\Components\TextInput::make('number')
+                    ->label(trans('main.serial_number'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('name')
+                    ->label(trans('main.invoice_name'))
                     ->required()
                     ->maxLength(255),
             ]);

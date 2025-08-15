@@ -5,6 +5,7 @@ namespace App\Filament\Resources\NewestStudentResource\Pages;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Actions;
+use App\Models\Semester;
 use App\Models\TuitionFee;
 use App\Models\ParentModel;
 use Filament\Actions\Action;
@@ -32,6 +33,7 @@ class ViewNewestStudent extends ViewRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        dd($data);
         $user = User::findOrFail($data['user_id']);
         $data['national_id'] = $user->national_id;
         $data['gender'] = $user->gender;
@@ -44,7 +46,16 @@ class ViewNewestStudent extends ViewRecord
         $data['parent_email']  = $parent?->parent_email;
         $data['parent_phone_number']  = $parent?->parent_phone_number;
         $data['parent_gender']  = $parent?->parent_gender;
+        
+        $data['semester_id'] = $this->record->semesters()->orderBy('id', 'desc')->first()->semester_id;
+       
+        if( $data['semester_id'] && $data['semester_id'] != "")
+        {
+            $data['academic_year_id'] = Semester::find($data['semester_id'])->academic_year_id;
+            $data['academic_stage_id'] = Semester::find($data['semester_id'])->course->academic_stage_id;
+            $data['course_id'] = Semester::find($data['semester_id'])->course_id;
 
+        } 
         return $data;
     }
     public function editPartitions(): Action

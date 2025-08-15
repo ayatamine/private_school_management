@@ -22,6 +22,7 @@ class AcademicYear extends Model
         'is_default',
         'is_registration_active',
         'is_upgrade_active',
+        'is_global_default',
     ];
 
     /**
@@ -35,5 +36,6 @@ class AcademicYear extends Model
         'end_date' => 'date',
         'is_default' => 'boolean',
         'is_upgrade_active' => 'boolean',
+        'is_global_default' => 'boolean',
     ];
 }

@@ -199,7 +199,7 @@ class ReceiptVoucherResource extends Resource implements HasShieldPermissions
                 ->relationship('paymentMethod', 'name')
                 ->label(trans_choice('main.payment_method',1)),
                 SelectFilter::make('finance_account')
-                ->relationship('paymentMethod', 'financeAccount.name')
+                ->relationship('paymentMethod.financeAccount', 'name')
                 ->label(trans('main.finance_account_name')),
                 Filter::make('payment_date')
                 ->label(trans('main.payment_date'))

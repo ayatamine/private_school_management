@@ -97,7 +97,12 @@ class StudentTerminationResource extends Resource implements HasShieldPermission
     public static function table(Table $table): Table
     {
         return $table
-            // ->query(StudentTermination::query())
+            ->query(StudentTermination::query()
+            ->whereHas('semester', function ($query) {
+                $default_academic_year_id = \App\Models\AcademicYear::where('is_global_default', true)->first()->id ?? \App\Models\AcademicYear::where('is_default', true)->first()->id;
+                $query->where('academic_year_id', $default_academic_year_id);
+            })
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('student.registration_number')->label(trans('main.registration_number'))
                     ->searchable('id')

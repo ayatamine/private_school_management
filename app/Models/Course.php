@@ -54,5 +54,9 @@ class Course extends Model
     {
         return $this->hasOne(GeneralFee::class,'course_id','id');
     }
+    public function semester(): HasOne
+    {
+        return $this->hasOne(Semester::class,'course_id','id');
+    }
 
 }

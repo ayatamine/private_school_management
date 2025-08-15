@@ -102,7 +102,7 @@ class SemesterResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) =>
-                $query->whereHas('academicYear', fn ($q) => $q->where('is_default', true))
+                $query->whereRelation('academicYear', 'is_global_default', true)
             )
             ->columns([
                 Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice('main.academic_year',1))

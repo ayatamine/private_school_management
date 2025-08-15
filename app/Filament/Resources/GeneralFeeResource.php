@@ -9,6 +9,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\GeneralFee;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
 use Filament\Forms\Components\Section;
@@ -17,8 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\GeneralFeeResource\Pages;
 use App\Filament\Resources\GeneralFeeResource\RelationManagers;
-use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class GeneralFeeResource extends Resource implements HasShieldPermissions
 {
@@ -100,6 +101,9 @@ class GeneralFeeResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+        ->query(GeneralFee::query()
+                ->where('academic_year_id',AcademicYear::where('is_global_default', true)->first()->id ?? AcademicYear::where('is_default', true)->first()->id)
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),

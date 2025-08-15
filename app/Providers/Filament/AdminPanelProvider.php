@@ -50,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->renderHook(
-                'panels.topbar.end',
+                'panels::global-search.after',
                 fn (): string => Blade::render('@livewire(\'change-default-academic-year\')'),
             )
             ->navigationItems([

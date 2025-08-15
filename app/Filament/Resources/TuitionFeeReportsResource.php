@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Course;
 use App\Models\Student;
+use App\Models\Semester;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\AcademicYear;
@@ -95,7 +96,13 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
     {
         return $table
             ->query(function(Builder $query) {
-                return Student::whereDoesntHave('termination')->where('status','approved');
+                return Student::whereDoesntHave('termination')->where('status','approved')->where(function($query){
+                    $default_academic_year_id = \App\Models\AcademicYear::where('is_global_default', true)->first()->id ?? \App\Models\AcademicYear::where('is_default', true)->first()->id;
+                    $semesters = Semester::where('academic_year_id', $default_academic_year_id)->pluck('id')->toArray() ;
+                    return $query->whereHas('semesters', function ($query) use ($semesters) {
+                        return $query->whereIn('semester_id', $semesters);
+                    });
+                  });
             })
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')->label(trans('main.id_number'))
@@ -131,7 +138,7 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
             ])
             ->filters([
                 SelectFilter::make('academic_year_id')->label(trans_choice('main.academic_year',1))
-                    ->relationship('semester.academicYear', 'name')->searchable()
+                    ->options(AcademicYear::pluck('name','id'))->searchable()
                     ->preload(),
                 SelectFilter::make('academic_stage_id')->label(trans_choice('main.academic_stage',1))
                     ->options(AcademicStage::pluck('name','id'))
@@ -151,7 +158,7 @@ class TuitionFeeReportsResource extends Resource implements HasShieldPermissions
                         });
                     }),
                 SelectFilter::make('semester_id')->label(trans_choice('main.semester',1))
-                    ->relationship('semester', 'name')->searchable()
+                    ->options(Semester::pluck('name','id'))->searchable()
                     ->preload(),
                 SelectFilter::make('course_id')->label(trans('main.course_enrolled'))
                     ->options(Course::pluck('name','id'))

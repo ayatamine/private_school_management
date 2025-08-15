@@ -47,6 +47,7 @@ class AcademicYearResource extends Resource implements HasShieldPermissions
             'update',
             'delete',
             'print',
+            'change_default',
             
         ];
     }

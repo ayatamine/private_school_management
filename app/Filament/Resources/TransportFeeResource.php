@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
 use App\Models\TransportFee;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
@@ -13,9 +14,9 @@ use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TransportFeeResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\TransportFeeResource\RelationManagers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class TransportFeeResource extends Resource implements HasShieldPermissions
 {
@@ -90,6 +91,9 @@ class TransportFeeResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+        ->query(TransportFee::query()
+                ->where('academic_year_id',AcademicYear::where('is_global_default', true)->first()->id ?? AcademicYear::where('is_default', true)->first()->id)
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(trans('main.name'))
                     ->searchable(),

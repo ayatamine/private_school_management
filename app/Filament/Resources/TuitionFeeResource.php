@@ -8,9 +8,11 @@ use Filament\Tables;
 use App\Models\Course;
 use App\Models\Student;
 use Filament\Forms\Get;
+use App\Models\Semester;
 use Filament\Forms\Form;
 use App\Models\TuitionFee;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
 use Filament\Forms\Components\Section;
@@ -124,6 +126,10 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+        ->query(TuitionFee::query()//->whereNull('termination_reason')
+                //show only the default academic year where has semesters , take semester_id and get academic year
+                ->where('academic_year_id',AcademicYear::where('is_global_default', true)->first()->id ?? AcademicYear::where('is_default', true)->first()->id)
+            )
             ->columns([
                 
                     Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice('main.academic_year',1))
@@ -156,8 +162,11 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
                 ])),
                 Tables\Actions\DeleteAction::make()
                 ->visible(function(TuitionFee $record): bool {
-                    $students = Student::whereHas('semester', function($query) use ($record) {
-                        $query->where('course_id', $record->course_id);
+                    $semester = Course::find($record->course_id)->semester;
+             
+                    //update this please cause now there is relation student_semsters
+                    $students = Student::whereHas('semesters', function($query) use ($record, $semester) {
+                        $query->where('semester_id', $semester->id);
                     })->get();
                     return $students->isEmpty();
                 }),

@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\AcademicYear;
 use App\Models\ConcessionFee;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
@@ -14,9 +15,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ConcessionFeeResource\Pages;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 use App\Filament\Resources\ConcessionFeeResource\RelationManagers;
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class ConcessionFeeResource extends Resource implements HasShieldPermissions
 {
@@ -87,6 +88,9 @@ class ConcessionFeeResource extends Resource implements HasShieldPermissions
     public static function table(Table $table): Table
     {
         return $table
+        ->query(ConcessionFee::query()
+                ->where('academic_year_id',AcademicYear::where('is_global_default', true)->first()->id ?? AcademicYear::where('is_default', true)->first()->id)
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('academicYear.name')->label(trans_choice('main.academic_year',1))
                         ->sortable(),
