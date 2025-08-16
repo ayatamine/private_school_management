@@ -205,7 +205,7 @@ class Student extends Model
 
     public function semesters()
     {
-        return $this->hasMany(StudentSemester::class)->with('semester','academicYear')
+        return $this->hasMany(StudentSemester::class)->with('semester')
         ->orderBy('enrollment_date','asc');
     }
 

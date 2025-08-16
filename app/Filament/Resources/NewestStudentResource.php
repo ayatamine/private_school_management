@@ -387,7 +387,7 @@ class NewestStudentResource extends Resource implements HasShieldPermissions
                     ->searchable(),
                 
                 Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
-                    ->state(fn (Student $student) => $student?->semester?->academicYear?->name .' '.$student?->semester?->course?->name)
+                    ->state(fn (Student $student) => $student?->currentSemester ? $student?->currentSemester?->semester?->academicYear?->name .' '.$student?->currentSemester?->semester?->course?->name : Semester::find($student?->currentSemester_id)->course?->name)
                     // ->searchable()
                     ,
                 Tables\Columns\TextColumn::make('status')->label(trans('main.status'))

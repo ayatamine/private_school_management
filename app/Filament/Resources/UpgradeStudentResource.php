@@ -409,11 +409,11 @@ class UpgradeStudentResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currentSemester')->label(trans('main.currentSemester'))
-                    ->state(fn (Student $student) =>$student?->currentSemester ? $student?->currentSemester?->academicYear?->name .' '.$student?->currentSemester?->course?->name : Semester::find($student?->semester_id)->name)                    ,
+                    ->state(fn (Student $student) =>$student?->currentSemester ? $student?->currentSemester?->semester?->academicYear?->name .' '.$student?->currentSemester?->semester?->course?->name : Semester::find($student?->semester_id)->course?->name)                    ,
                 Tables\Columns\TextColumn::make('promotedSemester')->label(trans('main.promotedSemester'))
-                    ->state(fn (Student $student) =>$student?->promotedSemester?->academicYear?->name .' '.$student?->promotedSemester?->course?->name)                    ,
+                    ->state(fn (Student $student) =>$student?->promotedSemester?->semester?->academicYear?->name .' '.$student?->promotedSemester?->semester?->course?->name)                    ,
                 Tables\Columns\TextColumn::make('created_at')->label(trans('main.promotion_date'))
-                    ->state(fn (Student $student) =>Carbon::parse($student?->promotedSemester?->created_at)->format('Y-m-d'))                    ,
+                    ->state(fn (Student $student) =>Carbon::parse($student?->promotedSemester?->enrollment_date)->format('Y-m-d'))                    ,
                 Tables\Columns\TextColumn::make('status')->label(trans('main.status'))->badge()->color('success')
                     ->state(fn (Student $student) => trans('main.upgraded'))                    ,
                 
@@ -429,11 +429,14 @@ class UpgradeStudentResource extends Resource implements HasShieldPermissions
                         }
                         //semester->course->academic_stage
                         //select courses where academic_stage_id = $data['value']
-                       $courses = Course::whereHas('academicStage', function ($query) use ($data) {
+                        $courses = Course::whereHas('academicStage', function ($query) use ($data) {
                             return $query->where('academic_stage_id', $data['value']);
                         })->pluck('id');
-                        return $query->whereHas('semester', function ($query) use ($data,$courses) {
+                        $semesters = Semester::whereHas('course', function ($query) use ($data,$courses) {
                             return $query->whereIn('course_id', $courses);
+                        })->pluck('id');
+                        return $query->whereHas('semesters', function ($query) use ($data,$semesters) {
+                            return $query->whereIn('semester_id', $semesters);
                         });
                     }),
                 SelectFilter::make('course_id')->label(trans('main.course_enrolled'))
@@ -445,8 +448,37 @@ class UpgradeStudentResource extends Resource implements HasShieldPermissions
                             return $query;
                         }
                 
-                        return $query->whereHas('semester', function ($q) use ($data) {
-                            return $q->where('course_id', $data['value']);
+                        $semesters = Semester::whereHas('course', function ($query) use ($data) {
+                            return $query->where('course_id', $data['value']);
+                        })->pluck('id');
+                        return $query->whereHas('semesters', function ($query) use ($data,$semesters) {
+                            return $query->whereIn('semester_id', $semesters);
+                        });
+                    }),
+                SelectFilter::make('current_semester')->label(trans('main.currentSemester'))
+                    ->options(Semester::pluck('name','id'))
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                       
+                        return $query->whereHas('semesters', function ($query) use ($data) {
+                            return $query->where('semester_id', $data['value'])->where('is_current', true);
+                        });
+                    }),
+                SelectFilter::make('promoted_semester')->label(trans('main.promotedSemester'))
+                    ->options(Semester::pluck('name','id'))
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                
+                        if ($data['value'] == null) {
+                            return $query;
+                        }
+                       
+                        return $query->whereHas('semesters', function ($query) use ($data) {
+                            return $query->where('semester_id', $data['value'])->where('is_promoted', true);
                         });
                     }),
             ])

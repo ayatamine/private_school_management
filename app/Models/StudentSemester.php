@@ -21,7 +21,6 @@ class StudentSemester extends Model
     protected $fillable = [
         'student_id',
         'semester_id',
-        'academic_year_id',
         'enrollment_date',
         'completion_date',
         'is_current',
@@ -38,7 +37,6 @@ class StudentSemester extends Model
         'id' => 'integer',
         'student_id' => 'integer',
         'semester_id' => 'integer',
-        'academic_year_id' => 'integer',
         'enrollment_date' => 'date',
         'completion_date' => 'date',
         'is_current' => 'boolean',
@@ -61,13 +59,6 @@ class StudentSemester extends Model
         return $this->belongsTo(Semester::class);
     }
 
-    /**
-     * Get the academic year.
-     */
-    public function academicYear(): BelongsTo
-    {
-        return $this->belongsTo(AcademicYear::class);
-    }
 
     /**
      * Get the duration of enrollment in days.

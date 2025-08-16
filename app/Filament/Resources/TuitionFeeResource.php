@@ -127,7 +127,6 @@ class TuitionFeeResource extends Resource implements HasShieldPermissions
     {
         return $table
         ->query(TuitionFee::query()//->whereNull('termination_reason')
-                //show only the default academic year where has semesters , take semester_id and get academic year
                 ->where('academic_year_id',AcademicYear::where('is_global_default', true)->first()->id ?? AcademicYear::where('is_default', true)->first()->id)
             )
             ->columns([

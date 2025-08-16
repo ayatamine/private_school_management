@@ -400,7 +400,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                     ->formatStateUsing(fn (string $state) => $state == 'saudian' ? trans("main.$state") : $state)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.course_enrolled')->label(trans('main.course_enrolled'))
-                    ->state(fn (Student $student) => $student?->currentSemester?->academicYear?->name .' '.$student?->currentSemester?->course?->name)                    ,
+                    ->state(fn (Student $student) => $student?->currentSemester ? $student?->currentSemester?->semester?->academicYear?->name .' '.$student?->currentSemester?->semester?->course?->name : Semester::find($student?->semester_id)->course?->name) ,
                 Tables\Columns\TextColumn::make('status')->label(trans('main.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -422,11 +422,14 @@ class StudentResource extends Resource implements HasShieldPermissions
                         }
                         //semester->course->academic_stage
                         //select courses where academic_stage_id = $data['value']
-                       $courses = Course::whereHas('academicStage', function ($query) use ($data) {
+                        $courses = Course::whereHas('academicStage', function ($query) use ($data) {
                             return $query->where('academic_stage_id', $data['value']);
                         })->pluck('id');
-                        return $query->whereHas('semester', function ($query) use ($data,$courses) {
+                        $semesters = Semester::whereHas('course', function ($query) use ($data,$courses) {
                             return $query->whereIn('course_id', $courses);
+                        })->pluck('id');
+                        return $query->whereHas('semesters', function ($query) use ($data,$semesters) {
+                            return $query->whereIn('semester_id', $semesters);
                         });
                     }),
                 SelectFilter::make('course_id')->label(trans('main.course_enrolled'))
@@ -438,8 +441,11 @@ class StudentResource extends Resource implements HasShieldPermissions
                             return $query;
                         }
                 
-                        return $query->whereHas('semester', function ($q) use ($data) {
-                            return $q->where('course_id', $data['value']);
+                        $semesters = Semester::whereHas('course', function ($query) use ($data) {
+                            return $query->where('course_id', $data['value']);
+                        })->pluck('id');
+                        return $query->whereHas('semesters', function ($query) use ($data,$semesters) {
+                            return $query->whereIn('semester_id', $semesters);
                         });
                     }),
                     //add nationality saudian or other
@@ -532,18 +538,7 @@ class StudentResource extends Resource implements HasShieldPermissions
                                 TextEntry::make('parent.user.phone_number')->label(trans('main.phone_number'))->weight(FontWeight::Bold),
                                 TextEntry::make('parent.user.email')->label(trans('main.email'))->weight(FontWeight::Bold),
                 ]),
-                \Filament\Infolists\Components\Section::make(trans('main.academic_data'))
-                        ->id('parent-sectidon')
-                        ->schema([
-                            ViewEntry::make('semesters')->label(trans_choice('main.academic_data',2))->view('infolists.components.view-student-academic-data')
-
-                            // TextEntry::make('registration_number')->label(trans('main.id_ne'))->weight(FontWeight::Bold),
-                            // TextEntry::make('semester.academicYear.name')->label(trans_choice('main.academic_year',1))->weight(FontWeight::Bold),
-                            // TextEntry::make('semester.course.academicStage.name')->label(trans_choice('main.academic_stage',1))->weight(FontWeight::Bold),
-                            // TextEntry::make('semester.course.name')->label(trans_choice('main.academic_course',number: 1))->weight(FontWeight::Bold),
-                            // TextEntry::make('semester.name')->label(trans_choice('main.semester',number: 1))->weight(FontWeight::Bold),
-                            // TextEntry::make('approved_at')->label(trans('main.approved_at'))->date('Y-m-d')->weight(FontWeight::Bold),
-                ]),
+                
                 // \Filament\Infolists\Components\Section::make(trans_choice('main.tuition_fee',2))
                 //         ->id('tuition_fee-section')
                 //         ->schema([

@@ -113,7 +113,8 @@ class ListUpgradeStudents extends ListRecords
             
 
             }),
-            // Actions\CreateAction::make(),
+            print_table_resrource_list('print_upgrade_student',route('print_pdf',['type'=>"upgraded_students"]))
         ];
+            // Actions\CreateAction::make(),
     }
 }

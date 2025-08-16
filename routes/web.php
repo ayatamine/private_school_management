@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\Semester;
 use App\Models\Transport;
 use App\Models\SchoolSetting;
 use App\Models\ReceiptVoucher;
@@ -241,6 +242,47 @@ Route::get('print-pdf/{type}/{id?}',function($type,$id=null){
                 'academic_stage_id'=>$academic_stage_id,'course_id'=>$course_id,'nationality'=>$nationality];
                 $view = "students";
                 $file_name = "قائمة الطلاب.pdf";
+                break;
+            case 'upgraded_students':
+                //remove the super admin
+                $url =url()->previous();
+                $parsedUrl = parse_url($url);
+                if(array_key_exists('query',$parsedUrl))    parse_str($parsedUrl['query'], $queryParams);
+               
+                // Extract the date values
+                $academic_stage_id = $queryParams['tableFilters']['academic_stage_id']['value'] ?? null;
+                $course_id = $queryParams['tableFilters']['course_id']['value'] ?? null;
+                $nationality = $queryParams['tableFilters']['nationality']['value'] ?? null;
+                
+                $students = Student::whereDoesntHave('termination')
+                ->where('status','approved')
+                ->when($academic_stage_id, function($query) use ($academic_stage_id){
+                    $courses = Course::whereHas('academicStage', function ($query) use ($academic_stage_id) {
+                        return $query->where('academic_stage_id', $academic_stage_id);
+                    })->pluck('id');
+                 
+                    $semesters = Semester::whereHas('course', function ($query) use ($courses) {
+                        return $query->whereIn('course_id', $courses);
+                    })->pluck('id');
+                    return $query->whereHas('semesters', function ($query) use ($semesters) {
+                        return $query->whereIn('semester_id', $semesters);
+                    });
+                })
+                ->when($course_id, function($query) use ($course_id){
+                    $semesters = Semester::whereHas('course', function ($query) use ($course_id) {
+                        return $query->where('course_id', $course_id);
+                    })->pluck('id');
+                    return $query->whereHas('semesters', function ($query) use ($semesters) {
+                        return $query->whereIn('semester_id', $semesters);
+                    });
+                })
+                ->when($nationality, fn ($query) => $nationality == 'saudian' ? $query->where('nationality', 'saudian') : $query->where('nationality', '!=', 'saudian'))
+                ->latest()
+                ->get();
+                $data = ['students' => $students,'settings'=>SchoolSetting::first(),
+                'academic_stage_id'=>$academic_stage_id,'course_id'=>$course_id,'nationality'=>$nationality];
+                $view = "upgraded_students";
+                $file_name = "قائمة الطلاب المرفعين.pdf";
                 break;
             case 'tuition_fees_reports':
                 //remove the super admin
